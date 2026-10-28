@@ -1,0 +1,137 @@
+/* Parent area (부모님 공간), opened from the 부모님 buttons after a parent check. Calm, grown-up look; Korean first.
+   Lives inside the library stage (1180 x 820). See ui/parents.js. */
+.pa{position:absolute;inset:0;z-index:75;font-family:"Noto Sans KR","Nunito",sans-serif;color:#2a2340;opacity:0;transition:opacity .2s}
+.pa.on{opacity:1}
+.pa[hidden]{display:none}
+.pa button{font:inherit;color:inherit;border:0;background:none;cursor:pointer}
+.pa button:focus-visible{outline:3px solid #5b3fa8;outline-offset:2px}
+
+/* parent check */
+.pa-gate{position:absolute;inset:0;display:grid;place-items:center;background:rgba(32,20,66,.72)}
+.pa-gatebox{width:520px;background:#fff;border-radius:28px;padding:34px 38px 30px;text-align:center;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.pa-gatebox h2{margin:0;font-size:26px;font-weight:700}
+.pa-gatebox p{margin:8px 0 0;color:#625e7a;font-size:16px}
+.pa-gatebox .q{margin:22px 0 18px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:54px;color:#42298a;letter-spacing:.02em}
+.pa-gatebox .opts{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pa-gatebox .opts button{height:70px;border-radius:18px;background:#f4f0fb;font-family:"Fredoka",sans-serif;font-weight:700;font-size:28px;color:#42298a;box-shadow:0 4px 0 #ddd3f2}
+.pa-gatebox .opts button.no{animation:paShake .4s;background:#ffe8e3}
+.pa-gatebox .cancel{margin-top:18px;font-size:15px;color:#625e7a;text-decoration:underline}
+@keyframes paShake{25%,75%{translate:-8px 0}50%{translate:8px 0}}
+
+/* the room */
+.pa-room{position:absolute;inset:0;display:grid;grid-template-columns:236px 1fr;background:#f7f5fb}
+.pa-nav{background:#2f2160;color:#fff;padding:26px 16px 20px;display:flex;flex-direction:column;gap:6px}
+.pa-brand{padding:0 10px 18px}
+.pa-brand b{display:block;font-size:20px;font-weight:700;line-height:1.25}
+.pa-brand span{display:block;margin-top:4px;font-size:12px;letter-spacing:.12em;color:#c9bdf0;font-family:"Sora",sans-serif}
+.pa-nav .tab{display:flex;align-items:center;gap:12px;width:100%;padding:13px 14px;border-radius:14px;text-align:left;font-size:17px;font-weight:600;color:#ded6f7}
+.pa-nav .tab i{font-style:normal;width:26px;text-align:center;font-size:19px}
+.pa-nav .tab small{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;color:#a99ad6;font-family:"Sora",sans-serif}
+.pa-nav .tab[aria-selected="true"]{background:#fff;color:#2f2160}
+.pa-nav .tab[aria-selected="true"] small{color:#7a6aa8}
+.pa-nav .spacer{flex:1}
+.pa-nav .child{display:flex;align-items:center;gap:10px;padding:12px;border-radius:14px;background:rgba(255,255,255,.08);font-size:15px}
+.pa-nav .child img{width:38px;height:38px;border-radius:50%;background:#fff}
+.pa-nav .back{margin-top:10px;width:100%;padding:13px;border-radius:14px;background:#ffd36b;color:#2f2160;font-weight:700;font-size:16px}
+
+.pa-main{position:relative;overflow:auto;padding:30px 36px 36px;scrollbar-width:thin}
+.pa-main h1{margin:0;font-size:28px;font-weight:700}
+.pa-main .sub{margin:6px 0 22px;color:#625e7a;font-size:15px}
+.pa-card{background:#fff;border-radius:20px;padding:20px 22px;box-shadow:0 1px 0 #e9e4f3,0 6px 18px rgba(47,33,96,.06)}
+.pa-card h3{margin:0 0 12px;font-size:18px;font-weight:700}
+.pa-row{display:grid;gap:16px}
+.pa-eyebrow{font-family:"Sora",sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;color:#7a6aa8}
+
+/* this month */
+.pa-program{display:flex;align-items:center;gap:20px;background:linear-gradient(120deg,#2f2160,#5b3fa8);color:#fff}
+.pa-program .big{font-family:"Fredoka",sans-serif;font-weight:700;font-size:44px;line-height:1;color:#ffd36b}
+.pa-program b{display:block;font-size:20px}
+.pa-program span{display:block;font-size:14px;color:#ded6f7;margin-top:2px}
+.pa-cycle{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.pa-cycle div{border-radius:16px;background:#f4f0fb;padding:12px 12px 14px;position:relative}
+.pa-cycle div:not(:last-child)::after{content:"›";position:absolute;right:-9px;top:50%;transform:translateY(-50%);color:#b5a7e0;font-size:22px}
+.pa-cycle b{display:block;font-family:"Sora",sans-serif;font-size:12px;letter-spacing:.08em;color:#5b3fa8}
+.pa-cycle strong{display:block;font-size:17px;margin:2px 0 4px}
+.pa-cycle span{font-size:13px;color:#625e7a;line-height:1.4}
+.pa-levels{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.pa-lv h4{margin:0 0 10px;display:flex;align-items:center;gap:8px;font-size:17px}
+.pa-lv h4 i{font-style:normal;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:15px}
+.pa-book{display:grid;grid-template-columns:54px 1fr auto;align-items:center;gap:10px;padding:6px 0;border-top:1px solid #f0ecf7}
+.pa-book:first-of-type{border-top:0}
+.pa-book img{width:54px;height:34px;object-fit:cover;border-radius:6px}
+.pa-book b{font-size:14px;font-weight:600;line-height:1.25}
+.pa-pill{font-size:12px;font-weight:700;padding:4px 9px;border-radius:999px;white-space:nowrap;background:#f0ecf7;color:#625e7a}
+.pa-pill.done{background:#e1f5ed;color:#167a5c}
+.pa-pill.doing{background:#fff3d1;color:#9a6a00}
+
+/* levels */
+.pa-lvcard{border-top:6px solid var(--c)}
+.pa-lvcard .tag{display:inline-flex;align-items:center;gap:8px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:22px;color:var(--c)}
+.pa-lvcard .focus{font-size:18px;font-weight:700;margin:6px 0 12px}
+.pa-lvcard ul{margin:0;padding-left:18px;color:#3b3552;font-size:15px;line-height:1.8}
+.pa-lvcard .ex{margin-top:14px;padding:10px 12px;border-radius:12px;background:#f7f5fb;font-family:"Fredoka",sans-serif;font-size:17px;color:#42298a}
+.pa-note{margin-top:16px;padding:14px 16px;border-radius:14px;background:#fff8e6;color:#6b5310;font-size:14px;line-height:1.6}
+
+/* words */
+.pa-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.pa-chips button{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border-radius:999px;background:#fff;box-shadow:0 0 0 1px #e3ddef;font-size:14px;font-weight:600}
+.pa-chips button img{width:44px;height:28px;object-fit:cover;border-radius:999px}
+.pa-chips button[aria-pressed="true"]{background:#2f2160;color:#fff;box-shadow:none}
+.pa-words{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pa-word{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;padding:12px 14px;border-radius:16px;background:#fff;box-shadow:0 0 0 1px #ece7f5}
+.pa-say{width:44px;height:44px;border-radius:50%;background:#f4f0fb !important;font-size:18px}
+.pa-say.on{background:#5b3fa8 !important;color:#fff !important}
+.pa-word b{font-family:"Fredoka",sans-serif;font-weight:600;font-size:20px;color:#2a2340}
+.pa-word em{font-style:normal;margin-left:8px;font-size:14px;color:#625e7a}
+.pa-word p{margin:2px 0 0;font-size:13px;color:#7a7590}
+.pa-sentences{display:flex;flex-wrap:wrap;gap:8px}
+.pa-sentences button{padding:10px 16px;border-radius:14px;background:#f4f0fb;font-family:"Fredoka",sans-serif;font-size:17px;color:#42298a}
+.pa-empty{padding:40px;text-align:center;color:#7a7590;font-size:15px}
+
+/* report */
+.pa-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.pa-kpi .n{font-family:"Fredoka",sans-serif;font-weight:700;font-size:40px;line-height:1;color:#2f2160}
+.pa-kpi .n small{font-size:18px;color:#7a7590;margin-left:2px}
+.pa-kpi .l{margin-top:6px;font-size:14px;font-weight:600;color:#625e7a}
+.pa-steps{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.pa-step{padding:12px;border-radius:14px;background:#f7f5fb;text-align:center}
+.pa-step .dot{width:34px;height:34px;margin:0 auto 6px;border-radius:50%;display:grid;place-items:center;background:#e6e0f2;color:#fff;font-size:16px;font-weight:700}
+.pa-step.ok .dot{background:#20b486}
+.pa-step b{display:block;font-family:"Sora",sans-serif;font-size:11px;letter-spacing:.08em;color:#5b3fa8}
+.pa-step span{font-size:14px;font-weight:600}
+.pa-voice{display:grid;gap:8px}
+.pa-voice .item{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:#f7f5fb}
+.pa-voice .item b{font-family:"Fredoka",sans-serif;font-weight:600;font-size:17px}
+.pa-voice .item span{font-size:12px;color:#7a7590}
+.pa-talk{display:grid;gap:8px}
+.pa-talk div{padding:10px 14px;border-radius:14px;background:#fff8e6}
+.pa-talk b{display:block;font-family:"Fredoka",sans-serif;font-weight:600;font-size:17px;color:#2a2340}
+.pa-talk span{font-size:14px;color:#6b5310}
+.pa-privacy{margin-top:14px;font-size:13px;color:#7a7590}
+
+/* family profiles */
+.pa-family{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pa-kid.now{box-shadow:0 0 0 3px #20b486,0 6px 18px rgba(47,33,96,.06)}
+.pa-kid .top{display:flex;align-items:center;gap:14px}
+.pa-kid .big{width:72px;height:72px;border-radius:50%;background:#f4f0fb;object-fit:cover}
+.pa-kid .who{display:grid;gap:8px;justify-items:start}
+.pa-kid input{width:220px;font:inherit;font-size:20px;font-weight:700;padding:8px 12px;border:2px solid #e3ddef;border-radius:12px;color:#2a2340;background:#fff}
+.pa-kid input:focus{outline:none;border-color:#5b3fa8}
+.pa-kid.add input{width:100%}
+.pa-faces{display:flex;flex-wrap:wrap;gap:8px}
+.pa-faces button{width:46px;height:46px;border-radius:50%;padding:0;overflow:hidden;background:#f4f0fb;box-shadow:0 0 0 2px #e3ddef}
+.pa-faces button.on{box-shadow:0 0 0 3px #5b3fa8}
+.pa-faces img{width:100%;height:100%;object-fit:cover}
+.pa-btn{padding:8px 14px;border-radius:12px;background:#f4f0fb !important;font-size:14px !important;font-weight:700;color:#42298a !important}
+.pa-btn.primary{background:#5b3fa8 !important;color:#fff !important;padding:12px 20px;font-size:16px !important}
+.pa-btn.danger{background:#ffe8e3 !important;color:#c2412f !important}
+.pa-kid .del{display:flex;align-items:center;gap:8px;margin-top:14px;min-height:34px;font-size:13px;color:#625e7a}
+.pa-link{font-size:13px !important;color:#9a95ad !important;text-decoration:underline}
+
+/* certificates in the report */
+.pa-certs{display:grid;gap:12px}
+.pa-cert{display:grid;grid-template-columns:240px 1fr;gap:18px;align-items:center;padding:12px;border-radius:16px;background:#f7f5fb}
+.pa-cert canvas{width:240px;aspect-ratio:1414/1000;border-radius:8px;box-shadow:0 0 0 3px #e2c995,0 6px 14px rgba(47,33,96,.15)}
+.pa-cert b{display:block;font-size:18px}
+.pa-cert span{display:block;margin-top:2px;font-size:14px;color:#625e7a}
+.pa-cert .acts{display:flex;gap:8px;margin-top:12px}

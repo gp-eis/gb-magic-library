@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>THINK · Bye-Bye Sugar Bugs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Sora:wght@600&display=swap">
+<link rel="stylesheet" href="kit.css">
+<link rel="stylesheet" href="../../ui/cl-buttons.css">
+<link rel="stylesheet" href="../../ui/cl-bubble.css">
+<style>
+#stage section>*{position:absolute}
+.zone{top:100px;width:420px;height:320px;border-radius:30px;border:5px dashed;display:grid;grid-template-rows:auto 1fr;padding:12px 16px;z-index:5;transition:background .2s,transform .2s}
+.zone.happy{left:230px;border-color:#7fd3b4;background:rgba(225,245,237,.92)}
+.zone.bugs{left:690px;border-color:#ffb3a8;background:rgba(255,232,227,.92)}
+.zone.flash{transform:scale(1.03)}
+.zone h2{margin:0;display:flex;align-items:center;gap:12px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:26px}
+.zone h2 img{height:62px}
+.zone .inside{display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding-top:10px}
+.zone .inside .item{width:70px;height:70px;box-shadow:none;background:rgba(255,255,255,.8);cursor:default}
+.zone .inside .item img{max-width:80%;max-height:80%}
+.zone .inside .item .emoji{font-size:42px}
+.tray{left:250px;right:30px;top:452px;display:flex;justify-content:center;gap:12px;z-index:8}
+.item{width:100px;height:100px;border-radius:22px;background:#fff;box-shadow:0 6px 0 #e6d6b8;display:grid;place-items:center;touch-action:none;cursor:grab;transition:transform .15s}
+.item img{max-width:82%;max-height:82%;object-fit:contain;pointer-events:none}
+.item .emoji{font-size:62px;line-height:1;pointer-events:none}
+.item.picked{box-shadow:0 0 0 5px var(--gold),0 6px 0 #e6d6b8;transform:scale(1.08)}
+.item.dragging{z-index:30;transform:scale(1.12);cursor:grabbing;box-shadow:0 16px 30px rgba(60,40,10,.25)}
+.item.bad{animation:shake .45s}
+.label-hint{left:250px;right:30px;top:566px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:600;font-size:18px;color:var(--soft);z-index:8}
+/* round 2 */
+.slot{top:110px;width:240px;height:300px;border-radius:28px;border:5px dashed #cbb6f0;background:rgba(239,233,251,.9);display:grid;grid-template-rows:auto 1fr;justify-items:center;padding-top:10px;z-index:5}
+.slot b{width:54px;height:54px;border-radius:50%;background:var(--plum);color:#fff;font-family:"Fredoka",sans-serif;font-size:30px;display:grid;place-items:center}
+.slot .inside{display:grid;place-items:center;width:100%}
+.slot.filled{border-style:solid;border-color:var(--mint);background:#e1f5ed}
+.steps{left:300px;right:60px;top:440px;display:flex;justify-content:center;gap:24px;z-index:8}
+.stepcard{width:240px;height:180px;border-radius:24px;background:#fff;box-shadow:0 6px 0 #e6d6b8;display:grid;grid-template-rows:1fr auto;justify-items:center;padding:12px 8px;touch-action:none;cursor:grab;transition:transform .15s}
+.stepcard img{max-width:80%;max-height:96px;object-fit:contain;pointer-events:none}
+.stepcard .emoji{font-size:80px;line-height:1;pointer-events:none}
+.stepcard span.t{font-family:"Fredoka",sans-serif;font-weight:600;font-size:20px;text-align:center;pointer-events:none}
+.stepcard.picked{box-shadow:0 0 0 5px var(--gold),0 6px 0 #e6d6b8;transform:scale(1.05)}
+.stepcard.dragging{z-index:30;transform:scale(1.08);box-shadow:0 16px 30px rgba(60,40,10,.25)}
+.stepcard.bad{animation:shake .45s}
+.slot .inside .stepcard{box-shadow:none;background:transparent;height:200px;cursor:default}
+</style>
+</head>
+<body>
+<div id="stage">
+  <section id="r1">
+    <div class="zone happy" id="zHappy" data-kind="happy" role="button" aria-label="Happy teeth basket"><h2><img src="img/teeth_sparkle.webp" alt="">Happy teeth</h2><div class="inside"></div></div>
+    <div class="zone bugs" id="zBugs" data-kind="bugs" role="button" aria-label="Sugar bugs love it basket"><h2><img src="img/sugar_bug_giggle.webp" alt="">Sugar bugs love it</h2><div class="inside"></div></div>
+    <div class="tray" id="tray"></div>
+    <div class="label-hint">Drag a picture into a basket, or tap the picture and then the basket.</div>
+  </section>
+  <section id="r2" class="hidden">
+    <div class="slot" style="left:300px" data-n="1"><b>1</b><div class="inside"></div></div>
+    <div class="slot" style="left:564px" data-n="2"><b>2</b><div class="inside"></div></div>
+    <div class="slot" style="left:828px" data-n="3"><b>3</b><div class="inside"></div></div>
+    <div class="steps" id="steps"></div>
+  </section>
+</div>
+<script src="../../ui/mate.js"></script>
+<script src="../../ui/rotate.js" data-base="../../"></script>
+<script src="../../ui/stage.js" data-base="../../"></script>
+<script src="../../ui/mate-lines.js"></script>
+<script src="kit.js"></script>
+<script src="../../ui/cl-bubble.js"></script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  SB.bar('think','Sort it out');
+  SB.gerry();
+  document.querySelectorAll('section').forEach(s=>{ s.style.position='absolute'; s.style.inset='0'; });
+
+  /* ---------- round 1: happy teeth or sugar bugs ---------- */
+  const ITEMS=[
+    {id:'apple',img:'img/apple.webp',name:'apple',kind:'happy',ok:'Crunch! Apples help scrub your teeth.'},
+    {id:'soda',img:'img/can.webp',name:'soda',kind:'bugs',ok:'Yes! Soda is full of sugar.',no:'Soda has lots and lots of sugar. Sugar bugs love it!'},
+    {id:'water',emoji:'💧',name:'water',kind:'happy',ok:'Water washes sugar away!',no:'Water washes the sugar away. Teeth love water!'},
+    {id:'donut',img:'img/donut_color.webp',name:'donut',kind:'bugs',ok:'Right! Sticky donuts hug your teeth.',no:'A donut is sweet and sticky. Sugar bugs love it!'},
+    {id:'carrot',emoji:'🥕',name:'carrot',kind:'happy',ok:'Crunchy carrots are great for teeth!',no:'Carrots are crunchy and not sugary. Happy teeth!'},
+    {id:'lollipop',img:'img/lollipop.webp',name:'lollipop',kind:'bugs',ok:'Yes! A lollipop is full of sugar.',no:'A lollipop is full of sugar. Sugar bugs love it!'},
+    {id:'cheese',emoji:'🧀',name:'cheese',kind:'happy',ok:'Cheese is a tooth-friendly snack!',no:'Cheese is not sugary. It is a happy-teeth snack!'},
+    {id:'sugar',img:'img/sugar_cubes.webp',name:'sugar',kind:'bugs',ok:'Of course! Sugar bugs love sugar.',no:'That is sugar! The sugar bugs love it.'}
+  ];
+  ITEMS[0].no='Apples are crunchy and good for teeth. Happy teeth!';
+  let sorted=0;
+  function r1(){
+    const tray=$('tray');
+    ITEMS.forEach(it=>{
+      const b=document.createElement('button'); b.className='item'; b.dataset.id=it.id; b.setAttribute('aria-label',it.name);
+      b.innerHTML=it.img?'<img src="'+it.img+'" alt="">':'<span class="emoji" aria-hidden="true">'+it.emoji+'</span>';
+      tray.appendChild(b);
+    });
+    SB.dragTap([...tray.children],[$('zHappy'),$('zBugs')],(el,zone)=>{
+      const it=ITEMS.find(x=>x.id===el.dataset.id);
+      if(zone.dataset.kind!==it.kind){ SB.sfx.bad(); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); SB.say(it.no); return; }
+      SB.sfx.good(); el.dataset.placed='1'; el.classList.remove('picked'); zone.querySelector('.inside').appendChild(el);
+      zone.classList.add('flash'); setTimeout(()=>zone.classList.remove('flash'),200); SB.sparkle(el,10);
+      sorted++;
+      if(sorted<ITEMS.length){ if(sorted%3===1) SB.say(it.ok); }
+      else { SB.star($('zHappy')); SB.star($('zBugs')); SB.say('You sorted them all! Now let’s brush like a champion.').then(()=>setTimeout(r2,400)); }
+    });
+    SB.say('Which snacks make teeth happy, and which ones do sugar bugs love? Put each one in a basket!');
+  }
+
+  /* ---------- round 2: brushing in order ---------- */
+  const STEPS=[
+    {n:1,img:'img/toothbrush_paste.webp',t:'A pea of toothpaste'},
+    {n:2,img:'img/teeth_clean.webp',t:'Brush in little circles'},
+    {n:3,emoji:'💧',t:'Rinse with water'}
+  ];
+  let placed=0;
+  function r2(){
+    $('r1').classList.add('hidden'); $('r2').classList.remove('hidden');
+    document.querySelector('.title').textContent='Brush like a champion';
+    const box=$('steps'); const order=[STEPS[2],STEPS[0],STEPS[1]];
+    order.forEach(s=>{
+      const c=document.createElement('button'); c.className='stepcard'; c.dataset.n=s.n; c.setAttribute('aria-label',s.t);
+      c.innerHTML=(s.img?'<img src="'+s.img+'" alt="">':'<span class="emoji" aria-hidden="true">'+s.emoji+'</span>')+'<span class="t">'+s.t+'</span>';
+      box.appendChild(c);
+    });
+    const slots=[...document.querySelectorAll('.slot')];
+    SB.dragTap([...box.children],slots,(el,slot)=>{
+      if(slot.classList.contains('filled')) return;
+      const next=placed+1;
+      if(+el.dataset.n!==+slot.dataset.n || +slot.dataset.n!==next){
+        SB.sfx.bad(); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad');
+        SB.say(next===1?'What do we do first? We need toothpaste on the brush!':next===2?'Next, we brush in little circles.':'Last, we rinse with water.');
+        return;
+      }
+      SB.sfx.good(); el.dataset.placed='1'; el.classList.remove('picked'); slot.querySelector('.inside').appendChild(el); slot.classList.add('filled'); SB.sparkle(slot,12);
+      placed++;
+      if(placed===3){ SB.star(slots[2]); SB.say('Toothpaste, brush, rinse! That’s how champions brush.').then(()=>SB.finish('think',{title:'Super thinking!',text:'You sorted the snacks and put the brushing steps in order. Your next step is EXPRESS.',img:'img/teeth_sparkle.webp'})); }
+    });
+    SB.say('Put the brushing steps in order. What comes first?');
+  }
+
+  SB.startScreen({kicker:'STEP 3 · THINK',title:'Sort it out',text:'Help the teeth! Decide which snacks make teeth happy, then put the brushing steps in order.',img:'img/teeth_sparkle.webp'}).then(r1);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>EXPRESS · Bye-Bye Sugar Bugs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Sora:wght@600&display=swap">
+<link rel="stylesheet" href="kit.css">
+<link rel="stylesheet" href="../../ui/cl-buttons.css">
+<link rel="stylesheet" href="../../ui/cl-bubble.css">
+<style>
+.pic{left:200px;top:108px;width:330px;height:330px;border-radius:34px;background:#fff;box-shadow:0 8px 0 #e6d6b8,0 14px 30px rgba(60,40,10,.12);display:grid;place-items:center;z-index:5}
+.pic img{max-width:80%;max-height:80%;object-fit:contain}
+.pic .emoji{font-size:170px}
+.count{left:200px;top:452px;width:330px;text-align:center;font-family:"Sora",sans-serif;font-weight:600;font-size:14px;letter-spacing:.14em;color:var(--plum);z-index:5}
+.sentence{left:570px;top:120px;width:560px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:56px;line-height:1.15;color:var(--ink);z-index:5}
+.sentence .w{display:inline-block;transition:color .1s,transform .1s}
+.sentence .w.lit{color:var(--plum);transform:translateY(-3px)}
+.actions{left:570px;top:330px;display:flex;gap:14px;z-index:6}
+.act{display:grid;justify-items:center;gap:6px;width:150px;padding:14px 8px;border-radius:24px;background:#fff;box-shadow:0 6px 0 #e6d6b8;font-family:"Fredoka",sans-serif;font-weight:700;font-size:19px}
+.act i{font-style:normal;font-size:46px;line-height:1}
+.act.go{box-shadow:0 0 0 5px var(--gold),0 6px 0 #e6d6b8;animation:pulse 1.4s ease-in-out infinite}
+.act.rec{background:var(--coral);color:#fff;box-shadow:0 6px 0 #d94b3d}
+.act[disabled]{opacity:.35;animation:none;box-shadow:0 6px 0 #e6d6b8;cursor:default}
+.act.done-mark{box-shadow:0 0 0 4px var(--mint),0 6px 0 #bfe8d7}
+@keyframes pulse{50%{transform:scale(1.05)}}
+.meter{left:570px;top:500px;width:500px;height:60px;display:flex;align-items:flex-end;gap:5px;z-index:6}
+.meter span{flex:1;background:var(--coral);border-radius:6px 6px 2px 2px;height:6%;transition:height .08s}
+.note{left:570px;top:575px;width:540px;font-size:15px;color:var(--soft);z-index:6}
+.next{right:40px;bottom:36px;z-index:18}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="pic" id="pic"></div>
+  <div class="count" id="count">SENTENCE 1 OF 3</div>
+  <div class="sentence" id="sentence" aria-live="polite"></div>
+  <div class="actions">
+    <button class="act go" id="listen"><i>👂</i>Listen</button>
+    <button class="act" id="say" disabled><i>🎤</i><span id="sayLab">Say it!</span></button>
+    <button class="act" id="hear" disabled><i>▶️</i>Hear me</button>
+  </div>
+  <div class="meter hidden" id="meter" aria-hidden="true"></div>
+  <p class="note" id="note">Your recordings stay on this device.</p>
+  <div class="next hidden" id="next"><button class="clb clb--go clb--lg clb--pulse" id="nextBtn">Next <span class="i">›</span></button></div>
+</div>
+<script src="../../ui/mate.js"></script>
+<script src="../../ui/rotate.js" data-base="../../"></script>
+<script src="../../ui/stage.js" data-base="../../"></script>
+<script src="../../ui/mate-lines.js"></script>
+<script src="kit.js"></script>
+<script src="../../ui/cl-bubble.js"></script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const LINES=[
+    {id:'brush',text:'Brush in little circles.',img:'img/teeth_clean.webp'},
+    {id:'water',text:'Drink water after sweets.',emoji:'💧'},
+    {id:'byebye',text:'Bye-bye, sugar bugs!',img:'img/sugar_bug_giggle.webp'}
+  ];
+  let i=0, clips={}, recorder=null, stream=null, micOK=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder);
+  SB.bar('express','Say it!');
+  SB.gerry();
+  for(let k=0;k<24;k++) $('meter').appendChild(document.createElement('span'));
+
+  /* recordings are kept in this browser (IndexedDB) so the finished book can later read in the child's voice */
+  function db(){ return new Promise((res,rej)=>{ const r=indexedDB.open('cl-voice',1); r.onupgradeneeded=()=>r.result.createObjectStore('clips',{keyPath:'id'}); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }); }
+  function child(){ try{ return JSON.parse(localStorage.getItem('gp.reading.profile.v1')).id||'local-reader'; }catch(e){ return 'local-reader'; } }
+  async function saveClip(id,blob,text){ try{ const d=await db(); d.transaction('clips','readwrite').objectStore('clips').put({id:child()+'|sugar-bugs:'+id,profile:child(),blob,text,at:new Date().toISOString()}); }catch(e){} }
+
+  function show(){
+    const L=LINES[i];
+    $('count').textContent='SENTENCE '+(i+1)+' OF 3';
+    $('pic').innerHTML=L.img?'<img src="'+L.img+'" alt="">':'<span class="emoji" aria-hidden="true">'+L.emoji+'</span>';
+    $('sentence').innerHTML=L.text.split(' ').map((w,n)=>'<span class="w" data-i="'+n+'">'+w+'</span>').join(' ');
+    $('listen').className='act go'; $('say').disabled=true; $('say').className='act'; $('hear').disabled=!clips[L.id]; $('hear').className='act';
+    $('sayLab').textContent=micOK?'Say it!':'I said it!';
+    $('next').classList.add('hidden');
+    SB.say(i===0?SB.line('express.listenFirst'):SB.line('express.next'));
+  }
+  $('listen').addEventListener('click',()=>{
+    $('listen').className='act done-mark';
+    SB.say(LINES[i].text,{el:$('sentence'),gerry:true,rate:.8,replay:false}).then(()=>{ $('say').disabled=false; $('say').className='act go'; SB.say(micOK?SB.line('express.yourTurnMic'):SB.line('express.yourTurnSay')); });
+  });
+
+  $('say').addEventListener('click',async()=>{
+    if(!micOK){ return said(null); }
+    if(recorder&&recorder.state==='recording'){ recorder.stop(); return; }
+    try{ stream=stream||await navigator.mediaDevices.getUserMedia({audio:true}); }
+    catch(e){ micOK=false; $('sayLab').textContent='I said it!'; $('note').textContent='The microphone is off, so just say it out loud and tap the button.'; return SB.say(SB.line('express.micOff')); }
+    SB.stopVoice();
+    const chunks=[]; recorder=new MediaRecorder(stream); recorder.ondataavailable=e=>{ if(e.data.size) chunks.push(e.data); };
+    recorder.onstop=()=>{ meterStop(); $('say').className='act done-mark'; $('sayLab').textContent='Say it again'; said(new Blob(chunks,{type:recorder.mimeType||'audio/webm'})); };
+    recorder.start(); $('say').className='act rec'; $('sayLab').textContent='Stop'; meterStart();
+    setTimeout(()=>{ if(recorder&&recorder.state==='recording') recorder.stop(); },6000);
+  });
+  function said(blob){
+    const L=LINES[i]; const first=!clips[L.id];
+    clips[L.id]=blob||true;
+    if(blob){ saveClip(L.id,blob,L.text); $('hear').disabled=false; $('hear').className='act go'; }
+    if(first){ SB.sfx.good(); SB.star($('sentence')); SB.sparkle($('sentence'),14); }
+    SB.say(blob?SB.line('express.recorded'):SB.line('express.said')).then(()=>$('next').classList.remove('hidden'));
+    if(!blob) $('next').classList.remove('hidden');
+  }
+  $('hear').addEventListener('click',()=>{
+    const b=clips[LINES[i].id]; if(!(b instanceof Blob)) return;
+    SB.stopVoice(); $('hear').className='act done-mark';
+    const a=new Audio(URL.createObjectURL(b)); a.play().catch(()=>{});
+    a.onended=()=>{ URL.revokeObjectURL(a.src); $('next').classList.remove('hidden'); SB.say(SB.line('express.heard')); };
+  });
+  $('nextBtn').addEventListener('click',()=>{
+    SB.stopVoice(); i++;
+    if(i<LINES.length) show();
+    else { if(stream) stream.getTracks().forEach(t=>t.stop()); SB.finish('express',{title:'You said it all!',text:'Your voice is saved for your book. Your last step is CREATE: make your very own book!',img:'img/girl_grin.webp'}); }
+  });
+
+  /* live loudness bars while recording */
+  let actx=null, raf=0;
+  function meterStart(){
+    $('meter').classList.remove('hidden');
+    try{
+      actx=actx||new (window.AudioContext||window.webkitAudioContext)(); const src=actx.createMediaStreamSource(stream); const an=actx.createAnalyser(); an.fftSize=64; src.connect(an);
+      const data=new Uint8Array(an.frequencyBinCount); const bars=[...$('meter').children];
+      (function tick(){ an.getByteFrequencyData(data); bars.forEach((b,k)=>{ b.style.height=Math.max(6,(data[k%data.length]/255)*100)+'%'; }); raf=requestAnimationFrame(tick); })();
+    }catch(e){}
+  }
+  function meterStop(){ cancelAnimationFrame(raf); $('meter').classList.add('hidden'); }
+
+  if(!micOK) $('note').textContent='Recording isn’t available here, so just say it out loud.';
+  SB.startScreen({kicker:'STEP 4 · EXPRESS',title:'Say it!',text:'Listen to '+(window.CLMate?CLMate.name():'Gerry')+', then say each sentence yourself. You can hear your own voice!',img:'img/girl_grin.webp'}).then(show);
+})();
+</script>
+</body>
+</html>

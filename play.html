@@ -1,0 +1,44 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2b1f4f">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GB Magic Library">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="art/icon-192.png">
+<title>GB Magic Library</title>
+<!-- Phone and tablet frame: the library and its activities open inside this page, so the screen can stay full and
+     sideways while the child moves between pages (a new page would drop full screen). index.html sends touch devices
+     here; on a computer the library opens directly. ui/rotate.js (in each page) asks this frame for full screen. -->
+<style>
+html,body{margin:0;height:100%;background:#2b1f4f;overflow:hidden}
+iframe{position:fixed;left:0;top:0;width:100%;height:100%;border:0;display:block;transform-origin:0 0}
+</style>
+<iframe id="page" title="GB Magic Library" allow="fullscreen; autoplay; microphone; camera"></iframe>
+<script>
+window.CL_SHELL = true;
+const frame = document.getElementById('page');
+frame.src = 'index.html' + location.hash;
+/* the tab shows the open page's title */
+frame.addEventListener('load', () => { try { document.title = frame.contentDocument.title || 'GB Magic Library'; } catch (e) {} });
+/* phone held upright (or rotation lock on): draw the whole library turned sideways, so the child only has to turn the
+   phone. The page inside still sees a wide screen, so its taps, drags and drawing work as normal. */
+function turn() {
+  const w = innerWidth, h = innerHeight, up = h > w;
+  document.documentElement.classList.toggle('turned', up);
+  Object.assign(frame.style, up
+    ? { width: h + 'px', height: w + 'px', left: w + 'px', top: '0px', transform: 'rotate(90deg)' }
+    : { width: '', height: '', left: '', top: '', transform: '' });
+}
+turn(); addEventListener('resize', turn); addEventListener('orientationchange', () => setTimeout(turn, 150));
+/* full screen, turned sideways (Android phones; iPhones cannot do this from a web page) */
+window.CLFull = function () {
+  const d = document.documentElement;
+  if (document.fullscreenElement || !d.requestFullscreen) return;
+  d.requestFullscreen({ navigationUI: 'hide' })
+    .then(() => screen.orientation && screen.orientation.lock ? screen.orientation.lock('landscape') : null)
+    .catch(() => {});
+};
+</script>

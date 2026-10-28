@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "purpose": "Local-only GP Reading homepage prototype: four real supplied B8 reading covers.",
+  "source_note": "Original user-supplied cover artwork is retained. Copies were proportionally resized to 700 pixels wide and WebP encoded at quality 88; no cropping, AI generation, redrawing, or source-file changes.",
+  "schedule_note": "The source filename's M8/B8 labels identify the supplied set, not an asserted calendar month or approved child assignment.",
+  "covers": [
+    {
+      "id": "b8-w1",
+      "title": "Hello! Hello!",
+      "source_title_from_filename": "Hello Hello",
+      "category": "Culture",
+      "level": "B",
+      "source_set": "M8",
+      "week": 1,
+      "source": "C:/Users/jdtje/OneDrive/Documents/KakaoTalk Downloads/M8 cover images/B8-W1_Hello Hello.jpg",
+      "source_width": 1904,
+      "source_height": 1040,
+      "asset": "covers/month8-week1.webp",
+      "width": 700,
+      "height": 382,
+      "bytes": 75072,
+      "sha256": "09f605bf9ca2baf390e5d33ad795bbca71bf2ef8eeb5ad22c84a62a41207daa5"
+    },
+    {
+      "id": "b8-w2",
+      "title": "Where Is Your Home?",
+      "category": "Animal World",
+      "level": "B",
+      "source_set": "M8",
+      "week": 2,
+      "source": "C:/Users/jdtje/OneDrive/Documents/KakaoTalk Downloads/M8 cover images/B8-W2_Where Is Your Home.jpg",
+      "source_width": 1792,
+      "source_height": 1008,
+      "asset": "covers/month8-week2.webp",
+      "width": 700,
+      "height": 394,
+      "bytes": 40960,
+      "sha256": "2ac9655aed0ea612d3588bff945b6c261ebb7aa1671019b8c331a60087af5a17"
+    },
+    {
+      "id": "b8-w3",
+      "title": "Why Do We Wait?",
+      "category": "Philosophy",
+      "level": "B",
+      "source_set": "M8",
+      "week": 3,
+      "source": "C:/Users/jdtje/OneDrive/Documents/KakaoTalk Downloads/M8 cover images/B8-W3_Why Do We Wait.png",
+      "source_width": 1672,
+      "source_height": 941,
+      "asset": "covers/month8-week3.webp",
+      "width": 700,
+      "height": 394,
+      "bytes": 52362,
+      "sha256": "cdd499e95c1bc785e17d9628f39853282f22f6b5fcaff6bd24b7c306b6c31e36"
+    },
+    {
+      "id": "b8-w4",
+      "title": "Bye-Bye Sugar Bugs!",
+      "category": "Life",
+      "level": "B",
+      "source_set": "M8",
+      "week": 4,
+      "source": "C:/Users/jdtje/OneDrive/Documents/KakaoTalk Downloads/M8 cover images/B8-W4_Bye-Bye Sugar Bugs.png",
+      "source_width": 1672,
+      "source_height": 941,
+      "asset": "covers/month8-week4.webp",
+      "width": 700,
+      "height": 394,
+      "bytes": 42972,
+      "sha256": "29f90eceb85a4febfdb366edf9af1dd11ed785efd943e4333e3b66fe9cd55b50"
+    }
+  ]
+}

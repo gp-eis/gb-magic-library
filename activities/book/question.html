@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>QUESTION · GB Magic Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Sora:wght@600&display=swap">
+<link rel="stylesheet" href="../sugar-bugs/kit.css">
+<link rel="stylesheet" href="../../ui/cl-buttons.css">
+<link rel="stylesheet" href="../../ui/cl-bubble.css">
+<!-- QUESTION step for any month book: plays the book's own questions written for this library
+     (content/m<N>/<id>/activities.json -> app/months/current.js, field activities.question). -->
+<style>
+.asker{left:130px;top:112px;width:270px;height:270px;border-radius:34px;overflow:hidden;background:#fff;box-shadow:0 0 0 8px #fff,0 0 0 12px var(--gold),0 14px 30px rgba(60,40,10,.15);z-index:5;display:grid;place-items:center}
+.asker img{width:100%;height:100%;object-fit:cover}
+.round{left:130px;top:400px;width:270px;text-align:center;font-family:"Sora",sans-serif;font-size:14px;font-weight:600;letter-spacing:.14em;color:var(--plum);z-index:5}
+.qbubble{left:440px;top:120px;width:640px;min-height:110px;background:#fff;border-radius:28px 28px 28px 8px;padding:20px 26px;font-family:"Fredoka",sans-serif;font-weight:600;font-size:34px;line-height:1.2;color:var(--ink);box-shadow:0 8px 0 #e6d6b8,0 14px 30px rgba(60,40,10,.12);z-index:5}
+.qbubble .w{display:inline-block}
+.qbubble .w.lit{color:var(--plum)}
+.answers{left:440px;width:640px;top:290px;display:flex;justify-content:center;gap:36px;z-index:5}
+.answers .card{width:290px;height:300px;grid-template-rows:1fr auto;padding:16px 0 16px}
+.answers .card img{max-width:86%;max-height:196px;border-radius:16px;object-fit:contain}
+.answers .card.dim{opacity:.35}
+.next{right:40px;bottom:36px;z-index:18}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="asker"><img id="askerImg" src="" alt=""></div>
+  <div class="round" id="round"></div>
+  <div class="qbubble" id="qbubble" aria-live="polite"></div>
+  <div class="answers" id="answers"></div>
+  <div class="next hidden" id="next"><button class="clb clb--go clb--lg clb--pulse" id="nextBtn">Next <span class="i">›</span></button></div>
+</div>
+<script src="../../months/current.js"></script>
+<script>
+  /* which book: ?id=<book id>&key=<shelf key, e.g. A0> */
+  (function () {
+    const p = new URLSearchParams(location.search), id = p.get('id');
+    const all = window.CLMonth ? [].concat(...Object.values(window.CLMonth.levels)) : [];
+    window.MB = all.find(b => b.id === id) || null;
+    window.SB_BOOK = { id: id || 'unknown', key: p.get('key') || 'B0' };
+  })();
+</script>
+<script src="../../ui/mate.js"></script>
+<script src="../../ui/rotate.js" data-base="../../"></script>
+<script src="../../ui/stage.js" data-base="../../"></script>
+<script src="../../ui/mate-lines.js"></script>
+<script src="../sugar-bugs/kit.js"></script>
+<script src="../../ui/cl-bubble.js"></script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id), B=window.MB, R='../../';
+  SB.bar('question','Ask and answer');
+  SB.gerry();
+  const Q=(B&&B.activities&&B.activities.question)||[];
+  if(!Q.length){ $('qbubble').textContent='This book’s questions are not ready yet.'; return; }
+  let r=0, locked=false, firstTry=true;
+
+  function words(el,text){ el.innerHTML=String(text).split(' ').map(w=>'<span class="w">'+w+'</span>').join(' '); }
+  function round(){
+    const q=Q[r]; locked=false; firstTry=true;
+    $('askerImg').src=q.img?R+q.img:R+B.cover;
+    $('round').textContent='QUESTION '+(r+1)+' OF '+Q.length;
+    words($('qbubble'),q.q);
+    $('answers').innerHTML=q.choices.map((c,k)=>'<button class="card" data-k="'+k+'">'+(c.img?'<img src="'+R+c.img+'" alt="">':'')+'<span class="lab">'+c.label+'</span></button>').join('');
+    $('next').classList.add('hidden');
+    SB.say(q.q,{el:$('qbubble'),gerry:true});
+  }
+  $('answers').addEventListener('click',e=>{
+    const card=e.target.closest('.card'); if(!card||locked) return;
+    const k=+card.dataset.k, q=Q[r];
+    if(k===q.correct){
+      locked=true; card.classList.add('good'); SB.sfx.good(); SB.sparkle(card,18);
+      $('answers').querySelectorAll('.card').forEach(c=>{ if(c!==card) c.classList.add('dim'); });
+      if(firstTry) SB.star(card);
+      SB.say(q.praise?SB.line('cheer')+' '+q.praise:SB.line('right')).then(()=>$('next').classList.remove('hidden'));
+      setTimeout(()=>$('next').classList.remove('hidden'),2500);
+    } else {
+      firstTry=false; card.classList.remove('bad'); void card.offsetWidth; card.classList.add('bad'); SB.sfx.bad();
+      SB.say(SB.line('tryAgain'));
+    }
+  });
+  $('nextBtn').addEventListener('click',()=>{
+    SB.stopVoice(); r++;
+    if(r<Q.length) round();
+    else SB.finish('question',{title:'Great answers!',text:'You answered every question about '+B.title+'. Next: THINK about the story!',img:R+B.cover});
+  });
+  SB.startScreen({kicker:'STEP 2 · QUESTION',title:B.title,text:'Listen to each question and tap the right picture.',img:R+B.cover}).then(round);
+})();
+</script>
+</body>
+</html>

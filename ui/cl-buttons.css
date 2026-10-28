@@ -1,0 +1,55 @@
+/* GB Magic Library button system — one look and one meaning for every button on every screen.
+   Roles:  .clb (Back / neutral, white) · .clb--go (main action, coral) · .clb--done (finish, green)
+           .clb--place (go to a place, purple) · .clb--danger (remove, red) · .clb--icon (round tool)
+   Sizes:  default 52px tall · .clb--lg 64px for the one big action · .clb--sm 44px for crowded bars
+   Not a button: .clchip (flat status like the stars count) · .clprofile (the child's picture)
+   Selectors start with "body" so they win over page resets such as ".app button". */
+:root{
+  --clb-plum:#5b3fa8; --clb-plum-d:#42298a; --clb-coral:#ff6b5c; --clb-coral-l:#ff8a7d; --clb-coral-d:#d94b3d;
+  --clb-mint:#20b486; --clb-mint-l:#38c99a; --clb-mint-d:#168a66; --clb-red:#c2412f; --clb-red-d:#8f2c1f;
+  --clb-gold:#ffd36b; --clb-gold-d:#c99a2e; --clb-edge:#e2c995; --clb-ink:#2a2340;
+  --clb-font:"Fredoka",ui-rounded,system-ui,sans-serif;
+}
+body .clb{
+  display:inline-flex; align-items:center; justify-content:center; gap:10px;
+  min-height:52px; padding:0 22px; border:0; border-radius:999px;
+  font-family:var(--clb-font); font-weight:700; font-size:19px; line-height:1; letter-spacing:0;
+  white-space:nowrap; text-decoration:none; cursor:pointer; position:relative;
+  color:var(--clb-plum); background:#fff;
+  --edge:var(--clb-edge);
+  box-shadow:0 5px 0 var(--edge),0 8px 16px rgba(42,35,64,.12);
+  transition:transform .15s cubic-bezier(.3,1.6,.5,1),box-shadow .15s,filter .2s,opacity .2s;
+  -webkit-tap-highlight-color:transparent; user-select:none;
+}
+body .clb .i{font-size:1.15em;line-height:1;display:inline-block}
+body .clb:hover:not(:disabled){transform:translateY(-2px)}
+body .clb:active:not(:disabled){transform:translateY(4px);box-shadow:0 1px 0 var(--edge),0 2px 6px rgba(42,35,64,.1)}
+body .clb:focus-visible{outline:4px solid var(--clb-gold);outline-offset:3px}
+body .clb:disabled,body .clb[aria-disabled="true"]{opacity:.45;cursor:default;filter:saturate(.5)}
+
+body .clb--go{color:#fff;background:linear-gradient(180deg,var(--clb-coral-l),var(--clb-coral));--edge:var(--clb-coral-d);box-shadow:0 6px 0 var(--edge),0 0 22px rgba(255,107,92,.35)}
+body .clb--done{color:#fff;background:linear-gradient(180deg,var(--clb-mint-l),var(--clb-mint));--edge:var(--clb-mint-d);box-shadow:0 6px 0 var(--edge),0 0 22px rgba(32,180,134,.3)}
+body .clb--place{color:#fff;background:linear-gradient(180deg,#7354c4,var(--clb-plum));--edge:var(--clb-plum-d);box-shadow:0 5px 0 var(--edge),0 0 18px rgba(255,211,107,.45)}
+body .clb--danger{color:#fff;background:linear-gradient(180deg,#d9573f,var(--clb-red));--edge:var(--clb-red-d);box-shadow:0 6px 0 var(--edge)}
+
+body .clb--lg{min-height:64px;padding:0 34px;font-size:25px;border-radius:999px}
+body .clb--sm{min-height:44px;padding:0 16px;font-size:16px}
+body .clb--icon{width:52px;height:52px;min-height:52px;padding:0;font-size:22px}
+body .clb--icon.clb--sm{width:44px;height:44px;min-height:44px;font-size:19px}
+body .clb--ko{font-family:"Gowun Dodum","Fredoka",sans-serif;font-weight:400}
+
+/* calls attention to the next thing to tap */
+body .clb--pulse:not(:disabled){animation:clbPulse 1.6s ease-in-out infinite}
+@keyframes clbPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12);transform:scale(1.04)}}
+
+/* status chip: flat on purpose, so children don't try to tap it */
+body .clchip{display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.82);color:#7a5300;font-family:var(--clb-font);font-weight:700;font-size:19px;box-shadow:inset 0 0 0 2px rgba(255,211,107,.9);white-space:nowrap;transition:transform .2s}
+body .clchip.bump{transform:scale(1.2)}
+body .clprofile{width:52px;height:52px;border-radius:50%;border:3px solid var(--clb-gold);background:#fff;object-fit:cover;flex:none}
+
+/* top bar: back on the left, everything else on the right in a fixed order */
+body .clbar{display:flex;align-items:center;gap:12px}
+body .clbar .clmid{flex:1;display:flex;justify-content:center;min-width:0}
+body .clbar .clright{display:flex;align-items:center;gap:10px}
+
+@media (prefers-reduced-motion:reduce){body .clb,body .clchip{transition:none}body .clb--pulse{animation:none}}

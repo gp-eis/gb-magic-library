@@ -1,0 +1,937 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GB Magic Library</title>
+<script>/* if a page opens the library inside the PC-size book frame, fill the whole window (or the phone frame, play.html) instead */
+(function(){try{let w=window;while(w.parent!==w&&w.parent.location.origin===location.origin&&!w.parent.CL_SHELL)w=w.parent;if(w!==window)w.location.replace(location.href);}catch(e){}
+/* phones and tablets open inside play.html, which keeps the screen full and sideways from page to page */
+if(window.top===window&&matchMedia('(pointer: coarse)').matches&&!/[?&]dev/.test(location.search))location.replace('play.html'+location.hash);})();</script>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="storybook-viewer.css">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Gowun+Dodum&family=Sora:wght@500;600&display=swap">
+<style>
+/* Layout: header, one tablet-sized playable prototype scaled to fit, controls, then notes in two columns. */
+:root{
+  --bg:#f6f4f8; --ink:#1f1d33; --soft:#625e7a; --line:#e3dfea; --card:#ffffff; --accent:#5b3fa8; --accent-ink:#ffffff;
+  --f-ui:"Sora",system-ui,sans-serif; --f-body:"Nunito",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#15131f;--ink:#efedf6;--soft:#a9a4bf;--line:#2c2840;--card:#1d1a2b;--accent:#b9a2ff;--accent-ink:#17122a}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#15131f;--ink:#efedf6;--soft:#a9a4bf;--line:#2c2840;--card:#1d1a2b;--accent:#b9a2ff;--accent-ink:#17122a}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:36px 64px}
+.page{max-width:1120px;margin:0 auto;display:grid;gap:22px}
+h1{font-family:var(--f-ui);font-weight:600;font-size:clamp(26px,4vw,34px);margin:0;text-wrap:balance}
+.intro p{color:var(--soft);max-width:72ch;margin:8px 0 0}
+.intro a{color:var(--accent)}
+.device{background:#0f1115;border-radius:28px;padding:14px;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+.screen{position:relative;width:100%;aspect-ratio:1180/820;overflow:hidden;border-radius:16px;background:#6c5ce7}
+.controls{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.controls button{font-family:var(--f-ui);font-size:14px;font-weight:500;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:9px 16px;border-radius:999px;cursor:pointer}
+.controls button:focus-visible,.controls input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.controls label{display:flex;gap:8px;align-items:center;font-size:15px;color:var(--soft);cursor:pointer}
+.controls input{width:18px;height:18px;accent-color:var(--accent)}
+.notes{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media (max-width:760px){.notes{grid-template-columns:1fr}}
+.note{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 22px}
+.note h2{font-family:var(--f-ui);font-weight:600;font-size:18px;margin:0 0 8px}
+.note ul{margin:0;padding-left:18px}
+.note li{margin-bottom:6px;font-size:15px}
+
+/* ================= APP (fixed 1180x820, scaled) ================= */
+.app{position:absolute;left:0;top:0;width:1180px;height:820px;transform-origin:0 0;overflow:hidden;font-family:"Nunito",sans-serif;color:#2a2340;user-select:none}
+.app *{box-sizing:border-box}
+.app button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
+.app button:focus-visible{outline:4px solid #ffd36b;outline-offset:3px}
+.scene{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .45s ease}
+.scene.on{opacity:1;pointer-events:auto}
+.wordmark{font-family:"Fraunces",serif;font-weight:700;color:#5b3fa8;display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.wordmark small{font-family:"Fredoka";font-weight:600;font-size:13px;color:#2a2340;background:#ffd36b;padding:3px 9px;border-radius:999px}
+.bubble{position:absolute;background:#5b3fa8;color:#fff;font-family:"Fredoka";font-weight:600;font-size:19px;line-height:1.25;padding:12px 16px;border-radius:20px;max-width:240px;box-shadow:0 6px 0 #42298a,0 0 24px rgba(255,211,107,.35);z-index:4}
+.guide{position:absolute;pointer-events:none;z-index:3}
+.guide img{width:100%;display:block;mix-blend-mode:multiply}
+.hat{position:absolute;left:27%;width:46%;top:-30%;height:38%;background:#5b3fa8;clip-path:polygon(58% 0,100% 100%,0 100%);transform:rotate(8deg)}
+.hat::after{content:"★";position:absolute;left:38%;top:42%;color:#ffd36b;font-size:calc(var(--w) * .1)}
+.brim{position:absolute;left:20%;width:60%;top:5%;height:6%;border-radius:999px;background:#42298a}
+.twinkle{position:absolute;width:6px;height:6px;background:#fff;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:tw 2.4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.25;transform:scale(.7)}50%{opacity:1;transform:scale(1.4)}}
+.spark{position:absolute;z-index:60;pointer-events:none;width:16px;height:16px;background:#ffd36b;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:burst .9s ease-out forwards}
+@keyframes burst{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.2) rotate(180deg);opacity:0}}
+
+/* ---------- Outside ---------- */
+#outside{background:linear-gradient(#5d4bc9 0%,#9a79e0 32%,#f2a9c9 62%,#ffd9a8 78%)}
+#outside .world{position:absolute;inset:0;transform-origin:589px 572px;transition:transform 1.1s cubic-bezier(.6,0,.35,1)}
+#outside .world.zoom{transform:scale(6)}
+#outside .world.instant{transition:none}
+.moon{position:absolute;left:90px;top:60px;width:90px;height:90px;border-radius:50%;box-shadow:inset -22px -6px 0 0 #fff2c9;filter:drop-shadow(0 0 18px rgba(255,242,201,.7))}
+/* the owl courier: two wing frames swap for the flap, the body bobs and drifts across the sky */
+.owl{position:absolute;left:0;top:96px;width:104px;z-index:2;pointer-events:none;animation:owlfly 24s linear infinite}
+.owl .bob{position:relative;width:100%;aspect-ratio:360/332;animation:owlbob 1.6s ease-in-out infinite}
+.owl img{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 8px 8px rgba(40,30,80,.22))}
+.owl .down{animation:owlflap .52s steps(1) infinite}
+.owl .up{animation:owlflap .52s steps(1) -.26s infinite}
+@keyframes owlfly{0%{transform:translate(-140px,30px)}30%{transform:translate(260px,-10px)}55%{transform:translate(620px,40px)}80%{transform:translate(960px,0)}100%{transform:translate(1320px,-30px)}}
+@keyframes owlbob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(3deg)}}
+@keyframes owlflap{0%{opacity:1}50%{opacity:0}}
+.owlnote img{height:30px;vertical-align:-8px;margin-right:4px}
+.hills{position:absolute;left:0;right:0;top:600px;bottom:0;background:#7bbf8a}
+.hill{position:absolute;border-radius:50%}
+.walk{position:absolute;left:470px;top:610px;width:240px;height:220px;background:linear-gradient(#ffe7a8,#f6d58a);clip-path:polygon(34% 0,66% 0,100% 100%,0 100%)}
+.tower{position:absolute;background:#fbe6c0;box-shadow:inset -18px 0 0 rgba(160,110,60,.12)}
+.cone{position:absolute;background:#5b3fa8;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.cone.side{background:#7354c4}
+.tip{position:absolute;color:#ffd36b;font-size:30px;filter:drop-shadow(0 0 8px #ffd36b)}
+.glowwin{position:absolute;width:44px;height:64px;border-radius:22px 22px 6px 6px;background:#ffe08a;box-shadow:0 0 20px 6px rgba(255,214,90,.55);border:4px solid #fff6dd}
+.plaque{position:absolute;left:590px;top:330px;transform:translate(-50%,-50%);background:#fffaf0;border:4px solid #ffd36b;border-radius:18px;padding:8px 20px;z-index:2;box-shadow:0 0 22px rgba(255,211,107,.6)}
+.plaque .wordmark{font-size:32px}
+.doorframe{position:absolute;left:520px;top:420px;width:140px;height:190px;border-radius:70px 70px 0 0;background:radial-gradient(circle at 50% 60%,#fffdf0 0%,#ffe9a0 45%,#ffc94a 100%);perspective:600px;box-shadow:0 0 0 9px #ffd36b,0 0 40px 10px rgba(255,211,107,.6)}
+.door{position:absolute;top:0;bottom:0;width:50%;background:#4a2f7a;transition:transform .6s cubic-bezier(.5,0,.3,1);box-shadow:inset 0 0 0 6px #3a2366}
+.door.l{left:0;border-radius:70px 0 0 0;transform-origin:left center}
+.door.r{right:0;border-radius:0 70px 0 0;transform-origin:right center}
+.door::after{content:"✦";position:absolute;top:96px;color:#ffd36b;font-size:20px}
+.door.l::after{right:8px}.door.r::after{left:8px}
+#outside.open .door.l{transform:rotateY(-100deg)}
+#outside.open .door.r{transform:rotateY(100deg)}
+.floatbook{position:absolute;width:74px;border-radius:5px;box-shadow:0 0 16px rgba(255,211,107,.8);animation:bob 4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-16px) rotate(calc(var(--r) * -1))}}
+.enter-btn{position:absolute;left:50%;top:650px;transform:translateX(-50%);background:#5b3fa8;color:#fff!important;font-family:"Fredoka";font-weight:700;font-size:26px;padding:16px 34px;border-radius:24px;box-shadow:0 7px 0 #42298a,0 0 30px rgba(255,211,107,.6);animation:pulse 1.6s ease-in-out infinite;white-space:nowrap;z-index:5}
+@keyframes pulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.06)}}
+.door-hit{position:absolute;left:532px;top:508px;width:114px;height:126px;border-radius:57px 57px 0 0;z-index:5}
+.skip{position:absolute;right:24px;top:22px;background:rgba(255,255,255,.85);font-family:"Fredoka";font-weight:600;font-size:16px;padding:8px 16px;border-radius:999px;color:#5b3fa8!important;z-index:5}
+#flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 55%,#fffdf2 0%,#fff0b8 55%,#ffd36b 100%);opacity:0;pointer-events:none;transition:opacity .35s;z-index:50}
+#flash.on{opacity:1}
+
+/* ---------- Hall ---------- */
+#hall{background:radial-gradient(900px 500px at 50% 30%,#fff3d6 0%,#f6e2bd 60%,#e9cc9b 100%)}
+#hall.arrive .room{animation:arrive .7s cubic-bezier(.2,.7,.2,1)}
+@keyframes arrive{from{transform:scale(1.12);filter:blur(3px)}to{transform:scale(1);filter:none}}
+.room{position:absolute;inset:0}
+.archwin{position:absolute;top:96px;width:70px;height:150px;border-radius:35px 35px 4px 4px;background:linear-gradient(#4a3aa8,#8a6be0);border:6px solid #c99a5b;overflow:hidden}
+.archwin i{position:absolute;width:4px;height:4px;background:#fff;border-radius:50%}
+.floor{position:absolute;left:0;right:0;bottom:0;height:140px;background:repeating-linear-gradient(90deg,#b98552 0 118px,#ad7a48 118px 120px);box-shadow:inset 0 10px 0 #a06f3f}
+.rug{position:absolute;left:390px;bottom:22px;width:400px;height:86px;border-radius:50%;background:#7354c4;box-shadow:inset 0 0 0 10px #ffd36b}
+.candle{position:absolute;width:14px;height:34px;background:#fff8e6;border-radius:3px;animation:float 3.6s ease-in-out infinite;z-index:2}
+.candle::before{content:"";position:absolute;left:2px;top:-16px;width:10px;height:16px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:#ffd36b;box-shadow:0 0 16px 6px rgba(255,200,80,.6)}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.topbar{position:absolute;left:24px;right:24px;top:18px;display:flex;align-items:center;justify-content:space-between;z-index:6}
+.pillbtn{display:flex;align-items:center;gap:8px;background:#fff;font-family:"Fredoka";font-weight:700;font-size:18px;padding:10px 18px;border-radius:18px;box-shadow:0 5px 0 #e2c995;color:#5b3fa8!important;transition:transform .2s}
+.pillbtn.mylib{background:#5b3fa8;color:#fff!important;box-shadow:0 5px 0 #42298a,0 0 18px rgba(255,211,107,.5)}
+.pillbtn.bump{transform:scale(1.15)}
+.topbar .wordmark{font-size:28px;background:rgba(255,255,255,.85);padding:4px 16px;border-radius:16px}
+.me{display:flex;align-items:center;gap:10px}
+.star-pill{font-family:"Fredoka";font-weight:700;font-size:19px;background:#fff;color:#9a6a00;padding:8px 16px;border-radius:999px;box-shadow:0 5px 0 #e2c995;transition:transform .2s}
+.star-pill.bump{transform:scale(1.25)}
+.kr{font-family:"Gowun Dodum";font-size:15px;background:#fff;color:#5b3fa8;padding:9px 14px;border-radius:999px;box-shadow:0 5px 0 #e2c995}
+.me img{width:54px;height:54px;border-radius:18px;border:3px solid #ffd36b;background:#fff;object-fit:cover}
+.owlnote{position:absolute;left:50%;top:92px;transform:translate(-50%,-30px);opacity:0;background:#fffaf0;border:3px solid #ffd36b;border-radius:18px;padding:8px 18px;font-family:"Fredoka";font-weight:600;font-size:18px;color:#5b3fa8;z-index:7;transition:all .5s cubic-bezier(.2,.8,.3,1.3);white-space:nowrap}
+.owlnote.on{opacity:1;transform:translate(-50%,0)}
+.cases{position:absolute;left:44px;right:44px;top:150px;display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.case{background:#6b3f2a;border-radius:170px 170px 10px 10px;padding:78px 14px 14px;position:relative;box-shadow:0 0 0 5px #c99a5b,0 12px 0 #4f2d1d,0 24px 40px rgba(60,30,10,.25)}
+.case .lvl{position:absolute;left:50%;top:22px;transform:translateX(-50%);font-family:"Fredoka";font-weight:700;font-size:21px;color:#2a2340;padding:6px 22px;border-radius:999px;white-space:nowrap;background:#ffd36b;box-shadow:0 0 16px rgba(255,211,107,.6)}
+.case.A .lvl::before{content:"✦ "}.case.B .lvl::before{content:"☾ "}.case.C .lvl::before{content:"★ "}
+.board{background:#3d2418;border-radius:10px;padding:16px 10px 0;display:grid;grid-template-columns:1fr 1fr;gap:12px;box-shadow:inset 0 -14px 0 #c99a5b;margin-bottom:12px}
+.board:last-child{margin-bottom:0}
+.book{position:relative;display:block;text-align:left;padding-bottom:20px!important;transition:transform .25s}
+.book:hover{transform:translateY(-8px) rotate(-1.5deg)}
+.book img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px;box-shadow:0 8px 14px rgba(0,0,0,.35)}
+.book.new img{animation:glow 2s ease-in-out infinite}
+@keyframes glow{0%,100%{box-shadow:0 0 0 2px #ffd36b,0 0 10px 2px rgba(255,211,107,.6)}50%{box-shadow:0 0 0 3px #ffd36b,0 0 26px 8px rgba(255,211,107,.9)}}
+.book .bt{display:block;font-family:"Fredoka";font-weight:600;font-size:14px;line-height:1.15;margin-top:7px;color:#ffeccc;min-height:32px}
+.book .tag{position:absolute;right:-6px;top:-10px;font-family:"Fredoka";font-weight:700;font-size:12px;padding:3px 9px;border-radius:999px;color:#2a2340;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.tag.done{background:#ffd36b}.tag.part{background:#b9a2ff}.tag.new{background:#fff}
+#hall .guide{left:40px;bottom:14px;width:92px}
+#hall .bubble{left:130px;bottom:150px}
+
+/* ---------- My Library nook ---------- */
+#nook{background:radial-gradient(700px 420px at 30% 20%,#fff6e3 0%,#f3dfc0 70%,#e6c99a 100%)}
+.nook-sign{position:absolute;left:50%;top:92px;transform:translateX(-50%);font-family:"Fraunces",serif;font-weight:700;font-size:40px;color:#5b3fa8;background:#fffaf0;border:4px solid #ffd36b;border-radius:22px;padding:6px 28px;box-shadow:0 0 26px rgba(255,211,107,.55);white-space:nowrap}
+.nook-grid{position:absolute;left:40px;right:40px;top:180px;display:grid;grid-template-columns:1fr 1fr 300px;gap:24px}
+.shelf{background:#6b3f2a;border-radius:20px;padding:14px;box-shadow:0 0 0 5px #c99a5b,0 10px 0 #4f2d1d}
+.shelf h3{margin:0 0 10px;font-family:"Fredoka";font-weight:700;font-size:21px;color:#ffeccc;display:flex;align-items:center;gap:8px}
+.shelf .slots{background:#3d2418;border-radius:12px;padding:14px 10px 4px;display:grid;grid-template-columns:1fr 1fr;gap:12px;min-height:250px;align-content:start;box-shadow:inset 0 -12px 0 #c99a5b}
+.shelf .empty{grid-column:1/-1;color:#d8b98f;font-size:15px;font-weight:700;text-align:center;padding:36px 10px}
+.nbook{position:relative;display:block;text-align:left;padding-bottom:16px!important;transition:transform .2s}
+.nbook:hover{transform:translateY(-6px)}
+.nbook img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px;box-shadow:0 6px 12px rgba(0,0,0,.35)}
+.nbook .bt{display:block;font-family:"Fredoka";font-weight:600;font-size:13px;color:#ffeccc;margin-top:6px;line-height:1.15}
+.nbook .bar{display:block;height:6px;border-radius:6px;background:rgba(255,255,255,.18);margin-top:6px;overflow:hidden}
+.nbook .bar i{display:block;height:100%;background:#b9a2ff}
+.mark{position:absolute;right:10px;top:-6px;width:16px;height:30px;background:#ff8a7d;clip-path:polygon(0 0,100% 0,100% 100%,50% 78%,0 100%)}
+.seal{position:absolute;right:-8px;top:-10px;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle,#ffe9a0,#ffc94a);display:grid;place-items:center;font-size:20px;box-shadow:0 0 14px rgba(255,211,107,.8)}
+.wall{background:#fffaf0;border-radius:20px;padding:14px;box-shadow:0 0 0 5px #c99a5b}
+.wall h3{margin:0 0 10px;font-family:"Fredoka";font-weight:700;font-size:21px;color:#5b3fa8}
+.frames{display:grid;gap:12px}
+.frame{background:#c99a5b;padding:7px;border-radius:8px;box-shadow:0 4px 0 #a37a43}
+.frame canvas{display:block;width:100%;height:auto;background:#fff;border-radius:3px}
+#nook .guide{right:40px;bottom:14px;width:90px}
+#nook .bubble{right:126px;bottom:150px}
+.nook-floor{position:absolute;left:0;right:0;bottom:0;height:110px;background:repeating-linear-gradient(90deg,#b98552 0 118px,#ad7a48 118px 120px)}
+.nook-rug{position:absolute;left:300px;bottom:16px;width:360px;height:70px;border-radius:50%;background:#ffd36b;box-shadow:inset 0 0 0 9px #7354c4}
+
+/* ---------- Quest ---------- */
+#quest{background:radial-gradient(1000px 600px at 70% 30%,#7d5fd6 0%,#5b3fa8 55%,#3f2a86 100%);color:#fff}
+.qtop{position:absolute;left:24px;right:24px;top:18px;display:flex;justify-content:space-between;align-items:center;z-index:6}
+.qcover{position:absolute;left:60px;top:120px;width:560px;height:315px;border-radius:22px;overflow:hidden;box-shadow:0 0 0 6px #ffd36b,0 0 40px rgba(255,211,107,.5)}
+.qcover img{width:100%;height:100%;object-fit:cover}
+.qinfo{position:absolute;left:60px;top:462px;width:560px}
+.qinfo .lv{display:inline-block;font-family:"Fredoka";font-weight:700;font-size:15px;color:#2a2340;background:#ffd36b;padding:5px 14px;border-radius:999px}
+.qinfo h2{font-family:"Fredoka";font-weight:700;font-size:40px;line-height:1.05;margin:10px 0 6px}
+.qinfo p{margin:0;font-size:18px;font-weight:700;color:#e2d8ff}
+.trail{position:absolute;left:660px;top:100px;width:480px;height:640px}
+.trail svg{position:absolute;inset:0}
+.stop{position:absolute;width:220px;display:flex;align-items:center;gap:14px}
+.stop .dot{width:96px;height:96px;flex:none;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ffffff,#e6dcff 60%,#b9a2ff);display:grid;place-items:center;font-size:42px;position:relative;box-shadow:0 0 0 4px rgba(255,255,255,.4)}
+.stop .lab{font-family:"Fredoka";font-weight:700;font-size:19px;line-height:1.15;color:#fff}
+.stop.locked .dot{filter:grayscale(1);opacity:.45}
+.stop.locked .lab{opacity:.5}
+.stop.done .dot{background:radial-gradient(circle at 40% 35%,#fffbe8,#ffe08a 60%,#ffc94a)}
+.stop.done .dot::after{content:"★";position:absolute;right:-8px;top:-8px;width:34px;height:34px;border-radius:50%;background:#ffd36b;color:#5b3fa8;font-size:18px;display:grid;place-items:center;box-shadow:0 0 12px #ffd36b}
+.stop.current .dot{box-shadow:0 0 0 6px #ffd36b,0 0 30px 8px rgba(255,211,107,.7);animation:hop 1.2s ease-in-out infinite}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+#quest .bubble{left:390px;bottom:130px}
+.flyer{position:absolute;z-index:40;border-radius:12px;overflow:hidden;box-shadow:0 0 30px rgba(255,211,107,.8);transition:left .6s cubic-bezier(.5,0,.2,1),top .6s cubic-bezier(.5,0,.2,1),width .6s cubic-bezier(.5,0,.2,1),height .6s cubic-bezier(.5,0,.2,1),border-radius .6s,opacity .6s}
+.flyer img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* ---------- Activity modal + toast ---------- */
+.modal{position:absolute;inset:0;background:rgba(30,20,60,.5);display:grid;place-items:center;z-index:55;opacity:0;pointer-events:none;transition:opacity .25s}
+.modal.on{opacity:1;pointer-events:auto}
+.sheet{width:560px;background:#fffaf0;border-radius:32px;padding:34px;text-align:center;box-shadow:0 0 0 6px #ffd36b,0 0 50px rgba(255,211,107,.5);transform:scale(.9);transition:transform .25s;color:#2a2340}
+.modal.on .sheet{transform:scale(1)}
+.sheet .big{font-size:80px;line-height:1}
+.sheet h3{font-family:"Fredoka";font-weight:700;font-size:32px;margin:10px 0 6px}
+.sheet p{font-size:18px;color:#625e7a;margin:0 0 22px}
+.cta{display:inline-block;background:#5b3fa8;color:#fff!important;font-family:"Fredoka";font-weight:700;font-size:24px;padding:14px 32px;border-radius:20px;box-shadow:0 6px 0 #42298a}
+.toast{position:absolute;left:50%;bottom:40px;transform:translate(-50%,30px);opacity:0;background:#ffd36b;color:#2a2340;font-family:"Fredoka";font-weight:700;font-size:22px;padding:12px 24px;border-radius:999px;z-index:58;transition:all .35s;box-shadow:0 0 30px rgba(255,211,107,.8);white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---------- Painted scenes (ChatGPT art) ---------- */
+.bg{position:absolute;max-width:none;pointer-events:none;user-select:none;display:block}
+#outside .bg,#hall .bg{left:-138.5px;top:0;width:1457px;height:820px}
+#outside{background:#7d6bd6}
+.doorglow{position:absolute;left:534px;top:510px;width:110px;height:124px;border-radius:55px 55px 4px 4px;background:radial-gradient(circle at 50% 62%,#fffdf2 0%,#ffeeb0 45%,rgba(255,206,90,.85) 70%,rgba(255,201,74,0) 100%);opacity:0;transition:opacity .45s;pointer-events:none}
+#outside.open .doorglow{opacity:1}
+.doorhalo{position:absolute;left:524px;top:500px;width:130px;height:140px;border-radius:65px 65px 6px 6px;box-shadow:0 0 30px 10px rgba(255,214,90,.55);animation:halo 2s ease-in-out infinite;pointer-events:none}
+@keyframes halo{0%,100%{opacity:.35}50%{opacity:1}}
+.plaque-text{position:absolute;left:589px;top:461px;transform:translate(-50%,-50%);pointer-events:none}
+.plaque-text .wordmark{font-size:23px;gap:6px}
+.plaque-text .wordmark small{font-size:10px;padding:2px 7px}
+#hall{background:#e9b56d}
+#cases{position:absolute;inset:0}
+#cases .book{position:absolute;width:110px;padding:0!important;z-index:2}
+#cases .book img{display:block;width:110px;height:62px;object-fit:cover;border-radius:4px;box-shadow:0 6px 10px rgba(60,25,5,.45)}
+#cases .book .tag{right:-8px;top:-12px}
+.lvlpill{position:absolute;transform:translateX(-50%);font-family:"Fredoka";font-weight:700;font-size:20px;color:#2a2340;padding:5px 20px;border-radius:999px;white-space:nowrap;background:#ffd36b;box-shadow:0 0 16px rgba(255,211,107,.7),0 4px 0 #c99a2e;z-index:2}
+#nook{background:linear-gradient(#3a2577,#4b3296 104px,#c98a4a 104px)}
+#nook .bg{left:-83.7px;top:104px;width:1273px;height:716px;-webkit-mask-image:linear-gradient(transparent 0,#000 46px);mask-image:linear-gradient(transparent 0,#000 46px)}
+.banner-name{position:absolute;left:504px;top:229px;transform:translate(-50%,-50%) rotate(-1.5deg);font-family:"Fraunces",serif;font-weight:700;font-size:30px;color:#5b3fa8;white-space:nowrap;pointer-events:none}
+.shelfpill{position:absolute;transform:translateX(-50%);font-family:"Fredoka";font-weight:700;font-size:17px;color:#fff;background:#5b3fa8;padding:4px 14px;border-radius:999px;white-space:nowrap;box-shadow:0 0 14px rgba(255,211,107,.55),0 3px 0 #42298a;z-index:2}
+#nookBooks{position:absolute;inset:0}
+#nookBooks .nbook{position:absolute;width:100px;padding:0!important;z-index:2}
+#nookBooks .nbook img{display:block;width:100px;height:56px;object-fit:cover;border-radius:4px;box-shadow:0 6px 10px rgba(60,25,5,.45)}
+#nookBooks .count{position:absolute;left:-6px;top:-10px;font-family:"Fredoka";font-weight:700;font-size:12px;background:#b9a2ff;color:#2a2340;padding:2px 8px;border-radius:999px;box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.nook-empty{position:absolute;width:220px;transform:translateX(-50%);text-align:center;font-family:"Fredoka";font-weight:600;font-size:15px;color:#fff3dc;background:rgba(61,36,24,.75);padding:8px 10px;border-radius:12px;z-index:2}
+.artframe{position:absolute;overflow:hidden;z-index:2}
+.artframe canvas{display:block;width:100%;height:100%}
+
+.app .pillbtn{background:#fff}
+.app .pillbtn.mylib{background:#5b3fa8}
+.guide img{mix-blend-mode:normal;filter:drop-shadow(0 8px 10px rgba(40,20,10,.35))}
+.hat{left:20%;width:60%;top:calc(var(--w) * -0.52);height:calc(var(--w) * .6)}
+.brim{left:10%;width:80%;top:calc(var(--w) * .02);height:calc(var(--w) * .1)}
+.hat::after{font-size:calc(var(--w) * .2)}
+
+/* ---------- GB Magic Library app additions ---------- */
+.guide{aspect-ratio:430/818}
+.guide img.gf{position:absolute;inset:0;width:100%;height:100%;opacity:0;mix-blend-mode:normal;filter:drop-shadow(0 8px 10px rgba(40,20,10,.35))}
+.guide img.gf.on{opacity:1}
+.guide.talking{animation:gnod .5s ease-in-out infinite}
+@keyframes gnod{50%{translate:0 -2%;rotate:-1.2deg}}
+.soundbtn{position:absolute;right:24px;bottom:22px;z-index:65;width:48px;height:48px;border-radius:50%;background:#fff;font-size:22px;box-shadow:0 4px 0 #e2c995}
+.stop:not(.done):not(.current):not(.locked) .dot{opacity:.92}
+.vidbox{width:880px;background:#fffaf0;border-radius:28px;padding:18px;display:grid;gap:14px;justify-items:center;box-shadow:0 0 0 6px #ffd36b,0 0 50px rgba(255,211,107,.5)}
+.vidbox video{width:100%;max-height:500px;border-radius:16px;background:#000}
+.artframe img.real{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
+.row-btns{display:flex;gap:12px;justify-content:center}
+.stop .lab small{display:block;font-family:"Sora",sans-serif;font-size:12px;font-weight:600;letter-spacing:.16em;color:#ffd36b;margin-bottom:2px}
+.qextras{position:absolute;left:60px;top:600px;display:flex;gap:12px;z-index:6}
+#quest .bubble{left:auto;right:36px;bottom:22px}
+[hidden]{display:none!important}
+.qcover{transition:transform .2s}
+.qcover.explorable{cursor:pointer}
+.qcover.explorable:hover{transform:scale(1.02)}
+.qcover.explorable:focus-visible{outline:5px solid #fff;outline-offset:6px}
+.qcover.first{animation:coverGlow 1.6s ease-in-out infinite}
+@keyframes coverGlow{0%,100%{box-shadow:0 0 0 6px #ffd36b,0 0 40px rgba(255,211,107,.5)}50%{box-shadow:0 0 0 8px #ffd36b,0 0 70px 18px rgba(255,211,107,.95)}}
+.explore-tag{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:#ffd36b;color:#2a2340;font-family:"Fredoka",sans-serif;font-weight:700;font-size:21px;padding:8px 20px;border-radius:999px;box-shadow:0 4px 0 #c99a2e;white-space:nowrap;pointer-events:none}
+.qcover.first .explore-tag{animation:tagBob 1.6s ease-in-out infinite}
+@keyframes tagBob{50%{transform:translateX(-50%) translateY(-6px)}}
+.cta.danger{background:#c2412f;box-shadow:0 6px 0 #8f2c1f}
+
+@media (prefers-reduced-motion: reduce){
+  .app *,.app *::before,.app *::after{animation:none!important;transition-duration:.01s!important}
+}
+</style>
+
+<script src="ui/profiles.js"></script>
+<script src="ui/mate.js"></script>
+<script src="ui/rotate.js" data-base=""></script>
+<script src="ui/stage.js" data-base=""></script>
+<script src="ui/mate-lines.js"></script>
+<script src="months/current.js"></script>
+<script src="months/catalog.js"></script>
+<link rel="stylesheet" href="ui/cl-buttons.css">
+<link rel="stylesheet" href="ui/cl-bubble.css">
+<link rel="stylesheet" href="ui/wardrobe.css">
+<link rel="stylesheet" href="ui/room.css">
+<link rel="stylesheet" href="ui/tower.css">
+<link rel="stylesheet" href="ui/parents.css">
+<link rel="stylesheet" href="ui/certificates.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap">
+<style>
+.outbar{position:absolute;right:24px;top:20px;z-index:6}
+body .enter-btn{position:absolute;left:0;right:0;top:648px;margin:0 auto;width:max-content;transform:none;animation:none;z-index:5}
+body .clb.bump{transform:scale(1.15)}
+.topbar.clbar,.qtop.clbar{justify-content:flex-start}
+.floaters{position:absolute;left:-138.5px;top:0;width:1457px;height:820px;pointer-events:none;z-index:1}
+.floaters .fl{position:absolute;will-change:transform}
+.floaters .fl img{position:absolute;inset:0;width:100%;height:100%;max-width:none}
+.floaters .fl .glow{position:absolute;left:50%;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.floaters .fl.fcandle .glow{top:16%;width:330%;aspect-ratio:1;background:radial-gradient(circle,rgba(255,226,140,.75) 0,rgba(255,196,96,.3) 22%,rgba(255,180,80,0) 60%);animation:flGlow 1.4s ease-in-out var(--dl) infinite alternate}
+.floaters .fl.fbook .glow{top:50%;width:150%;aspect-ratio:1;background:radial-gradient(circle,rgba(255,236,170,.45) 0,rgba(255,220,140,0) 65%)}
+.floaters .fl.fbook{animation:flBook var(--d) ease-in-out var(--dl) infinite}
+.floaters .fl.fcandle{animation:flCandle var(--d) ease-in-out var(--dl) infinite}
+@keyframes flBook{0%,100%{transform:translateY(0) rotate(var(--r0))}50%{transform:translateY(var(--y)) rotate(var(--r1))}}
+@keyframes flCandle{0%,100%{transform:translateY(0)}50%{transform:translateY(var(--y))}}
+@keyframes flGlow{from{opacity:.75;scale:.92}to{opacity:1;scale:1.06}}
+#hall #cases{z-index:2}
+</style>
+<style id="full-screen">
+/* the library fills the whole window; the test intro, controls and notes show only with ?dev in the address */
+html:not(.dev) .intro,html:not(.dev) .controls,html:not(.dev) .notes{display:none!important}
+html:not(.dev) body{padding:0!important;background:#2b1f4f;min-height:100vh;min-height:100dvh;display:grid;place-items:center;overflow:hidden}
+html:not(.dev) .page{max-width:none!important;display:block!important;width:100%}
+html:not(.dev) .device{padding:0!important;background:none!important;box-shadow:none!important;border-radius:0!important}
+html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width:min(100vw,calc(100dvh * 1180 / 820))!important;margin:0 auto;border-radius:0!important}
+</style>
+<script>if(/[?&]dev/.test(location.search))document.documentElement.classList.add("dev");</script>
+<div class="page">
+  <header class="intro">
+    <h1>GB Magic Library, with Bye-Bye Sugar Bugs</h1>
+    <p>The magic library with your real Sugar Bugs activities inside. Walk in, open <b>Bye-Bye Sugar Bugs</b> on the Level B shelf, and follow its four quests: explore the cover, watch the story, make your own book by tracing and coloring, then read it. Your finished book appears in My Library. The other books still use stand-in quests.</p>
+  </header>
+
+  <div class="device"><div class="screen" id="screen">
+    <div class="app" id="app">
+
+      <!-- OUTSIDE -->
+      <section class="scene on" id="outside" aria-label="Outside the magic library">
+        <div class="world" id="world">
+          <img class="bg" src="art/exterior-clean.webp" alt=""><div class="floaters" aria-hidden="true"><div class="fl fbook" style="left:30.962%;top:35.309%;width:5.001%;height:8.765%;--d:5.2s;--dl:0.0s;--r0:6deg;--r1:-2deg;--y:-12px"><i class="glow"></i><img src="art/float/piece-book-red.webp" alt=""></div><div class="fl fbook" style="left:27.631%;top:47.568%;width:5.444%;height:9.541%;--d:6.1s;--dl:-1.7s;--r0:-6deg;--r1:2deg;--y:-15px"><i class="glow"></i><img src="art/float/piece-book-blue.webp" alt=""></div><div class="fl fbook" style="left:66.327%;top:41.032%;width:5.444%;height:9.541%;--d:7.0s;--dl:-3.4s;--r0:6deg;--r1:-2deg;--y:-18px"><i class="glow"></i><img src="art/float/piece-book-green.webp" alt=""></div><div class="fl fbook" style="left:69.745%;top:54.797%;width:4.470%;height:7.834%;--d:5.5s;--dl:-0.1s;--r0:-6deg;--r1:2deg;--y:-12px"><i class="glow"></i><img src="art/float/piece-book-orange.webp" alt=""></div></div>
+          <div class="owl" aria-hidden="true"><div class="bob"><img class="up" src="art/owl-up.webp" alt=""><img class="down" src="art/owl-down.webp" alt=""></div></div>
+          <div class="doorhalo"></div>
+          <div class="doorglow"></div>
+          <div class="plaque-text"><span class="wordmark"><small>GB</small>Magic Library</span></div>
+          <div class="guide" style="left:1028px;top:604px;width:100px"><img class="gf on" data-f="idle" src="art/gerry-idle.webp" alt=""><img class="gf" data-f="talk" src="art/gerry-talk.webp" alt=""><img class="gf" data-f="blink" src="art/gerry-blink.webp" alt=""></div>
+          <div class="bubble" id="outBubble" style="left:790px;top:520px;max-width:230px">Welcome, Anna! New magic books are here!</div>
+        </div>
+        <button class="door-hit" id="doorHit" aria-label="Open the magic door"></button>
+        <button class="enter-btn clb clb--go clb--lg clb--pulse" id="enterBtn"><span class="i">✨</span>Tap the door</button>
+        <div class="outbar clright"><button class="clb clb--icon clb--sm" data-sound type="button" aria-label="Turn My Mate’s voice off">🔊</button><button class="clb clb--sm" id="skipBtn">Skip <span class="i">›</span></button></div>
+      </section>
+
+      <!-- HALL -->
+      <section class="scene" id="hall" aria-label="Inside the magic library">
+        <div class="room">
+          <img class="bg" src="art/hall-clean.webp" alt=""><div class="floaters" aria-hidden="true"><div class="fl fbook" style="left:15.164%;top:14.276%;width:6.993%;height:12.256%;--d:5.2s;--dl:0.0s;--r0:6deg;--r1:-2deg;--y:-12px"><i class="glow"></i><img src="art/float/piece-book-blue.webp" alt=""></div><div class="fl fbook" style="left:37.903%;top:10.185%;width:5.355%;height:9.386%;--d:6.1s;--dl:-1.7s;--r0:-6deg;--r1:2deg;--y:-15px"><i class="glow"></i><img src="art/float/piece-book-red.webp" alt=""></div><div class="fl fbook" style="left:86.006%;top:15.494%;width:6.816%;height:11.945%;--d:7.0s;--dl:-3.4s;--r0:6deg;--r1:-2deg;--y:-18px"><i class="glow"></i><img src="art/float/piece-book-green.webp" alt=""></div><div class="fl fcandle" style="left:8.927%;top:16.181%;width:1.883%;height:7.915%;--d:3.9s;--dl:-3.9s;--r0:0deg;--r1:0deg;--y:-5px"><i class="glow"></i><img src="art/float/piece-candle.webp" alt=""></div><div class="fl fcandle" style="left:15.274%;top:26.918%;width:1.628%;height:6.844%;--d:4.6s;--dl:-1.2s;--r0:0deg;--r1:0deg;--y:-7px"><i class="glow"></i><img src="art/float/piece-candle.webp" alt=""></div><div class="fl fcandle" style="left:29.311%;top:25.622%;width:1.487%;height:6.249%;--d:3.7s;--dl:-2.5s;--r0:0deg;--r1:0deg;--y:-9px"><i class="glow"></i><img src="art/float/piece-candle.webp" alt=""></div><div class="fl fcandle" style="left:33.924%;top:25.373%;width:1.529%;height:6.427%;--d:4.4s;--dl:-3.8s;--r0:0deg;--r1:0deg;--y:-5px"><i class="glow"></i><img src="art/float/piece-candle.webp" alt=""></div><div class="fl fcandle" style="left:56.339%;top:22.019%;width:1.557%;height:6.546%;--d:3.5s;--dl:-1.1s;--r0:0deg;--r1:0deg;--y:-7px"><i class="glow"></i><img src="art/float/piece-candle.webp" alt=""></div><div class="fl fcandle" style="left:65.053%;top:26.342%;width:1.472%;height:6.189%;--d:4.2s;--dl:-2.4s;--r0:0deg;--r1:0deg;--y:-9px"><i class="glow"></i><img src="art/float/piece-candle.webp" alt=""></div><div class="fl fcandle" style="left:69.257%;top:25.845%;width:1.557%;height:6.546%;--d:4.9s;--dl:-3.7s;--r0:0deg;--r1:0deg;--y:-5px"><i class="glow"></i><img src="art/float/piece-candle.webp" alt=""></div><div class="fl fcandle" style="left:80.818%;top:10.682%;width:1.642%;height:6.903%;--d:4.0s;--dl:-1.0s;--r0:0deg;--r1:0deg;--y:-7px"><i class="glow"></i><img src="art/float/piece-candle.webp" alt=""></div><div class="fl fcandle" style="left:77.679%;top:18.852%;width:1.699%;height:7.141%;--d:4.7s;--dl:-2.3s;--r0:0deg;--r1:0deg;--y:-9px"><i class="glow"></i><img src="art/float/piece-candle.webp" alt=""></div><div class="fl fcandle" style="left:82.872%;top:26.340%;width:1.600%;height:6.725%;--d:3.8s;--dl:-3.6s;--r0:0deg;--r1:0deg;--y:-5px"><i class="glow"></i><img src="art/float/piece-candle.webp" alt=""></div></div>
+          <div id="cases"></div>
+          <div class="guide"><img class="gf on" data-f="idle" src="art/gerry-idle.webp" alt=""><img class="gf" data-f="talk" src="art/gerry-talk.webp" alt=""><img class="gf" data-f="blink" src="art/gerry-blink.webp" alt=""></div>
+          <div class="bubble" id="hallBubble">Pick a glowing book to start a quest!</div>
+        </div>
+        <div class="owlnote" id="owlnote"><img src="art/owl-up.webp" alt="">The owl brought 4 new books this month!</div>
+        <div class="topbar clbar">
+          <button class="clb" id="exitBtn"><span class="i">🚪</span>Exit</button>
+          <div class="clmid"><span class="wordmark"><small>GB</small>Magic Library</span></div>
+          <div class="clright"><button class="clb clb--place" data-wardrobe type="button"><span class="i">👕</span>Wardrobe</button><button class="clb clb--place" id="myLibBtn"><span class="i">📚</span>My Library</button><span class="clchip" data-stars>⭐ 12</span><button class="clb clb--icon" data-sound type="button" aria-label="Turn My Mate’s voice off">🔊</button><button class="clb clb--ko parents" type="button" aria-label="부모님 메뉴">부모님</button><img class="clprofile" src="assets/ria.webp" alt="My profile"></div>
+        </div>
+      </section>
+
+      <!-- MY LIBRARY -->
+      <section class="scene" id="nook" aria-label="My Library">
+        <img class="bg" src="art/my-library.webp" alt="">
+        <div class="banner-name">✨ Anna's Library ✨</div>
+        <span class="shelfpill" style="left:145px;top:300px">🔖 Reading now</span>
+        <span class="shelfpill" style="left:500px;top:306px">⭐ Finished</span>
+        <div id="nookBooks"></div>
+        <div class="artframe" style="left:1053px;top:207px;width:100px;height:138px;transform:rotate(-1deg)"><canvas id="art1" width="200" height="276"></canvas></div>
+        <div class="artframe" style="left:1041px;top:410px;width:38px;height:98px"><canvas id="art2" width="76" height="196"></canvas></div>
+        <div class="artframe" style="left:1104px;top:382px;width:60px;height:116px;border-radius:50%"><canvas id="art3" width="120" height="232"></canvas></div>
+        <div class="guide"><img class="gf on" data-f="idle" src="art/gerry-idle.webp" alt=""><img class="gf" data-f="talk" src="art/gerry-talk.webp" alt=""><img class="gf" data-f="blink" src="art/gerry-blink.webp" alt=""></div>
+        <div class="bubble" id="nookBubble">Every book you read lives here!</div>
+        <div class="topbar clbar">
+          <button class="clb" id="nookBack"><span class="i">←</span>Hall</button>
+          <div class="clmid"></div>
+          <div class="clright"><button class="clb clb--place" data-wardrobe type="button"><span class="i">👕</span>Wardrobe</button><button class="clb clb--place" type="button" onclick="window.CLTower&&CLTower.openTower()"><span class="i">🏰</span>Tower</button><button class="clb" id="shareBtn"><span class="i">📤</span>Share</button><span class="clchip" data-stars>⭐ 12</span><button class="clb clb--icon" data-sound type="button" aria-label="Turn My Mate’s voice off">🔊</button><button class="clb clb--ko parents" type="button" aria-label="부모님 메뉴">부모님</button><img class="clprofile" src="assets/ria.webp" alt="My profile"></div>
+        </div>
+      </section>
+
+      <!-- QUEST -->
+      <section class="scene" id="quest" aria-label="Book quests">
+        <div id="qsky"></div>
+        <div class="qtop clbar">
+          <button class="clb" id="backBtn"><span class="i">←</span>Shelves</button>
+          <div class="clmid"></div>
+          <div class="clright"><button class="clb clb--place" id="qLibBtn"><span class="i">📚</span>My Library</button><span class="clchip" data-stars>⭐ 12</span><button class="clb clb--icon" data-sound type="button" aria-label="Turn My Mate’s voice off">🔊</button><button class="clb clb--ko parents" type="button" aria-label="부모님 메뉴">부모님</button><img class="clprofile" src="assets/ria.webp" alt="My profile"></div>
+        </div>
+        <div class="qcover" id="qcover"><img id="qimg" src="assets/month8-week2.webp" alt=""><span class="explore-tag" id="exploreTag" hidden>🔍 Tap to explore</span></div>
+        <div class="qinfo"><span class="lv" id="qlv">Level B</span><h2 id="qtitle">Where Is Your Home?</h2><p id="qprog">2 of 4 quests done</p></div>
+        <div class="trail" id="trail">
+          <svg viewBox="0 0 480 640" aria-hidden="true"><path d="M110 70 C 330 90, 360 180, 330 230 S 90 300, 110 390 S 360 480, 330 560" fill="none" stroke="#ffd36b" stroke-width="10" stroke-linecap="round" stroke-dasharray="2 24" opacity=".85"/></svg>
+        </div>
+        <div class="qextras" id="qExtras" hidden><button class="clb clb--place" id="openBookBtn" hidden><span class="i">📖</span>Open my book</button></div>
+        <div class="bubble" id="qBubble">Tap the glowing star!</div>
+      </section>
+
+      <div id="flash"></div>
+      <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+        <div class="sheet"><div class="big" id="mIcon">📖</div><h3 id="mTitle">Reading time!</h3><p id="mText">In the real product, the storybook opens here.</p><button class="clb clb--done clb--lg" id="mBtn">I finished! <span class="i">⭐</span></button></div>
+      </div>
+      <div class="modal" id="vidModal" role="dialog" aria-modal="true" aria-label="Watch the story">
+        <div class="vidbox"><video id="storyVid" controls playsinline preload="none" poster="reading/sugar-bugs/assets/film_poster.jpg"></video><button class="clb clb--done clb--lg" id="vidDone">Done watching <span class="i">⭐</span></button></div>
+      </div>
+      <div class="modal" id="confirmRemove" role="dialog" aria-modal="true" aria-labelledby="crTitle">
+        <div class="sheet"><div class="big">🗑️</div><h3 id="crTitle">Remove this book?</h3><p>Its pages will be deleted from My Library on this device.</p><div class="row-btns"><button class="clb clb--lg" id="confirmNo">Keep it</button><button class="clb clb--danger clb--lg" id="confirmYes"><span class="i">🗑️</span>Remove</button></div></div>
+      </div>
+      <div class="toast" id="toast">✨ Added to Anna's Library!</div>
+    </div>
+  </div></div>
+
+  <div class="controls">
+    <button id="restart">↺ Start over (clears Sugar Bugs steps)</button>
+    <label for="shortIntro"><input type="checkbox" id="shortIntro"> Returning child (short intro)</label>
+  </div>
+
+  <div class="notes">
+    <div class="note">
+      <h2>What's real now</h2>
+      <ul>
+        <li><b>Bye-Bye Sugar Bugs follows the GB cycle</b>: READ the story video, QUESTION, THINK, EXPRESS, then CREATE your own book.</li>
+        <li><b>QUESTION:</b> the sugar bug, toothpaste, apple and lollipop ask questions, answer in their own recorded voices, then the child asks Gerry "why?" questions.</li>
+        <li><b>THINK:</b> sort snacks into Happy teeth or Sugar bugs love it, then put the brushing steps in order.</li>
+        <li><b>EXPRESS:</b> listen, say each sentence into the microphone, and hear your own voice. Recordings stay on this device.</li>
+        <li><b>CREATE:</b> your book maker with tracing and coloring. The finished book opens with page turns and fills the frames in My Library.</li>
+        <li><b>Explore the cover</b> stays as a bonus button under the book.</li>
+      </ul>
+    </div>
+    <div class="note">
+      <h2>Still to come</h2>
+      <ul>
+        <li><b>Sharing with friends</b> needs parent accounts, so the Share button explains this for now.</li>
+        <li>Saved books stay on this device only, in this browser.</li>
+        <li>The other three books, and Levels A and C, show stand-in quests until their activities are made.</li>
+        <li>The activity pages keep their current design. Restyling them to match the library comes next.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<dialog id="workDialog" class="storybook-dialog" aria-labelledby="workTitle" aria-describedby="workMeta">
+    <div id="savedReaderFullscreenRoot" class="saved-reader-root">
+    <header class="saved-reader-topbar">
+      <button id="closeSavedBook" class="saved-reader-back" aria-label="Close storybook"><span aria-hidden="true">←</span><span>Library</span></button>
+      <div class="saved-reader-identity"><h2 id="workTitle" data-keep-english>My storybook</h2><p id="workMeta" class="dialog-description"></p></div>
+      <div class="saved-reader-top-actions">
+        <div id="savedBookDraftActions" class="saved-book-draft-actions" hidden><span class="saved-draft-label">In progress</span><a id="continueSavedBook" href="coloring/index.html?mode=color">Continue my book <span aria-hidden="true">→</span></a></div>
+        <button id="toggleSavedFullscreen" class="saved-fullscreen-button" type="button" aria-label="Enter fullscreen" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg><span id="savedFullscreenLabel">Full screen</span></button>
+      </div>
+    </header>
+    <div id="savedBookStage" class="saved-book-stage" aria-label="Saved storybook pages" data-keep-english></div>
+    <div class="saved-reader-bottom">
+      <p id="savedBookError" class="saved-book-error" role="status" hidden>A saved picture could not load. Your original work is unchanged. Close the book and try again.</p>
+      <p id="savedBookHint" class="reader-sr-only"></p>
+      <div class="saved-reader-control-row">
+        <div class="saved-page-position"><p id="savedPageLabel" aria-live="polite" aria-atomic="true">Front cover</p><span id="savedPageDetail"></span><progress id="savedBookProgress" class="saved-book-progress" max="1" value="0" aria-label="Storybook progress"></progress></div>
+        <nav class="saved-book-navigation" aria-label="Turn your saved storybook page">
+          <button id="previousSavedPage" aria-label="Previous page"><span aria-hidden="true">←</span><span class="saved-nav-word">Previous</span></button>
+          <button id="readSavedBook" class="saved-read-button" type="button" aria-pressed="false"><span class="saved-play-icon" aria-hidden="true">▶</span><span id="readSavedBookLabel">Read my book</span></button>
+          <button id="nextSavedPage" aria-label="Next page"><span id="nextSavedPageLabel">Open book</span><span aria-hidden="true">→</span></button>
+        </nav>
+        <details id="savedReaderMore" class="saved-reader-more"><summary aria-label="More book options" title="More book options"><span aria-hidden="true">•••</span></summary><div class="saved-reader-more-menu">
+          <button id="restartSavedBook" class="reader-action" hidden><span aria-hidden="true">↻</span>Back to cover</button>
+          <button id="downloadWork" class="reader-action" title="Download the saved activity picture">Save a copy <span aria-hidden="true">↓</span></button>
+          <button id="requestRemoveWork" class="reader-action reader-remove-action" type="button" aria-label="Remove this saved creation from My Library"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v5M14 11v5"/></svg>Remove creation</button>
+        </div></details>
+      </div>
+      <p id="savedReadStatus" class="saved-read-status" role="status" aria-live="polite">Press Read my book to listen and watch.</p>
+    </div>
+    </div>
+  </dialog>
+<script src="catalog.js"></script>
+<script src="library-store.js"></script>
+<script src="storybook-model.js"></script>
+<script src="coloring/book-pages.js"></script>
+<script src="coloring/scene-motion.js"></script>
+<script src="storybook-playback.js"></script>
+<script src="storybook-viewer.js"></script>
+<script>
+(function(){
+  const screen=document.getElementById('screen'), app=document.getElementById('app');
+  let S=1;
+  /* the library fills the window (ui/stage.js); ?dev keeps the old framed preview, scaled to its box */
+  const DEV=document.documentElement.classList.contains('dev');
+  function fit(){ if(!DEV&&window.CLStage){S=CLStage.fit(app).S;return;} S=screen.clientWidth/1180; app.style.transform='scale('+S+')';}
+  fit(); window.addEventListener('resize',fit); window.addEventListener('clstage',()=>{S=CLStage.S;});
+  if(DEV&&'ResizeObserver' in window) new ResizeObserver(fit).observe(screen);
+
+  const RM=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $=id=>document.getElementById(id);
+  // My Mate's words (ui/mate-lines.js), with the child's name filled in
+  function ml(m,v){ return window.CLLines?CLLines.text(m,Object.assign({name:(window.CLProfiles?CLProfiles.active().name:'Anna')},v||{})):''; }
+  const wait=ms=>new Promise(r=>setTimeout(r,RM?10:ms));
+  const BOOKS=[
+    {t:'Hello! Hello!',c:'assets/month8-week1.webp',cat:'Culture'},
+    {t:'Where Is Your Home?',c:'assets/month8-week2.webp',cat:'Animal World'},
+    {t:'Why Do We Wait?',c:'assets/month8-week3.webp',cat:'Philosophy'},
+    {t:'Bye-Bye Sugar Bugs!',c:'assets/month8-week4.webp',cat:'Life'}];
+  // the live month's books (months/current.js); the fixed list above is only a fallback
+  const MONTH=window.CLMonth||null;
+  function bookOf(L,i){
+    const b=MONTH&&MONTH.levels[L]&&MONTH.levels[L][i];
+    if(!b) return Object.assign({id:'demo-'+L+i,key:L+i},BOOKS[i]);
+    return {id:b.id,key:L+i,t:b.title,c:b.cover,cat:'Week '+b.week,video:b.video,act:b.activities||{},custom:b.custom};
+  }
+  window.clBook=bookOf;
+  const STEP_KEYS=['read','question','think','express','create'];
+  function bflag(id,step,set){ const k='cl.bk.'+id+'.'+step; try{ if(set){ localStorage.setItem(k,'1'); return true; } return localStorage.getItem(k)==='1'; }catch(e){ return false; } }
+  function bookSteps(L,i){ const b=bookOf(L,i); return STEP_KEYS.map(s=>bflag(b.id,s)); }
+  const QUESTS=[['📖','Read the story','Reading time!','In the real product, the storybook opens here with narration.'],
+                ['🎬','Watch the video','Movie time!','The story video plays here.'],
+                ['🧩','Play the game','Game time!','A game made from this book’s words opens here.'],
+                ['🎨','Make a picture','Art time!','The coloring studio opens here. The picture is saved to My Library.']];
+  const STOP_POS=[[40,22],[250,182],[40,342],[250,512]];
+  let progress, stars, busy=false, current=null, seenOwl=false;
+
+  // twinkling stars
+  function sprinkle(el,n,h){for(let i=0;i<n;i++){const t=document.createElement('i');t.className='twinkle';t.style.left=Math.random()*1180+'px';t.style.top=Math.random()*h+'px';t.style.animationDelay=(-Math.random()*2.4)+'s';el.appendChild(t);}}
+  sprinkle($('qsky'),30,820);
+
+  function sparkle(x,y,n){ if(RM) return; for(let i=0;i<(n||14);i++){const s=document.createElement('span');s.className='spark';const a=Math.random()*Math.PI*2,d=60+Math.random()*90;
+    s.style.left=x+'px';s.style.top=y+'px';s.style.setProperty('--dx',Math.cos(a)*d+'px');s.style.setProperty('--dy',Math.sin(a)*d+'px');app.appendChild(s);setTimeout(()=>s.remove(),950);} }
+
+  function reset(){
+    progress={}; ['A','B','C'].forEach(L=>{ for(let i=0;i<4;i++){ const n=bookSteps(L,i).filter(Boolean).length; if(n) progress[L+i]=n; } });
+    stars=12; busy=false; current=null; seenOwl=false;
+    ['outside','hall','quest','nook'].forEach(id=>$(id).classList.remove('on','open','arrive'));
+    $('outside').classList.add('on');
+    const w=$('world'); w.classList.add('instant'); w.classList.remove('zoom'); void w.offsetWidth; w.classList.remove('instant');
+    $('outBubble').textContent=ml('welcome');
+    $('modal').classList.remove('on'); $('owlnote').classList.remove('on'); $('toast').classList.remove('on');
+    document.querySelectorAll('.flyer').forEach(f=>f.remove());
+    drawStars(); buildShelves(); buildNook();
+    refreshReal();
+  }
+  function drawStars(){ const n=stars-(window.CLWardrobe?CLWardrobe.spent():0); document.querySelectorAll('[data-stars]').forEach(e=>e.textContent='⭐ '+n); }
+  window.clStars=()=>stars; window.clDrawStars=drawStars; window.clProgress=()=>progress;
+  function bump(){ document.querySelectorAll('[data-stars]').forEach(e=>{e.classList.add('bump');setTimeout(()=>e.classList.remove('bump'),220);}); }
+  function tagFor(k){const p=progress[k]||0, n=totalOf(k); return p>=n?['done','★ Done']:p>0?['part',p+'/'+n]:['new','✨ NEW'];}
+  function totalOf(k){ return 5; }
+
+  // Ledge positions measured on the painted hall (app coordinates).
+  const HALL={A:{x:86,w:259,ledges:[431,521]},B:{x:458,w:262,ledges:[440,527]},C:{x:836,w:261,ledges:[431,521]}};
+  function buildShelves(){
+    const cases=$('cases'); cases.innerHTML='';
+    ['A','B','C'].forEach(L=>{
+      const c=HALL[L];
+      const pill=document.createElement('span'); pill.className='lvlpill'; pill.textContent=({A:'✦ ',B:'☾ ',C:'★ '})[L]+'Level '+L;
+      pill.style.left=(c.x+c.w/2)+'px'; pill.style.top='300px'; cases.appendChild(pill);
+      const pad=(c.w-2*110-16)/2;
+      for(let i=0;i<4;i++){
+        const k=L+i, tg=tagFor(k), bk=bookOf(L,i);
+        const btn=document.createElement('button'); btn.className='book'+(tg[0]==='new'?' new':''); btn.dataset.key=k;
+        btn.setAttribute('aria-label','Level '+L+', '+bk.t);
+        btn.innerHTML='<img src="'+bk.c+'" alt=""><span class="tag '+tg[0]+'">'+tg[1]+'</span>';
+        btn.style.left=(c.x+pad+(i%2)*126)+'px'; btn.style.top=(c.ledges[i<2?0:1]-64)+'px';
+        btn.addEventListener('click',()=>openBook(btn,L,i,'hall'));
+        cases.appendChild(btn);
+      }
+    });
+  }
+
+  // Ledges measured on the painted My Library room (app coordinates).
+  const NOOK={reading:{x:23,w:244,ledges:[439,542],cx:145},done:{x:385,w:232,ledges:[448,546],cx:500}};
+  function buildNook(){
+    const box=$('nookBooks'); box.innerHTML='';
+    const groups={reading:[],done:[]};
+    Object.keys(progress).sort().forEach(k=>{ const p=progress[k]; if(p) groups[p>=totalOf(k)?'done':'reading'].push(k); });
+    Object.keys(groups).forEach(g=>{
+      const s=NOOK[g], list=groups[g].slice(0,4), pad=(s.w-2*100-14)/2;
+      list.forEach((k,n)=>{
+        const p=progress[k], L=k[0], i=+k.slice(1), bk=bookOf(L,i);
+        const b=document.createElement('button'); b.className='nbook'; b.dataset.key=k;
+        b.setAttribute('aria-label','Level '+L+', '+bk.t+(p>=totalOf(k)?', finished':', '+p+' of '+totalOf(k)+' steps'));
+        b.innerHTML='<img src="'+bk.c+'" alt="">'+(p>=totalOf(k)?'<span class="seal">★</span>':'<span class="mark"></span><span class="count">'+p+'/5</span>');
+        b.style.left=(s.x+pad+(n%2)*114)+'px'; b.style.top=(s.ledges[n<2?0:1]-58)+'px';
+        // a finished book the child made opens like a real storybook (their own pages); others open their quest
+        b.addEventListener('click',()=>(p>=totalOf(k)&&k===REAL_KEY&&realRecord)?openReader(realRecord):openBook(b,L,i,'nook'));
+        box.appendChild(b);
+      });
+      if(!list.length){ const e=document.createElement('div'); e.className='nook-empty'; e.style.left=s.cx+'px'; e.style.top=(s.ledges[0]-46)+'px';
+        e.textContent=g==='done'?'Finish a quest to earn a gold seal!':'Books you start will wait here.'; box.appendChild(e); }
+    });
+  }
+
+  function drawArt(){
+    const a=$('art1').getContext('2d'); a.fillStyle='#eaf6ff'; a.fillRect(0,0,200,276);
+    ['#ff6b5c','#ffb020','#ffd36b','#20b486','#3c8cff','#7354c4'].forEach((c,n)=>{a.strokeStyle=c;a.lineWidth=12;a.lineCap='round';a.beginPath();a.arc(100,200,86-n*13,Math.PI,0);a.stroke();});
+    a.fillStyle='#ffd36b'; a.beginPath(); a.arc(156,52,22,0,7); a.fill();
+    a.fillStyle='#fff'; [[40,206],[160,206]].forEach(([x,y])=>{a.beginPath();a.arc(x,y,20,0,7);a.arc(x+22,y+4,16,0,7);a.arc(x-20,y+6,14,0,7);a.fill();});
+    a.fillStyle='#7bbf8a'; a.fillRect(0,226,200,50);
+    const b=$('art2').getContext('2d'); b.fillStyle='#fff7e6'; b.fillRect(0,0,76,196);
+    b.fillStyle='#7bbf8a'; b.fillRect(0,160,76,36); b.strokeStyle='#4f9a5b'; b.lineWidth=6; b.beginPath(); b.moveTo(38,160); b.lineTo(38,84); b.stroke();
+    b.fillStyle='#ff8a7d'; for(let k=0;k<5;k++){b.beginPath();b.arc(38+Math.cos(k*1.256)*16,70+Math.sin(k*1.256)*16,12,0,7);b.fill();}
+    b.fillStyle='#ffd36b'; b.beginPath(); b.arc(38,70,10,0,7); b.fill();
+    const c=$('art3').getContext('2d'); c.fillStyle='#d9f0ff'; c.fillRect(0,0,120,232);
+    c.fillStyle='#ffd36b'; c.beginPath(); c.arc(60,100,30,0,7); c.fill(); c.strokeStyle='#ffb020'; c.lineWidth=6; c.lineCap='round';
+    for(let k=0;k<8;k++){const t=k*Math.PI/4;c.beginPath();c.moveTo(60+Math.cos(t)*40,100+Math.sin(t)*40);c.lineTo(60+Math.cos(t)*54,100+Math.sin(t)*54);c.stroke();}
+    c.fillStyle='#2a2340'; c.beginPath(); c.arc(50,94,3.5,0,7); c.arc(70,94,3.5,0,7); c.fill(); c.strokeStyle='#2a2340'; c.lineWidth=3; c.beginPath(); c.arc(60,104,10,0.2,Math.PI-0.2); c.stroke();
+  }
+  drawArt();
+
+  function rectIn(el){const a=app.getBoundingClientRect(), r=el.getBoundingClientRect();
+    return {left:(r.left-a.left)/S, top:(r.top-a.top)/S, width:r.width/S, height:r.height/S};}
+  function fly(src, from, to, fade){
+    return new Promise(res=>{
+      const f=document.createElement('div'); f.className='flyer';
+      f.innerHTML='<img src="'+src+'" alt="">';
+      Object.assign(f.style,{left:from.left+'px',top:from.top+'px',width:from.width+'px',height:from.height+'px'});
+      app.appendChild(f); void f.offsetWidth;
+      Object.assign(f.style,{left:to.left+'px',top:to.top+'px',width:to.width+'px',height:to.height+'px',borderRadius:'22px',opacity:fade?'.2':'1'});
+      setTimeout(()=>res(f),RM?20:620);
+    });
+  }
+  function show(id){ ['outside','hall','quest','nook'].forEach(s=>$(s).classList.toggle('on',s===id)); }
+
+  async function arriveHall(){
+    $('hall').classList.add('arrive'); $('hallBubble').textContent=ml('hallArrive');
+    if(!seenOwl){ seenOwl=true; await wait(500); $('owlnote').classList.add('on'); setTimeout(()=>$('owlnote').classList.remove('on'),3600); }
+    await wait(300); $('hall').classList.remove('arrive');
+  }
+  async function enter(){
+    if(busy) return; busy=true;
+    const fast=$('shortIntro').checked;
+    $('outBubble').textContent=ml('enter');
+    sparkle(589,572,20);
+    $('outside').classList.add('open');
+    await wait(fast?150:650);
+    const w=$('world'); w.style.transitionDuration=(fast?.5:1.1)+'s'; w.classList.add('zoom');
+    await wait(fast?280:700);
+    $('flash').classList.add('on');
+    await wait(fast?220:420);
+    show('hall');
+    await wait(80); $('flash').classList.remove('on');
+    await arriveHall(); busy=false;
+  }
+  async function skip(){ if(busy) return; busy=true; show('hall'); await arriveHall(); busy=false; }
+  async function exitLib(){
+    if(busy) return; busy=true;
+    $('flash').classList.add('on'); await wait(300);
+    const w=$('world'); w.classList.add('instant','zoom'); show('outside'); $('outside').classList.add('open'); void w.offsetWidth;
+    w.classList.remove('instant'); w.style.transitionDuration='1s';
+    $('outBubble').textContent=ml('goodbye');
+    await wait(60); $('flash').classList.remove('on'); w.classList.remove('zoom');
+    await wait(1000); $('outside').classList.remove('open');
+    await wait(1600); $('outBubble').textContent=ml('comeBack');
+    busy=false;
+  }
+  window.clShowNook=()=>{ buildNook(); fillFrames(); show('nook'); };
+  window.clOpenBook=(btn,L,i)=>openBook(btn,L,i,'tower');
+  function openNook(){ if(busy) return; buildNook(); show('nook'); if(((realRecord&&realRecord.pages)||[]).some(p=>p&&p.imageBlob)) fillFrames(); else { fillFrames(); $('nookBubble').textContent=ml('nookArrive'); } }
+
+  async function openBook(btn,L,i,origin){
+    if(busy) return; busy=true; current={L,i,origin};
+    const bk=bookOf(L,i);
+    const from=rectIn(btn.querySelector('img'));
+    sparkle(from.left+from.width/2,from.top+from.height/2,12);
+    btn.style.visibility='hidden';
+    const flyer=await fly(bk.c, from, {left:60,top:120,width:560,height:315});
+    $('qimg').src=bk.c; $('qtitle').textContent=bk.t; $('qlv').textContent='Level '+L+' · '+bk.cat;
+    $('backBtn').innerHTML=origin==='nook'?'<span class="i">←</span>My Library':origin==='tower'?'<span class="i">←</span>Tower':'<span class="i">←</span>Shelves';
+    drawTrail(); show('quest');
+    await wait(450); flyer.remove(); btn.style.visibility=''; busy=false;
+  }
+  async function back(){
+    if(busy||!current) return; busy=true;
+    if(current.origin==='nook'){ buildNook(); show('nook'); current=null; busy=false; return; }
+    if(current.origin==='tower'){ show('nook'); current=null; busy=false; if(window.CLTower) CLTower.reopen(); return; }
+    buildShelves();
+    const btn=document.querySelector('.book[data-key="'+current.L+current.i+'"]');
+    show('hall'); btn.style.visibility='hidden';
+    const flyer=await fly(bookOf(current.L,current.i).c,{left:60,top:120,width:560,height:315}, rectIn(btn.querySelector('img')));
+    flyer.remove(); btn.style.visibility='';
+    const p=progress[current.L+current.i]||0;
+    $('hallBubble').textContent=p>=5?ml('hallBookDone'):ml('hallArrive');
+    current=null; busy=false;
+  }
+
+  // stand-ins for steps a book does not have yet
+  // stand-ins for steps whose activities have not been written for this book yet (content/m<N>/<id>/activities.json)
+  const SOON={question:['❓','Question time!','Questions about this story are on their way. Tap to collect your star!'],
+              think:['💭','Thinking time!','A thinking game made from this story is on its way. Tap to collect your star!'],
+              express:['🗣️','Speaking time!','Saying sentences from this story is on its way. Tap to collect your star!'],
+              create:['🎨','Making time!','Making your own book of this story is coming soon. Tap to collect your star!']};
+  function drawTrail(){
+    if(isReal()) return drawRealTrail();
+    setTrail(false); document.querySelector('#trail svg path').setAttribute('d',PATH5);
+    const tr=$('trail'); tr.querySelectorAll('.stop').forEach(s=>s.remove());
+    const state=bookSteps(current.L,current.i), next=state.findIndex(v=>!v), d=state.filter(Boolean).length;
+    REAL_STOPS.forEach((q,n)=>{
+      const st=document.createElement('button');
+      st.className='stop '+(state[n]?'done':n===next?'current':'');
+      st.style.left=REAL_POS[n][0]+'px'; st.style.top=REAL_POS[n][1]+'px';
+      st.innerHTML='<span class="dot">'+q[0]+'</span><span class="lab"><small>'+q[1]+'</small>'+q[2]+'</span>';
+      st.setAttribute('aria-label',q[1]+': '+q[2]+(state[n]?', done':''));
+      st.addEventListener('click',()=>tapStop(n));
+      tr.appendChild(st);
+    });
+    $('openBookBtn').hidden=true;
+    $('qprog').textContent=d>=5?'All five steps done! This book has a gold seal.':'Read · Question · Think · Express · Create · '+d+' of 5 done';
+    const NAMES=['READ','QUESTION','THINK','EXPRESS','CREATE'];
+    $('qBubble').textContent=d>=5?ml('questAllDone'):(d>0&&next>0&&CLLines.has('questResume'))?ml('questResume',{last:NAMES[next-1],step:NAMES[next]}):ml('quest.'+STEP_KEYS[next]);
+  }
+  let pending=null;
+  function tapStop(n){
+    if(isReal()) return realTap(n);
+    const b=bookOf(current.L,current.i), q='&key='+b.key+'&id='+encodeURIComponent(b.id);
+    if(n===0) return openVideo(b.video);
+    if(n===1 && (b.act.question||[]).length) return leaveTo('activities/book/question.html?'+q.slice(1));
+    if(n===3 && (b.act.express||[]).length) return leaveTo('activities/book/express.html?'+q.slice(1));
+    pending=STEP_KEYS[n]; const m=SOON[pending];
+    $('mIcon').textContent=m[0]; $('mTitle').textContent=m[1]; $('mText').textContent=m[2];
+    $('modal').classList.add('on'); $('mBtn').focus();
+  }
+  // a step finished in the library itself (video, stand-ins): save it, give a star, celebrate a finished book
+  async function stepDone(step){
+    const b=bookOf(current.L,current.i), k=b.key;
+    if(!bflag(b.id,step)){ bflag(b.id,step,true); bonus(1); const n=STEP_KEYS.indexOf(step), stop=$('trail').querySelectorAll('.stop')[n]; if(stop){const r=rectIn(stop.querySelector('.dot'));sparkle(r.left+48,r.top+48,12);} }
+    const before=progress[k]||0; progress[k]=bookSteps(current.L,current.i).filter(Boolean).length;
+    stars=12+earned(); drawStars(); bump(); drawTrail();
+    if(before===0 && progress[k]===1) toast('🔖 Saved to Reading now in My Library');
+    if(progress[k]>=5 && before<5){ await finishBook(); if(window.CLCerts) setTimeout(()=>CLCerts.check(),400); }
+  }
+  $('mBtn').addEventListener('click',()=>{ $('modal').classList.remove('on'); const s=pending; pending=null; if(s) stepDone(s); });
+  function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),2200); }
+  async function finishBook(){
+    busy=true;
+    $('qBubble').textContent=ml('bookDone'); if(window.CLLines) CLLines.flourish('bookDone');
+    sparkle(340,280,30); await wait(500);
+    const target=rectIn($('qLibBtn'));
+    const flyer=await fly(bookOf(current.L,current.i).c,{left:60,top:120,width:560,height:315},{left:target.left,top:target.top,width:target.width,height:target.height},true);
+    flyer.remove(); sparkle(target.left+target.width/2,target.top+target.height/2,16);
+    $('qLibBtn').classList.add('bump'); setTimeout(()=>$('qLibBtn').classList.remove('bump'),250);
+    toast('✨ Added to Anna’s Library with a gold seal!');
+    busy=false;
+  }
+
+  // ===== Real book: Bye-Bye Sugar Bugs (Level B, week 4) follows the GB learning cycle =====
+  // READ (story video) · QUESTION · THINK · EXPRESS (activities/sugar-bugs/*.html) · CREATE (the book maker).
+  const REAL_KEY=(()=>{ if(!MONTH) return 'B3'; for(const L of ['A','B','C']){ const i=MONTH.levels[L].findIndex(b=>b.custom==='sugar-bugs'); if(i>=0) return L+i; } return 'none'; })(), REAL_BOOK='bye-bye-sugar-bugs';
+  window.clRealKey=REAL_KEY;
+  const REAL_STOPS=[['📖','READ','Watch the story'],['❓','QUESTION','Ask and answer'],['💭','THINK','Sort it out'],['🗣️','EXPRESS','Say it!'],['🎨','CREATE','Make my book']];
+  const REAL_POS=[[40,0],[250,118],[40,236],[250,354],[40,472]];
+  const PATH4=document.querySelector('#trail svg path').getAttribute('d');
+  const PATH5='M90 48 C 300 60, 330 120, 300 166 S 70 230, 90 284 S 330 350, 300 402 S 70 470, 90 520';
+  const READER=(()=>{try{return JSON.parse(localStorage.getItem('gp.reading.profile.v1'))||{};}catch(e){return {};}})();
+  const PROFILE=READER.id||'local-reader';
+  let realRecord=null, realState=[false,false,false,false,false], realMake='none', frameUrls=[];
+  function flag(k,set){ try{ if(set){ localStorage.setItem('cl.sb5.'+k,'1'); return true; } return localStorage.getItem('cl.sb5.'+k)==='1'; }catch(e){ return false; } }
+  function bonus(n){ try{ localStorage.setItem('cl.sb5.stars',String((+localStorage.getItem('cl.sb5.stars')||0)+n)); }catch(e){} }
+  function earned(){ try{ return +localStorage.getItem('cl.sb5.stars')||0; }catch(e){ return 0; } }
+  function isReal(){ return !!current && (current.L+current.i)===REAL_KEY; }
+  function setTrail(real){
+    document.querySelector('#trail svg path').setAttribute('d', real?PATH5:PATH4);
+    $('qExtras').hidden=!real;
+    const c=$('qcover'), explored=flag('explore');
+    c.classList.toggle('explorable',real); c.classList.toggle('first',real&&!explored);
+    $('exploreTag').hidden=!real;
+    if(real){ c.setAttribute('role','button'); c.tabIndex=0; c.setAttribute('aria-label','Explore the Bye-Bye Sugar Bugs cover'); }
+    else { c.removeAttribute('role'); c.removeAttribute('tabindex'); c.removeAttribute('aria-label'); }
+  }
+  async function refreshReal(){
+    let records=[];
+    try{ if(window.GPLibrary) records=(await window.GPLibrary.list(PROFILE)).filter(r=>r.bookId===REAL_BOOK); }catch(e){}
+    realRecord=records.find(r=>r.metadata&&r.metadata.bookCompleted)||records[0]||null;
+    realMake=!realRecord?'none':(realRecord.metadata&&realRecord.metadata.bookCompleted)?'done':'part';
+    if(realMake==='done'){ flag('createDone',true); if(!flag('createStars')){ flag('createStars',true); bonus(3); } }
+    realState=[flag('read'),flag('question'),flag('think'),flag('express'),realMake==='done'];
+    if(REAL_KEY!=='none') progress[REAL_KEY]=realState.filter(Boolean).length;
+    stars=12+earned(); drawStars(); if(window.CLCerts) CLCerts.check();
+    buildShelves(); buildNook(); fillFrames();
+    if(current && $('quest').classList.contains('on')) drawTrail();
+  }
+  function drawRealTrail(){
+    setTrail(true);
+    const tr=$('trail'); tr.querySelectorAll('.stop').forEach(s=>s.remove());
+    const explored=flag('explore');
+    const next=explored?realState.findIndex(v=>!v):-1;
+    REAL_STOPS.forEach((q,n)=>{
+      const st=document.createElement('button');
+      st.className='stop '+(realState[n]?'done':n===next?'current':'');
+      st.style.left=REAL_POS[n][0]+'px'; st.style.top=REAL_POS[n][1]+'px';
+      const lab=(n===4&&realMake==='part')?'Keep making my book':q[2];
+      st.innerHTML='<span class="dot">'+q[0]+'</span><span class="lab"><small>'+q[1]+'</small>'+lab+'</span>';
+      st.setAttribute('aria-label',q[1]+': '+lab+(realState[n]?', done':''));
+      st.addEventListener('click',()=>realTap(n));
+      tr.appendChild(st);
+    });
+    $('openBookBtn').hidden=!realRecord;
+    const d=realState.filter(Boolean).length;
+    $('qprog').textContent=d>=5?'All five steps done! Your book is in My Library.':'Read · Question · Think · Express · Create · '+d+' of 5 done';
+    const lines=[ml('quest.read'),'The sugar bug has questions for you!','Time to think! Which snacks make teeth happy?','Now say it out loud, like a real speaker!',realMake==='part'?'Let\u2019s keep making your book!':'Now make your very own book!'];
+    $('qBubble').textContent=!explored?'Tap the cover to explore it! Everything on it has something to say.':d>=5?'You did all five steps! Open your book anytime.':lines[next];
+  }
+  function pcBook(url){ url=String(url); return url.indexOf('coloring/index.html')===0 ? 'coloring/pc.html'+url.slice('coloring/index.html'.length) : url; }
+  document.addEventListener('click',e=>{ const l=e.target.closest('a[href^="coloring/index.html"]'); if(l) l.setAttribute('href',pcBook(l.getAttribute('href'))); },true);
+  function leaveTo(url){
+    url=pcBook(url);
+    try{ sessionStorage.setItem('cl.return','quest:'+(current?current.L+current.i:REAL_KEY)); }catch(e){}
+    $('flash').classList.add('on'); setTimeout(()=>{ location.href=url; }, RM?0:320);
+  }
+  function openReader(record){
+    if(!window.GPStorybookViewer) return;
+    const cat=((window.GPCatalog&&window.GPCatalog.books)||[]).find(b=>b.id===record.bookId);
+    window.GPStorybookViewer.open(record,{readerName:READER.name||'Anna',catalogBook:cat});
+  }
+  function realTap(n){
+    if(n===0) openVideo();
+    else if(n===1) leaveTo('activities/sugar-bugs/question.html');
+    else if(n===2) leaveTo('activities/sugar-bugs/think.html');
+    else if(n===3) leaveTo('activities/sugar-bugs/express.html');
+    else leaveTo(realMake==='part'&&realRecord&&realRecord.activityUrl?realRecord.activityUrl:'coloring/index.html?edition=creative&book='+REAL_BOOK);
+  }
+  function exploreCover(){
+    if(!isReal()||busy) return;
+    if(!flag('explore')){ flag('explore',true); bonus(1); }
+    leaveTo('reading/sugar-bugs/index.html');
+  }
+  $('qcover').addEventListener('click',exploreCover);
+  $('qcover').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); exploreCover(); } });
+  $('openBookBtn').addEventListener('click',()=>{ if(realRecord) openReader(realRecord); });
+  function openVideo(src){
+    const v=$('storyVid'), want=src||'reading/sugar-bugs/assets/reading-full.mp4';
+    if(v.getAttribute('src')!==want) v.src=want;
+    $('vidModal').classList.add('on'); v.play().catch(()=>{});
+  }
+  function closeVideo(){
+    const v=$('storyVid'); const watched=v.ended||v.currentTime>15; v.pause(); $('vidModal').classList.remove('on');
+    if(!isReal()){ if(watched&&current) stepDone('read'); return; }
+    if(watched && !flag('read')){ flag('read',true); bonus(1); const r=rectIn($('trail')); sparkle(r.left+90,r.top+48,16); }
+    refreshReal();
+  }
+  $('vidDone').addEventListener('click',closeVideo);
+  $('storyVid').addEventListener('ended',()=>{ if($('vidModal').classList.contains('on')) closeVideo(); });
+  function fillFrames(){
+    frameUrls.forEach(u=>URL.revokeObjectURL(u)); frameUrls=[];
+    document.querySelectorAll('.artframe img.real').forEach(e=>e.remove());
+    const pages=((realRecord&&realRecord.pages)||[]).filter(p=>p&&p.imageBlob);
+    document.querySelectorAll('.artframe').forEach((f,i)=>{
+      const p=pages[i]; if(!p) return;
+      const u=URL.createObjectURL(p.imageBlob); frameUrls.push(u);
+      const im=document.createElement('img'); im.className='real'; im.src=u; im.alt=p.title||'My page'; f.appendChild(im);
+    });
+    if(pages.length) $('nookBubble').textContent=ml('nookFrames');
+  }
+  window.addEventListener('gp-request-remove-creation',e=>{
+    const id=e.detail&&e.detail.id; if(!id) return;
+    try{ window.GPStorybookViewer.closeIf(id); }catch(_){}
+    $('confirmRemove').classList.add('on');
+    $('confirmNo').onclick=()=>$('confirmRemove').classList.remove('on');
+    $('confirmYes').onclick=async()=>{
+      $('confirmRemove').classList.remove('on');
+      try{ await window.GPLibrary.remove(id); }catch(_){}
+      try{ localStorage.removeItem('cl.sb5.createDone'); }catch(_){}
+      refreshReal(); toast('The book was removed from My Library.');
+    };
+  });
+  window.addEventListener('gp-library-updated',()=>refreshReal());
+  window.addEventListener('storage',e=>{ if(e.key==='gp.reading.library.updated') refreshReal(); });
+  $('shareBtn').addEventListener('click',()=>toast('Sharing with friends comes with parent accounts.'));
+  
+  function restoreReturn(){
+    let ret=null; try{ ret=sessionStorage.getItem('cl.return'); sessionStorage.removeItem('cl.return'); }catch(e){}
+    if(location.hash==='#myLibrary'){
+      seenOwl=true; buildNook(); fillFrames(); show('nook');
+      try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){}
+      return;
+    }
+    if(ret&&ret.indexOf('quest:')===0){
+      const k=ret.slice(6), L=k[0], i=+k.slice(1), bk=bookOf(L,i); seenOwl=true;
+      current={L,i,origin:'hall'};
+      $('qimg').src=bk.c; $('qtitle').textContent=bk.t; $('qlv').textContent='Level '+L+' · '+bk.cat;
+      $('backBtn').innerHTML='<span class="i">←</span>Shelves'; show('quest'); drawTrail();
+      refreshReal();
+    }
+  }
+
+  $('enterBtn').addEventListener('click',enter);
+  $('doorHit').addEventListener('click',enter);
+  $('skipBtn').addEventListener('click',skip);
+  $('exitBtn').addEventListener('click',exitLib);
+  $('backBtn').addEventListener('click',back);
+  $('myLibBtn').addEventListener('click',openNook);
+  $('qLibBtn').addEventListener('click',()=>{ if(busy) return; current=null; openNook(); });
+  $('nookBack').addEventListener('click',()=>{ if(busy) return; buildShelves(); show('hall'); });
+  $('restart').addEventListener('click',()=>{ try{ Object.keys(localStorage).filter(k=>k.indexOf('cl.sb5.')===0||k.indexOf('cl.bk.')===0||k==='cl.certs').forEach(k=>localStorage.removeItem(k)); }catch(e){} if(window.CLWardrobe) CLWardrobe.reset(); if(window.CLRoom) CLRoom.reset(); reset(); });
+  reset();
+  restoreReturn();
+})();
+</script>
+<script>
+(function(){
+  const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let muted=false; try{ muted=localStorage.getItem('cl.muted')==='1'; }catch(e){}
+  let interacted=false; addEventListener('pointerdown',()=>{ interacted=true; },{capture:true});
+  const timers=new Map(); let last={t:'',at:0};
+  function frame(g,f){ g.querySelectorAll('img.gf').forEach(i=>i.classList.toggle('on',i.dataset.f===f)); }
+  function stopTalk(g){ clearTimeout(timers.get(g)); frame(g,'idle'); g.classList.remove('talking'); }
+  function talk(g,ms){
+    if(!g) return; clearTimeout(timers.get(g)); if(!RM) g.classList.add('talking');
+    let open=false; const end=Date.now()+ms;
+    (function step(){ if(Date.now()>end){ stopTalk(g); return; } open=!open; frame(g,open?'talk':'idle'); timers.set(g,setTimeout(step,open?120+Math.random()*80:70+Math.random()*70)); })();
+  }
+  function speak(text,g){
+    if(muted||!interacted||!('speechSynthesis' in window)) return false;
+    try{
+      speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang='en-US'; u.rate=.95; u.pitch=(window.CLMate?CLMate.pitch():1.2);
+      if(g){ u.onend=()=>stopTalk(g); }
+      speechSynthesis.speak(u); return true;
+    }catch(e){ return false; }
+  }
+  [['outBubble','#outside .guide'],['hallBubble','#hall .guide'],['nookBubble','#nook .guide'],['qBubble',null]].forEach(([id,sel])=>{
+    const b=document.getElementById(id); if(!b) return; const g=sel?document.querySelector(sel):null;
+    new MutationObserver(()=>{
+      const t=b.textContent.trim(); const scene=b.closest('.scene');
+      if(!t||(scene&&!scene.classList.contains('on'))) return;
+      if(t===last.t&&Date.now()-last.at<1500) return; last={t,at:Date.now()};
+      const spoken=speak(t,g);
+      if(g) talk(g, spoken?15000:Math.min(6000,380*t.split(/\s+/).length));
+    }).observe(b,{childList:true,characterData:true,subtree:true});
+  });
+  document.querySelectorAll('.guide').forEach(g=>{
+    (function loop(){ setTimeout(()=>{ if(!g.classList.contains('talking')){ frame(g,'blink'); setTimeout(()=>{ if(!g.classList.contains('talking')) frame(g,'idle'); },140); } loop(); },2200+Math.random()*2800); })();
+  });
+  const sounds=[...document.querySelectorAll('[data-sound]')];
+  function paint(){ sounds.forEach(b=>{ b.textContent=muted?'🔇':'🔊'; b.setAttribute('aria-label',muted?'Turn My Mate\u2019s voice on':'Turn My Mate\u2019s voice off'); }); }
+  sounds.forEach(b=>b.addEventListener('click',()=>{ muted=!muted; try{ localStorage.setItem('cl.muted',muted?'1':'0'); }catch(e){} if(muted&&'speechSynthesis' in window) speechSynthesis.cancel(); paint(); }));
+  paint();
+})();
+</script>
+<script src="ui/tap-magic.js"></script>
+<script src="ui/cl-bubble.js"></script>
+<script src="ui/wardrobe.js"></script>
+<script src="ui/parent-data.js"></script>
+<script src="ui/parents.js"></script>
+<script src="ui/profiles-ui.js"></script>
+<script src="ui/certificates.js"></script>
+<script src="ui/room.js"></script>
+<script src="ui/tower.js"></script>

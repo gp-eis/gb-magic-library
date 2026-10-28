@@ -1,0 +1,179 @@
+/* GB Magic Library theme for the Sugar Bugs book maker.
+   A visual layer only: colors, type, shapes and motion. Layout and drawing logic are unchanged.
+   Every rule is scoped to body.cl-magic so it wins over the original styles. */
+body.cl-magic{
+  --m-plum:#5b3fa8; --m-plum-dark:#42298a; --m-plum-soft:#efe9fb; --m-gold:#ffd36b; --m-gold-dark:#c99a2e;
+  --m-cream:#fffaf0; --m-ink:#2a2340; --m-coral:#ff6b5c; --m-coral-dark:#d94b3d; --m-mint:#20b486; --m-mint-dark:#168a66;
+  --m-kid:"Fredoka",ui-rounded,system-ui,sans-serif; --m-body:"Nunito",ui-rounded,system-ui,sans-serif;
+  --ink:var(--m-ink); --purple:var(--m-plum); --coral:var(--m-coral); --green:var(--m-mint); --focus:var(--m-plum);
+  font-family:var(--m-body); color:var(--m-ink); background:#2b1f4f; background-image:none;
+}
+body.cl-magic::before{content:"";position:fixed;inset:0;z-index:-2;background:url(../art/hall.webp) center/cover;filter:blur(2px) saturate(1.05);transform:scale(1.03)}
+body.cl-magic::after{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 0%,rgba(255,250,240,.78),rgba(255,246,228,.9) 55%,rgba(255,240,214,.94))}
+body.cl-magic main{position:relative}
+
+/* ---------- type ---------- */
+body.cl-magic h1,body.cl-magic h2,body.cl-magic .brand,body.cl-magic .activity-tab,body.cl-magic .page-number{font-family:var(--m-kid)}
+body.cl-magic h1{color:var(--m-plum);font-weight:700;letter-spacing:0;text-shadow:0 3px 0 #fff,0 0 22px rgba(255,211,107,.55)}
+body.cl-magic .eyebrow{color:#9a6a00;letter-spacing:.18em;font-family:var(--m-kid);font-weight:600}
+body.cl-magic .brand{color:var(--m-plum);font-weight:700}
+body.cl-magic .brand-icon{background:radial-gradient(circle at 40% 35%,#fff6c9,var(--m-gold));color:var(--m-plum);box-shadow:0 0 0 3px #fff,0 0 18px rgba(255,211,107,.8);animation:clTwinkle 3s ease-in-out infinite}
+@keyframes clTwinkle{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(8deg) scale(1.08)}}
+
+/* ---------- every button: chunky, bouncy, friendly ---------- */
+body.cl-magic button,body.cl-magic summary,body.cl-magic .storybook-home-link{font-family:var(--m-kid);font-weight:600}
+body.cl-magic main button,body.cl-magic dialog button{border:0;border-radius:999px;background:#fff;color:var(--m-plum);box-shadow:0 5px 0 #e2c995,0 8px 18px rgba(60,40,10,.08);transition:transform .15s cubic-bezier(.3,1.6,.5,1),box-shadow .15s,background .2s}
+body.cl-magic main button:hover:not(:disabled),body.cl-magic dialog button:hover:not(:disabled){transform:translateY(-3px) scale(1.03)}
+body.cl-magic main button:active:not(:disabled),body.cl-magic dialog button:active:not(:disabled){transform:translateY(3px) scale(.97);box-shadow:0 2px 0 #e2c995;margin-bottom:0}
+body.cl-magic main button:disabled,body.cl-magic dialog button:disabled{opacity:.45;filter:saturate(.6)}
+body.cl-magic main button[aria-pressed=true],body.cl-magic dialog button[aria-pressed=true]{box-shadow:0 0 0 4px var(--m-gold),0 5px 0 var(--m-gold-dark)}
+
+/* header pills */
+body.cl-magic .storybook-home-link{display:inline-flex;align-items:center;gap:8px;background:#fff;color:var(--m-plum);border-radius:999px;padding:9px 18px;text-decoration:none;box-shadow:0 5px 0 #e2c995}
+body.cl-magic .storybook-home-link:hover{transform:translateY(-2px)}
+body.cl-magic .language-switch{background:rgba(255,255,255,.7);border-radius:999px;padding:4px;gap:4px}
+body.cl-magic .language-switch button{min-height:40px;padding:6px 14px;border-radius:999px;box-shadow:none;background:transparent}
+body.cl-magic .language-switch button[aria-pressed=true]{background:var(--m-plum);color:#fff;box-shadow:0 3px 0 var(--m-plum-dark)}
+body.cl-magic .grownups summary{background:#fff;border-radius:999px;padding:9px 16px;color:var(--m-plum);box-shadow:0 5px 0 #e2c995;list-style:none;cursor:pointer}
+
+/* listen and the big action buttons */
+body.cl-magic #readAloud,body.cl-magic button.listen{background:#fff;color:var(--m-plum);box-shadow:0 5px 0 #e2c995,0 8px 16px rgba(42,35,64,.12);padding:0 22px;min-height:52px;font-size:19px;font-weight:700}
+body.cl-magic .color-button,body.cl-magic #begin,body.cl-magic #edit{background:linear-gradient(180deg,#ff8a7d,var(--m-coral));color:#fff;box-shadow:0 6px 0 var(--m-coral-dark),0 0 24px rgba(255,107,92,.45);font-size:22px;padding:14px 30px;min-height:62px;position:relative;overflow:visible}
+body.cl-magic #begin:not([hidden])::after,body.cl-magic #edit:not([hidden])::after{content:"✨";position:absolute;right:-12px;top:-14px;font-size:24px;animation:clSparkleBob 1.6s ease-in-out infinite}
+@keyframes clSparkleBob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-6px) rotate(20deg)}}
+body.cl-magic button.done,body.cl-magic #finish,body.cl-magic #traceDone,body.cl-magic .studio-done,body.cl-magic #apply{background:linear-gradient(180deg,#38c99a,var(--m-mint));color:#fff;box-shadow:0 6px 0 var(--m-mint-dark),0 0 22px rgba(32,180,134,.35);font-size:20px;padding:12px 26px}
+body.cl-magic #finish:not(:disabled){animation:clReady 1.6s ease-in-out infinite}
+@keyframes clReady{0%,100%{box-shadow:0 6px 0 var(--m-mint-dark),0 0 14px rgba(32,180,134,.3)}50%{box-shadow:0 6px 0 var(--m-mint-dark),0 0 34px 8px rgba(32,180,134,.55)}}
+body.cl-magic .paper-button{background:#fff;color:var(--m-plum)}
+
+/* page turning: glowing magic orbs */
+body.cl-magic #previousPage,body.cl-magic #nextPage{width:78px;min-height:96px;border-radius:40px;background:radial-gradient(circle at 40% 30%,#8a6be0,var(--m-plum));color:#fff;font-size:13px;box-shadow:0 0 0 4px var(--m-gold),0 6px 0 var(--m-plum-dark),0 0 26px rgba(255,211,107,.6)}
+body.cl-magic #previousPage span[aria-hidden],body.cl-magic #nextPage span[aria-hidden]{font-size:30px;line-height:1}
+body.cl-magic #nextPage:not(:disabled){animation:clOrb 2s ease-in-out infinite}
+@keyframes clOrb{0%,100%{transform:translateX(0)}50%{transform:translateX(6px)}}
+body.cl-magic #previousPage:disabled,body.cl-magic #nextPage:disabled{opacity:.3;animation:none}
+
+/* activity steps */
+body.cl-magic .activity-tab{border:0;background:#fff;color:var(--m-plum);box-shadow:0 4px 0 #e2c995;border-radius:999px;font-weight:600;font-size:15px}
+body.cl-magic .activity-tab-number{background:var(--m-plum-soft);color:var(--m-plum);font-family:var(--m-kid)}
+body.cl-magic .activity-tab[aria-current="step"]{background:linear-gradient(180deg,#fff3c4,var(--m-gold));color:var(--m-ink);box-shadow:0 4px 0 var(--m-gold-dark),0 0 20px rgba(255,211,107,.7)}
+body.cl-magic .activity-tab[aria-current="step"] .activity-tab-number{background:var(--m-plum);color:#fff}
+
+/* the helper line above the book */
+body.cl-magic .reading-book-toolbar .helper p,body.cl-magic #modeLabel{background:var(--m-plum);color:#fff;font-family:var(--m-kid);font-weight:600;padding:8px 16px;border-radius:18px 18px 18px 6px;box-shadow:0 4px 0 var(--m-plum-dark)}
+body.cl-magic .helper-star{background:var(--m-gold);color:var(--m-plum);border-radius:50%;animation:clTwinkle 3s ease-in-out infinite}
+
+/* ---------- the book ---------- */
+body.cl-magic .book-cover img,body.cl-magic .book{border-radius:20px;box-shadow:0 0 0 6px var(--m-gold),0 0 0 10px #fff,0 18px 40px rgba(60,30,90,.25),0 0 50px rgba(255,211,107,.45)}
+body.cl-magic .book{background:var(--m-cream)}
+body.cl-magic .text-page{background:linear-gradient(180deg,#fffdf6,#fff6e3)}
+body.cl-magic .chapter{font-family:var(--m-kid);color:#9a6a00;letter-spacing:.14em}
+body.cl-magic .story-lines{font-family:var(--m-kid);font-weight:600;color:var(--m-ink)}
+body.cl-magic .story-line{cursor:pointer;border-radius:10px;padding:0 6px;transition:background .2s,box-shadow .2s;background:linear-gradient(transparent 62%,rgba(255,211,107,.55) 62%)}
+body.cl-magic .story-line:hover{background:rgba(255,211,107,.45);box-shadow:0 0 0 3px rgba(255,211,107,.6)}
+body.cl-magic .story-line::after{content:" ✏️";font-size:.7em;opacity:.75}
+body.cl-magic .trace-hint{display:inline-block;background:var(--m-plum-soft);color:var(--m-plum);font-family:var(--m-kid);font-weight:600;border-radius:999px;padding:6px 14px}
+body.cl-magic .page-number{color:var(--m-plum)}
+body.cl-magic .activity-page-indicator{font-family:var(--m-kid);color:var(--m-plum);font-weight:600}
+body.cl-magic #status,body.cl-magic .writing-status{font-family:var(--m-kid);color:var(--m-plum)}
+body.cl-magic footer{font-family:var(--m-kid);color:var(--m-plum)}
+
+/* ---------- Color Studio: a starry art room ---------- */
+body.cl-magic .coloring-studio{background:radial-gradient(1200px 700px at 70% 0%,#7d5fd6 0%,#5b3fa8 50%,#3a2577 100%);color:#fff;border:0}
+body.cl-magic .coloring-studio::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.7;
+  background-image:radial-gradient(2px 2px at 8% 12%,#fff 50%,transparent 51%),radial-gradient(2px 2px at 24% 70%,#fff 50%,transparent 51%),radial-gradient(3px 3px at 41% 20%,#ffd36b 50%,transparent 51%),radial-gradient(2px 2px at 63% 82%,#fff 50%,transparent 51%),radial-gradient(3px 3px at 78% 14%,#ffd36b 50%,transparent 51%),radial-gradient(2px 2px at 92% 58%,#fff 50%,transparent 51%),radial-gradient(2px 2px at 52% 46%,#fff 50%,transparent 51%);animation:clStars 4s ease-in-out infinite}
+@keyframes clStars{50%{opacity:.35}}
+body.cl-magic .studio-topbar{background:transparent;border:0}
+body.cl-magic .studio-identity h2{color:#fff;font-family:var(--m-kid);font-weight:700;text-shadow:0 0 18px rgba(255,211,107,.6)}
+body.cl-magic .studio-identity p,body.cl-magic .studio-identity small{color:#e2d8ff}
+body.cl-magic .studio-logo i{background:var(--m-gold)}
+body.cl-magic .studio-back{background:#fff;color:var(--m-plum)}
+body.cl-magic .studio-sidebar{background:var(--m-cream);color:var(--m-ink);border-radius:26px;box-shadow:0 0 0 5px var(--m-gold),0 14px 30px rgba(0,0,0,.2);border:0}
+body.cl-magic .tool-heading{font-family:var(--m-kid);font-weight:700;color:var(--m-plum);letter-spacing:.06em}
+body.cl-magic .tool-buttons button{background:#fff;color:var(--m-plum);border-radius:18px}
+body.cl-magic .tool-buttons button[aria-pressed=true]{background:linear-gradient(180deg,#7354c4,var(--m-plum));color:#fff;box-shadow:0 0 0 4px var(--m-gold),0 5px 0 var(--m-plum-dark),0 0 18px rgba(255,211,107,.6)}
+body.cl-magic .paint-tool-icon{stroke:currentColor}
+body.cl-magic .swatches button{width:46px;height:46px;min-height:46px;border-radius:50%;background:var(--paint);border:4px solid #fff;box-shadow:0 4px 0 rgba(0,0,0,.18),0 0 0 1px rgba(0,0,0,.08);transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+body.cl-magic .swatches button:hover{transform:scale(1.12) rotate(-6deg)}
+body.cl-magic .swatches button[aria-pressed=true]{outline:0;transform:scale(1.18);box-shadow:0 0 0 4px var(--m-gold),0 0 0 7px #fff,0 0 22px rgba(255,211,107,.9)}
+body.cl-magic .size-buttons button{border-radius:50%}
+body.cl-magic .size-buttons .dot{background:var(--m-plum)}
+body.cl-magic .studio-edit-row button{background:#fff;color:var(--m-plum)}
+body.cl-magic .studio-art-panel{background:var(--m-cream);border-radius:28px;box-shadow:0 0 0 5px var(--m-gold),0 18px 40px rgba(0,0,0,.25);color:var(--m-ink);border:0}
+body.cl-magic .studio-eyebrow{color:#9a6a00;font-family:var(--m-kid);letter-spacing:.16em}
+body.cl-magic .studio-tool-hint{background:var(--m-plum-soft);color:var(--m-plum);font-family:var(--m-kid);font-weight:600;border-radius:999px;padding:4px 12px}
+body.cl-magic .studio-canvas-area{border-radius:20px}
+body.cl-magic .studio-canvas-status{font-family:var(--m-kid);color:var(--m-plum)}
+body.cl-magic .studio-photo-note{color:var(--m-plum)}
+
+/* ---------- tracing pop-up ---------- */
+body.cl-magic #writingDialog{background:var(--m-cream);border:0;border-radius:32px;box-shadow:0 0 0 6px var(--m-gold),0 0 60px rgba(255,211,107,.55),0 30px 60px rgba(40,20,80,.35);color:var(--m-ink)}
+body.cl-magic #writingDialog::backdrop,body.cl-magic .coloring-studio::backdrop{background:rgba(43,31,79,.55)}
+body.cl-magic #writingTitle{font-family:var(--m-kid);color:var(--m-plum)}
+body.cl-magic #writingLine{font-family:var(--m-kid);font-weight:700;color:var(--m-plum)}
+body.cl-magic .trace-pad{border-radius:24px;box-shadow:inset 0 0 0 4px #cbb6f0;background:#fff}
+body.cl-magic .pen-colors button{width:52px;height:52px;min-height:52px;border-radius:50%;background:var(--paint);border:4px solid #fff;box-shadow:0 4px 0 rgba(0,0,0,.2)}
+body.cl-magic .pen-colors button[aria-pressed=true]{box-shadow:0 0 0 4px var(--m-gold),0 0 18px rgba(255,211,107,.8);transform:scale(1.12)}
+body.cl-magic #closeWriting{border-radius:50%;width:48px;height:48px;min-height:48px;font-size:26px}
+
+/* ---------- photo alignment and save feedback ---------- */
+body.cl-magic .alignment{background:var(--m-cream);border-radius:28px;box-shadow:0 0 0 5px var(--m-gold)}
+body.cl-magic .library-save-button{border-radius:999px}
+
+/* ---------- the helper bubble becomes Gerry ---------- */
+body.cl-magic .gp-reading-helper{font-family:var(--m-kid);--gp-helper-avatar-size:96px}
+body.cl-magic .gp-helper-bubble{background:linear-gradient(180deg,#7354c4,var(--m-plum));color:#fff;border:0;border-radius:24px 24px 6px 24px;box-shadow:0 6px 0 var(--m-plum-dark),0 0 30px rgba(255,211,107,.45);scrollbar-color:var(--m-gold) transparent}
+body.cl-magic .gp-helper-name{color:var(--m-gold);font-size:13px}
+body.cl-magic .gp-helper-message{font-size:16px;font-weight:600;line-height:1.4}
+body.cl-magic .gp-helper-progress span{background:rgba(255,255,255,.16);border-color:transparent;color:#fff;font-size:12px}
+body.cl-magic .gp-reading-helper .gp-helper-action{background:linear-gradient(180deg,#fff3c4,var(--m-gold));color:var(--m-ink);border:0;box-shadow:0 4px 0 var(--m-gold-dark);font-size:15px;border-radius:14px}
+body.cl-magic .gp-reading-helper .gp-helper-close{color:#fff}
+body.cl-magic .gp-reading-helper .gp-helper-close:hover{background:rgba(255,255,255,.15)}
+body.cl-magic .gp-reading-helper .gp-helper-toggle{flex:0 0 96px;width:96px;height:182px;max-height:none;border:0;border-radius:0;background:transparent;box-shadow:none;padding:0}
+body.cl-magic .gp-helper-toggle .gp-helper-avatar{display:none}
+body.cl-magic .gp-helper-spark{right:-2px;top:6px;background:var(--m-gold);color:var(--m-plum);width:30px;height:30px;font-size:17px;box-shadow:0 0 12px rgba(255,211,107,.9)}
+.cl-gerry{position:absolute;inset:0;pointer-events:none}
+.cl-gerry img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:bottom;opacity:0;filter:drop-shadow(0 8px 10px rgba(40,20,10,.3))}
+.cl-gerry img.on{opacity:1}
+.cl-gerry.talking{animation:clNod .5s ease-in-out infinite}
+@keyframes clNod{50%{translate:0 -3%;rotate:-1.5deg}}
+body.cl-magic .cl-sound{min-height:44px;width:44px;height:44px;padding:0;border-radius:50%;font-size:18px}
+@media(max-width:750px){
+  body.cl-magic .gp-reading-helper .gp-helper-toggle{flex-basis:56px;width:56px;height:106px}
+  body.cl-magic #previousPage,body.cl-magic #nextPage{width:60px;min-height:76px}
+}
+
+/* ---------- sparkles and confetti made by magic-theme.js ---------- */
+.cl-spark{position:fixed;z-index:2147483000;width:16px;height:16px;pointer-events:none;background:var(--c,#ffd36b);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:clBurst .8s ease-out forwards}
+@keyframes clBurst{to{transform:translate(var(--dx),var(--dy)) scale(.2) rotate(200deg);opacity:0}}
+.cl-trail{position:fixed;z-index:2147483000;width:12px;height:12px;pointer-events:none;background:var(--c,#ffd36b);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:clTrail .7s ease-out forwards}
+@keyframes clTrail{to{transform:translateY(-26px) scale(.2) rotate(120deg);opacity:0}}
+.cl-confetti{position:fixed;z-index:2147483000;top:-24px;width:14px;height:20px;border-radius:3px;pointer-events:none;animation:clFall 2s ease-in forwards}
+@keyframes clFall{to{transform:translateY(110vh) rotate(720deg)}}
+@media(prefers-reduced-motion:reduce){
+  body.cl-magic *,body.cl-magic *::before,body.cl-magic *::after{animation:none!important;transition-duration:.01s!important}
+  .cl-spark,.cl-trail,.cl-confetti{display:none}
+}
+
+/* small fixes after review */
+body.cl-magic .coloring-studio .library-autosave-status{color:#e2d8ff}
+body.cl-magic .swatches{padding:8px 6px}
+body.cl-magic .swatches button[aria-pressed=true]{transform:scale(1.1)}
+body.cl-magic .pen-colors button[aria-pressed=true]{outline:0}
+
+/* button system alignment (see design/BUTTONS.md) */
+body.cl-magic header button,body.cl-magic .reading-media-controls button,body.cl-magic .main-controls button,body.cl-magic .studio-topbar button,body.cl-magic .writing-tools button,body.cl-magic .studio-edit-row button{min-height:52px;font-size:19px;font-weight:700;border-radius:999px}
+body.cl-magic .main-controls .color-button,body.cl-magic .main-controls #finish{min-height:64px;font-size:25px;padding:0 34px}
+body.cl-magic .storybook-home-link{min-height:52px;font-size:19px;font-weight:700;padding:0 22px}
+body.cl-magic .storybook-home-link svg{display:none}
+body.cl-magic .storybook-home-link::before{content:"←";font-size:1.15em}
+body.cl-magic .tool-buttons button{border-radius:20px}
+body.cl-magic .cl-sound{font-size:22px;width:52px;height:52px}
+body.cl-magic #readAloud,body.cl-magic #play,body.cl-magic #replay,body.cl-magic #read{border-radius:999px}
+body.cl-magic #begin,body.cl-magic #edit,body.cl-magic #finish{min-height:64px}
+
+
+/* inside the library's frame (pc.html adds html.cl-pc): My Mate stands in a strip on the right, clear of the book,
+   its Next button and the coloring picture */
+html.cl-pc .reading-stage,html.cl-pc .studio-art-panel{margin-right:110px}
+html.cl-pc .reading-page .story-line{white-space:nowrap}   /* keep each story line and its pencil on one row */

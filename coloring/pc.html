@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover">
+<title>Bye-Bye Sugar Bugs! · My magic book</title>
+<style>
+/* Shows the book maker filling the whole window: it is laid out at least 1280 x 800 (PC size; phones 1000 x 600)
+   and scaled to fit, its width or height growing to match the screen's shape, like the library (ui/stage.js).
+   The page inside gets html.cl-pc (and .cl-pc-phone); there the guide bubble folds into My Mate after a moment
+   (gp-helper.js), so it does not stay over the picture. */
+html,body{margin:0;height:100%;background:#2b1f4f;overflow:hidden}
+body::before{content:"";position:fixed;inset:0;background:url(../art/hall.webp) center/cover;filter:blur(8px) brightness(.55);transform:scale(1.05)}
+#box{position:fixed;inset:0;overflow:hidden}
+#frame{position:absolute;left:0;top:0;width:1280px;height:800px;border:0;transform-origin:0 0;background:#fff6e4}
+</style>
+</head>
+<body>
+<div id="box"><iframe id="frame" title="My magic book" allow="autoplay; fullscreen; microphone; camera"></iframe></div>
+<script>
+(function(){
+  var f=document.getElementById('frame'), W=1280, H=800;
+  // pass this page's query (edition, book, project) through to the book maker
+  f.src='index.html'+location.search+location.hash;
+  var phone=false;
+  function fit(){
+    var b=document.getElementById("box"), w=b.clientWidth, hh=b.clientHeight, s=Math.min(w/W, hh/H);
+    phone=s<0.62; if(phone) s=Math.min(w/1000, hh/600);   // phones: a smaller layout, drawn bigger
+    f.style.width=w/s+'px'; f.style.height=hh/s+'px';
+    f.style.transform='scale('+s+')';
+    mark();
+  }
+  function mark(){ try{ var d=f.contentDocument.documentElement; d.classList.add('cl-pc'); d.classList.toggle('cl-pc-phone',phone); }catch(e){} }
+  f.addEventListener('load',mark);
+  addEventListener('resize',fit); fit();
+})();
+</script>
+<script src="../ui/mate.js"></script><script src="../ui/rotate.js" data-base="../"></script>
+</body>
+</html>

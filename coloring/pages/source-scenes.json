@@ -1,0 +1,40 @@
+{
+  "sourceVideo": "C:/Users/jdtje/OneDrive/동영상/Reading Videos/B8-W4_Bye-Bye Sugar Bugs.mp4",
+  "sourceSha256": "1A09162B72478462DCF6C822E31145CB45542E656FBAC96F3600A02225CA6047",
+  "durationSeconds": 119.541341,
+  "width": 1280,
+  "height": 720,
+  "frameRate": "24/1",
+  "otherOriginalPath": "C:/Users/jdtje/OneDrive/Desktop/Codex Projects/Month8/apps/level-b/assets/reading/videos/week-4.mp4",
+  "otherOriginalSha256": "EFEF4145383651BA096AD33A7D99FAE795197ED586DDEAD4C3019A6DFC4EDD82",
+  "note": "The two files have the same byte count but different hashes. The decoded frame at 50.5 seconds has the same MD5 in both (734362b262481d9d3c68bcaeaf5153d8), but full-video equality is not asserted. Frames and audio here were extracted only from sourceVideo. Reference PNGs are original-video frames, not newly created coloring templates.",
+  "scenes": [
+    {
+      "pageId": "sugar-bugs",
+      "reference": "source-02-sugar-bugs-050500.png",
+      "frameSeconds": 50.5,
+      "narration": "sugar-bugs-narration.m4a",
+      "narrationSourceSeconds": [38, 56],
+      "approximateSceneSeconds": [38, 56],
+      "visual": "Pink gums and two rows of white teeth. Two teal-outline sugar bugs: a round bug with a sugar-cube hat and an oval bug with a spiral belly. The round bug later digs at a tooth.",
+      "visibleSubtitleText": ["Sugar! Yum, yum!", "This tooth is sweet!", "Let's dig a hole!"],
+      "existingBlankOrCutoutAssets": false
+    },
+    {
+      "pageId": "toothache",
+      "reference": "source-03-toothache-065500.png",
+      "frameSeconds": 65.5,
+      "narration": "toothache-narration.m4a",
+      "narrationSourceSeconds": [57, 67],
+      "subtitleProofReference": "source-03-toothache-063500.png",
+      "approximateSceneSeconds": [57, 67],
+      "visual": "The same girl in the magenta kitchen holds a bitten donut and touches her aching cheek. A lollipop and soda can remain on the yellow table.",
+      "visibleSubtitleText": ["Ow! My tooth hurts!", "Why does it hurt?"],
+      "existingBlankOrCutoutAssets": false
+    }
+  ],
+  "availablePage1AssetsRoot": "C:/Users/jdtje/Documents/Codex/2026-08-31/hy/sugar-bugs-storybook-site/dist",
+  "availablePage1Assets": ["table-scene.png", "blank-treats-scene.png", "clean-kitchen.png", "workbook-preview.png"],
+  "sourceBookProject": "C:/Users/jdtje/Documents/Codex/2026-08-31/hy/sugar-bugs-storybook-site",
+  "transcriptNote": "Text was transcribed from visible original-video subtitles. Scene intervals are approximate reference ranges, not frame-accurate narration cut points. No additional story beats are supplied."
+}

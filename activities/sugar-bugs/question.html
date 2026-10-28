@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>QUESTION · Bye-Bye Sugar Bugs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Sora:wght@600&display=swap">
+<link rel="stylesheet" href="kit.css">
+<link rel="stylesheet" href="../../ui/cl-buttons.css">
+<link rel="stylesheet" href="../../ui/cl-bubble.css">
+<style>
+.asker{left:150px;top:112px;width:250px;height:250px;border-radius:50%;background:radial-gradient(circle at 50% 40%,#fff,#fff1d0);box-shadow:0 0 0 8px #fff,0 0 0 12px var(--gold),0 14px 30px rgba(60,40,10,.15);display:grid;place-items:center;z-index:5}
+.asker img{max-width:72%;max-height:72%;object-fit:contain}
+.asker.gerry-ask img{max-height:86%}
+.qbubble{left:430px;top:132px;width:640px;min-height:120px;background:#fff;border-radius:28px 28px 28px 8px;padding:20px 26px;font-family:"Fredoka",sans-serif;font-weight:600;font-size:34px;line-height:1.25;color:var(--ink);box-shadow:0 8px 0 #e6d6b8;z-index:5}
+.qbubble .w.lit{color:var(--plum)}
+.qbubble.explain{font-size:24px;font-weight:500;background:#f2fbf7;box-shadow:0 8px 0 #bfe8d7}
+.qbubble.explain .w.lit{color:#14785a}
+.answers{left:300px;right:80px;top:330px;display:flex;justify-content:center;gap:40px;z-index:5}
+.answers .card{width:300px;height:290px;grid-template-rows:1fr auto;padding:18px 0 16px}
+.answers .card img{max-height:170px}
+.answers .card.dim{opacity:.35}
+.wonder{left:300px;right:60px;top:320px;display:grid;gap:16px;z-index:5}
+.wonder button{display:flex;align-items:center;gap:16px;background:#fff;border-radius:22px;padding:16px 22px;font-family:"Fredoka",sans-serif;font-weight:600;font-size:26px;text-align:left;box-shadow:0 6px 0 #e6d6b8}
+.wonder button b{flex:none;width:52px;height:52px;border-radius:50%;background:var(--gold);display:grid;place-items:center;font-size:30px;color:var(--plum)}
+.wonder button.asked{box-shadow:0 0 0 4px var(--mint),0 6px 0 #bfe8d7}
+.next{right:40px;bottom:36px;z-index:18}
+.next .big-btn{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.round{left:150px;top:378px;font-family:"Sora",sans-serif;font-size:14px;font-weight:600;letter-spacing:.14em;color:var(--plum);width:250px;text-align:center;z-index:5}
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="asker" id="asker"><img id="askerImg" src="img/sugar_bug_peek.webp" alt=""></div>
+  <div class="round" id="round">QUESTION 1 OF 4</div>
+  <div class="qbubble" id="qbubble" aria-live="polite"></div>
+  <div class="answers" id="answers"></div>
+  <div class="wonder hidden" id="wonder"></div>
+  <div class="next hidden" id="next"><button class="clb clb--go clb--lg clb--pulse" id="nextBtn">Next <span class="i">›</span></button></div>
+</div>
+<script src="../../ui/mate.js"></script>
+<script src="../../ui/rotate.js" data-base="../../"></script>
+<script src="../../ui/stage.js" data-base="../../"></script>
+<script src="../../ui/mate-lines.js"></script>
+<script src="kit.js"></script>
+<script src="../../ui/cl-bubble.js"></script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const ROUNDS=[
+    {asker:'img/sugar_bug_peek.webp',name:'sugar bug',q:'Where do I like to hide?',
+     answers:[{img:'img/teeth_bugs.webp',lab:'Behind your back teeth',ok:true},{img:'img/apple.webp',lab:'Inside an apple'}],
+     hint:'Hmm, sugar bugs like teeth. Try again!',
+     clip:'../../reading/sugar-bugs/assets/voice/sugar_bug_talk_en.mp3',
+     says:'I am a sugar bug! I hide where you forget to brush, behind your back teeth. Brush back there, and I have to run away!'},
+    {asker:'img/toothpaste_closed.webp',name:'toothpaste',q:'How much toothpaste do you need?',
+     answers:[{img:'img/toothpaste_squeezed.webp',lab:'The whole tube'},{img:'img/toothbrush_paste.webp',lab:'A little dab, like a pea',ok:true}],
+     hint:'That is too much! Just a tiny bit.',
+     clip:'../../reading/sugar-bugs/assets/voice/toothpaste_talk_en.mp3',
+     says:'Squeeze me from the bottom, never from the middle! Just a little dab, as big as a pea. Then brush, and I make the sugar bugs run!'},
+    {asker:'img/apple_shine.webp',name:'apple',q:'Which snack scrubs your teeth while you chew?',
+     answers:[{img:'img/apple.webp',lab:'Apple',ok:true},{img:'img/donut_color.webp',lab:'Donut'}],
+     hint:'A donut is sticky. Think crunchy!',
+     clip:'../../reading/sugar-bugs/assets/voice/apple_word_en.mp3',
+     says:'Apple. Crunch, crunch! An apple scrubs your teeth while you chew it.'},
+    {asker:'img/lollipop.webp',name:'lollipop',q:'What should you drink after something sweet?',
+     answers:[{img:'img/can.webp',lab:'Soda'},{emoji:'💧',lab:'Water',ok:true}],
+     hint:'Soda has lots of sugar. Try the other one!',
+     clip:'../../reading/sugar-bugs/assets/voice/lollipop_talk_en.mp3',
+     says:'I am a lollipop, full of sugar. Save me for after a meal, then drink a big glass of water. Water washes the sugar away before the bugs can find it!'}
+  ];
+  const WONDER=[
+    {q:'Why do sugar bugs love sugar?',a:'Sugar bugs are tiny germs. They eat the sugar left on your teeth, and that can make holes. Brushing takes the sugar away!'},
+    {q:'Why do we brush before bed?',a:'At night your mouth rests, so sugar can stay on your teeth for a long time. Brushing before bed keeps them clean all night!'},
+    {q:'Why is water good after sweets?',a:'Water washes the sugar off your teeth, so the sugar bugs stay hungry!'}
+  ];
+  let r=0, locked=false;
+  SB.bar('question','Ask and answer');
+  SB.gerry();
+
+  function round(){
+    const R=ROUNDS[r]; locked=false;
+    $('next').classList.add('hidden'); $('qbubble').classList.remove('explain');
+    $('round').textContent='QUESTION '+(r+1)+' OF 4';
+    $('askerImg').src=R.asker; $('asker').classList.remove('gerry-ask');
+    const box=$('answers'); box.innerHTML='';
+    R.answers.forEach(a=>{
+      const c=document.createElement('button'); c.className='card';
+      c.innerHTML=(a.img?'<img src="'+a.img+'" alt="">':'<span class="emoji" aria-hidden="true">'+a.emoji+'</span>')+'<span class="lab">'+a.lab+'</span>';
+      c.setAttribute('aria-label',a.lab);
+      c.addEventListener('click',()=>choose(a,c));
+      box.appendChild(c);
+    });
+    $('qbubble').textContent=R.q;
+    SB.say('The '+R.name+' has a question for you!').then(()=>SB.say(R.q,{el:$('qbubble'),bounce:$('askerImg'),pitch:1.45,rate:.9,replay:false}));
+  }
+  function choose(a,c){
+    if(locked) return;
+    if(!a.ok){ SB.sfx.bad(); c.classList.remove('bad'); void c.offsetWidth; c.classList.add('bad'); SB.say(ROUNDS[r].hint); return; }
+    locked=true; SB.sfx.good(); c.classList.add('good'); SB.sparkle(c,18); SB.star(c);
+    [...$('answers').children].forEach(x=>{ if(x!==c) x.classList.add('dim'); });
+    const R=ROUNDS[r]; $('qbubble').classList.add('explain');
+    SB.say('Yes! Listen to the '+R.name+'.').then(()=>SB.clip(R.clip,R.says,$('qbubble'),$('askerImg'))).then(()=>{ $('next').classList.remove('hidden'); });
+  }
+  $('nextBtn').addEventListener('click',()=>{ SB.stopVoice(); r++; if(r<ROUNDS.length) round(); else wonder(); });
+
+  function wonder(){
+    $('answers').innerHTML=''; $('next').classList.add('hidden'); $('qbubble').classList.remove('explain');
+    $('round').textContent='YOUR TURN';
+    $('askerImg').src='../../art/gerry-idle.webp'; $('asker').classList.add('gerry-ask');
+    const w=$('wonder'); w.classList.remove('hidden'); w.innerHTML='';
+    let asked=0;
+    WONDER.forEach(item=>{
+      const b=document.createElement('button'); b.innerHTML='<b>?</b><span>'+item.q+'</span>';
+      b.addEventListener('click',()=>{
+        SB.sfx.pop(); if(!b.classList.contains('asked')){ b.classList.add('asked'); asked++; SB.star(b); }
+        SB.say(item.a,{el:$('qbubble'),bounce:$('askerImg')}).then(()=>{ if(asked>=1){ $('nextBtn').className='clb clb--done clb--lg'; $('nextBtn').innerHTML='Finish <span class="i">✓</span>'; $('next').classList.remove('hidden'); } });
+      });
+      w.appendChild(b);
+    });
+    $('nextBtn').onclick=null;
+    $('nextBtn').addEventListener('click',()=>{ if(!$('wonder').classList.contains('hidden')) SB.finish('question',{title:'Great questions!',text:'Asking "why?" is how big thinkers learn. Your next step is THINK.',img:'img/sugar_bug_friendly.webp'}); });
+    SB.say('Now it’s your turn to ask! Tap a question, and I’ll answer it.');
+    $('qbubble').textContent='What do you wonder about?';
+  }
+
+  SB.startScreen({kicker:'STEP 2 · QUESTION',title:'Ask and answer',text:'The sugar bug, the toothpaste and their friends have questions for you. Then you can ask your own!',img:'img/sugar_bug_peek.webp'}).then(round);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+/* Turn-your-phone screen (ui/rotate.js): only on touch screens held upright; hidden everywhere else. */
+#cl-rotate{display:none}
+@media (orientation: portrait) and (pointer: coarse){
+  #cl-rotate{display:grid;place-items:center;position:fixed;inset:0;z-index:2147483000;padding:24px;
+    background:radial-gradient(120% 80% at 50% 30%,#7a5cc8,#3a2a78 70%,#2b1f4f);color:#fff;text-align:center;
+    font-family:"Fredoka",ui-rounded,system-ui,sans-serif}
+  body{overflow:hidden!important}
+}
+#cl-rotate .rt-box{display:grid;justify-items:center;gap:10px;max-width:340px}
+#cl-rotate .rt-mate{height:30vh;max-height:240px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.35));animation:rtHop 1.6s ease-in-out infinite}
+#cl-rotate .rt-phone{width:58px;height:96px;border:5px solid #ffd36b;border-radius:14px;position:relative;animation:rtTurn 2.4s ease-in-out infinite;margin:6px 0}
+#cl-rotate .rt-phone span{position:absolute;left:50%;bottom:6px;width:12px;height:4px;margin-left:-6px;border-radius:2px;background:#ffd36b}
+#cl-rotate .rt-en{margin:0;font-weight:700;font-size:26px;line-height:1.2}
+#cl-rotate .rt-ko{margin:0;font-family:"Noto Sans KR",sans-serif;font-weight:700;font-size:19px;color:#ffe08a}
+#cl-rotate .rt-who{margin:4px 0 0;font-size:14px;opacity:.8}
+@keyframes rtTurn{0%,20%{transform:rotate(0)}50%,80%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+@keyframes rtHop{50%{transform:translateY(-8px)}}
+@media (prefers-reduced-motion: reduce){#cl-rotate .rt-phone,#cl-rotate .rt-mate{animation:none}}
+
+/* small-screen mode (phones held sideways): rotate.js adds html.cl-small when the stage is drawn at under ~62% size.
+   Top-bar buttons become big round icons (words hidden) and speech bubbles get bigger text, so children can read and tap. */
+html.cl-small .clbar .clmid,html.cl-small .bar .title{display:none!important}
+html.cl-small .clbar .clb,html.cl-small .bar .clb{font-size:0!important;min-width:84px;min-height:84px;padding:0 14px!important;border-radius:42px!important;justify-content:center;gap:0!important}
+html.cl-small .clbar .clb .i,html.cl-small .bar .clb .i,html.cl-small .clbar .clb.clb--icon,html.cl-small .bar .clb.clb--icon{font-size:40px!important;line-height:1}
+html.cl-small .clbar .clb:not(:has(.i)):not(.clb--icon){font-size:30px!important}
+html.cl-small .clbar .clchip,html.cl-small .bar .clchip{font-size:30px!important;padding:10px 18px!important}
+html.cl-small .clbar .clprofile{width:84px!important;height:84px!important}
+html.cl-small .clbar .clright,html.cl-small .bar{gap:12px!important}
+html.cl-small .app .bubble,html.cl-small #stage .say{font-size:30px!important;line-height:1.25!important;max-width:400px!important;padding:18px 24px!important}
+html.cl-small .bar .dots{margin-left:auto}   /* the title is hidden: keep the dots, stars and sound on the right */
+
+/* Android: one tap turns the library sideways and full screen (rotate.js); iPhone: a tip about the rotation lock */
+#cl-rotate .rt-go{margin-top:10px;font:700 19px "Fredoka",ui-rounded,system-ui,sans-serif;color:#3a2a78;background:#ffd36b;border:0;
+  border-radius:999px;padding:14px 24px;box-shadow:0 5px 0 #c9962e}
+#cl-rotate .rt-tip{margin:8px 0 0;font-size:13px;line-height:1.5;opacity:.85}
+/* the space beside the library (phones are wider than the library) shows a soft blur of the hall, not flat purple */
+html:not(.dev) body{background:#2b1f4f url(../art/backdrop.webp) center/cover no-repeat fixed!important}

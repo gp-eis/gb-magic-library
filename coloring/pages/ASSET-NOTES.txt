@@ -1,0 +1,33 @@
+Local three-activity Sugar Bugs preview — 2026-10-21
+
+Source supplied by the user:
+C:/Users/jdtje/OneDrive/동영상/Reading Videos/B8-W4_Bye-Bye Sugar Bugs.mp4
+
+Activity 1 retains the original existing local artwork and narration.
+Activity 2: source-02-sugar-bugs-050500.png, authentic frame at 50.5 seconds;
+its white bug bodies already function as coloring areas. Narration is the
+original source audio from 38 to 56 seconds, not generated speech.
+Activity 3: source-03-toothache-065500.png, authentic frame at 65.5 seconds.
+Narration is the original source audio from 57 to 67 seconds.
+
+toothache-coloring.png is an AI-edited derivative of the Activity 3 frame.
+Created using the built-in image generation/editing tool, not an API script.
+Final project asset: coloring/pages/toothache-coloring.png
+
+Editing prompt:
+Make a coloring-activity template from this exact frame. Change ONLY the three
+treats: the bitten donut held by the girl at right, the round lollipop and its
+stick at lower left, and the soda can at lower right. Remove colored fills,
+icing colors, sprinkles and soda label/detail to leave WHITE interiors inside
+clean dark outlines. Preserve the bitten contour and center hole of the donut.
+Keep a simple spiral outline in the lollipop, and top oval/outer can contour.
+Keep positions, scale, 16:9 composition, girl, hand on cheek, expression, other
+hand, striped shirt, pink kitchen, window, lamp, fridge and yellow table.
+No new objects, captions, workbook lines, border or watermark. Match the flat
+2D children's-book look of the input. One image.
+
+New scenes use a static finished-art preview, not invented movie animation.
+Only genuine edited activity snapshots enter a child's library. Unstarted
+scenes remain available in the editor but are not shown as completed artwork.
+The three activity spreads correspond to six printed text/picture pages.
+Existing one-activity library projects remain in their original edition.

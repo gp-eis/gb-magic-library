@@ -1,0 +1,68 @@
+/* The Library Tower (ui/tower.js): the outside view that grows a floor every month, and a month floor. Stage 1180 x 820. */
+.tw-scene{position:absolute;inset:0;z-index:58;overflow:hidden;opacity:0;transition:opacity .3s}
+.tw-scene.on{opacity:1}
+.tw-scene[hidden]{display:none}
+.tw-bar{position:absolute;left:20px;right:20px;top:16px;z-index:5}
+.tw-title{font-family:"Fraunces",serif;font-weight:700;font-size:28px;color:#42298a;background:rgba(255,255,255,.88);padding:4px 18px;border-radius:16px;white-space:nowrap}
+.tw-title small{font-family:"Noto Sans KR",sans-serif;font-size:15px;font-weight:600;color:#9a6a00;margin-left:6px}
+
+/* outside: sunset sky with clouds below, the tower in the middle */
+.tw-sky{position:absolute;inset:0;background:
+  radial-gradient(60% 40% at 50% 100%,rgba(255,236,200,.95),rgba(255,236,200,0) 70%),
+  radial-gradient(30% 12% at 18% 92%,#fff3e4 0 60%,transparent 62%),radial-gradient(34% 14% at 82% 94%,#fff0dd 0 60%,transparent 62%),
+  linear-gradient(180deg,#4b2f8f 0%,#8a5cc4 38%,#ef9b8a 72%,#ffd39b 100%)}
+.tw-sky::after{content:"";position:absolute;inset:0;background-image:radial-gradient(2px 2px at 12% 14%,#fff,transparent),radial-gradient(2px 2px at 30% 8%,#fff,transparent),radial-gradient(1.5px 1.5px at 66% 12%,#fff,transparent),radial-gradient(2px 2px at 84% 20%,#fff,transparent),radial-gradient(1.5px 1.5px at 48% 4%,#fff,transparent);opacity:.9}
+.tw-scroll{position:absolute;left:0;right:0;top:84px;bottom:40px;overflow-y:auto;scrollbar-width:none}
+.tw-scroll::-webkit-scrollbar{display:none}
+.tw-stack{min-height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-top:10px}
+.tw-part{position:relative;border:0;background:none;padding:0;display:block;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.tw-part img{display:block;width:100%;filter:drop-shadow(0 6px 10px rgba(40,20,60,.25))}
+/* shared scale (roof 492, floor and base 413 px wide); floors and base have their top rim trimmed, so the rim of the
+   part above overlaps the join and there is one gold band per floor */
+.tw-roof{width:211px;margin-bottom:-12px}
+.tw-floor{width:177px;margin-bottom:-6px}
+.tw-base{width:177px}
+.tw-part:hover img,.tw-part:focus-visible img{filter:drop-shadow(0 0 14px rgba(255,214,107,.9))}
+.tw-floor.ghost{cursor:default;opacity:.45}
+.tw-floor.ghost img{filter:grayscale(.6) brightness(1.15)}
+.tw-floor:not(.lit):not(.ghost) img{filter:brightness(.82) saturate(.8) drop-shadow(0 6px 10px rgba(40,20,60,.25))}
+.tw-plate{position:absolute;right:-96px;top:50%;transform:translateY(-50%);display:grid;justify-items:start;padding:5px 12px;border-radius:14px;background:#fffaf0;box-shadow:0 0 0 2px #ffc94a,0 4px 10px rgba(40,20,60,.2);font-family:"Fredoka",sans-serif;text-align:left;white-space:nowrap}
+.tw-plate b{font-family:"Noto Sans KR",sans-serif;font-size:17px;color:#42298a;line-height:1.1}
+.tw-plate small{font-size:12px;font-weight:600;color:#9a6a00}
+.tw-plate.gold{background:#fff3d1}
+.tw-floor.ghost .tw-plate{box-shadow:0 0 0 2px #d8cbe9;background:#f7f2ff}
+.tw-new{position:absolute;left:-58px;top:50%;transform:translateY(-50%);font-family:"Fredoka",sans-serif;font-weight:700;font-size:13px;color:#fff;background:#ff6b5c;padding:3px 9px;border-radius:999px;animation:twBounce 1.4s ease-in-out infinite}
+@keyframes twBounce{50%{transform:translateY(-60%)}}
+.tw-help{position:absolute;left:0;right:0;bottom:12px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:600;font-size:16px;color:#fff;text-shadow:0 2px 4px rgba(40,20,60,.5)}
+
+/* a month floor */
+.tw-room .bg{position:absolute;left:-138.5px;top:0;width:1457px;height:820px;max-width:none}
+.tw-room.ride{animation:twRide .6s ease-in-out}
+@keyframes twRide{0%{transform:translateY(0)}35%{transform:translateY(-30px);filter:brightness(.8)}100%{transform:translateY(0)}}
+.tw-lv{position:absolute;transform:translateX(-50%)}
+.tw-book{position:absolute;width:110px;border:0;background:none;padding:0;cursor:pointer;transition:transform .15s}
+.tw-book img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:6px;box-shadow:0 8px 14px rgba(0,0,0,.35)}
+.tw-book:hover{transform:translateY(-4px)}
+.tw-book.wait img{filter:saturate(.55) brightness(.85)}
+.tw-book .seal{position:absolute;right:-8px;top:-10px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:16px;background:radial-gradient(circle at 35% 35%,#ffe58f,#c98a12);box-shadow:0 0 0 2px #fff,0 3px 6px rgba(0,0,0,.3)}
+.tw-book .count{position:absolute;right:-6px;top:-10px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:12px;color:#fff;background:#5b3fa8;padding:2px 7px;border-radius:999px;box-shadow:0 0 0 2px #fff}
+.tw-lift{position:absolute;right:16px;top:150px;z-index:6;display:flex;flex-direction:column;gap:6px;padding:10px 8px;border-radius:22px;background:linear-gradient(180deg,#7a5a2a,#5a3f18);box-shadow:0 0 0 3px #ffc94a,0 8px 20px rgba(0,0,0,.35)}
+.tw-lift-lab{text-align:center;font-size:20px}
+.tw-lift button{min-width:56px;height:40px;border:0;border-radius:12px;cursor:pointer;background:#fff3d1;color:#42298a;font-family:"Noto Sans KR",sans-serif;font-weight:700;font-size:15px;box-shadow:0 3px 0 #c99a2e}
+.tw-lift button.now{background:#ffd36b}
+.tw-lift button.here{background:#5b3fa8;color:#fff;box-shadow:0 3px 0 #2f2160}
+.tw-lift button.top{font-size:18px}
+.tw-room .bubble.tw-bubble{left:auto;right:110px;bottom:40px;max-width:320px;z-index:6}
+@media (prefers-reduced-motion: reduce){.tw-new,.tw-room.ride{animation:none}.tw-scene{transition:none}}
+
+/* opening at the newest floor, My Mate pointing it out, and the whole-tower zoom */
+.tw-stack{transform-origin:50% 100%;transition:transform .5s cubic-bezier(.3,1.2,.5,1)}
+.tw-scene.zoomed .tw-scroll{overflow:hidden}
+.tw-scene.zoomed .tw-stack{justify-content:flex-end}
+.tw-scene.zoomed .tw-plate small,.tw-scene.zoomed .tw-new{display:none}
+.tw-scene .tw-zoom{position:absolute;right:24px;bottom:22px;z-index:6}   /* more specific than the button system's position:relative */
+.tw-mate{position:absolute;left:40px;bottom:18px;width:96px;aspect-ratio:430/818;z-index:6;pointer-events:none}
+.tw-mate img{width:100%;height:100%;filter:drop-shadow(0 8px 10px rgba(40,20,60,.35))}
+.tw-scene .bubble.tw-mate-say{left:150px;bottom:150px;max-width:260px;z-index:6}
+.tw-scene.zoomed .tw-mate-say{display:none}
+@media (prefers-reduced-motion: reduce){.tw-stack{transition:none}}

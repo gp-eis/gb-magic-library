@@ -1,0 +1,38 @@
+/* This is an ordinary page helper, not a desktop pet or a voice assistant. */
+.gp-reading-helper{--gp-helper-bottom:22px;--gp-helper-avatar-size:58px;--gp-helper-gap:9px;position:fixed;right:var(--gp-helper-right,20px);bottom:var(--gp-helper-bottom);z-index:12;display:flex;align-items:flex-end;gap:var(--gp-helper-gap);max-width:var(--gp-helper-max-width,calc(100vw - 28px));max-height:var(--gp-helper-max-height,calc(100dvh - 44px));color:#394641;font-family:'Trebuchet MS',Arial,sans-serif;pointer-events:none}
+.coloring-studio .gp-reading-helper{z-index:5}
+.gp-helper-bubble{position:relative;width:260px;min-width:0;max-width:calc(var(--gp-helper-max-width,calc(100vw - 28px)) - var(--gp-helper-avatar-size) - var(--gp-helper-gap));max-height:var(--gp-helper-max-height,calc(100dvh - 44px));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#baa4d5 transparent;padding:15px 16px 14px;border:1px solid #cfbbeb;border-bottom:3px solid #bda5dc;border-radius:19px 19px 6px 19px;background:#fffdf8;box-shadow:0 9px 26px #46346020;pointer-events:auto}
+.gp-helper-name{margin:0 22px 7px 0;color:#79539d;font-size:11px;line-height:1.3;font-weight:700}
+.gp-helper-message{margin:0;font-size:13px;line-height:1.55;font-weight:700;overflow-wrap:anywhere}
+.gp-helper-progress{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:11px 0 0}
+.gp-helper-progress span{padding:5px 8px;border:1px solid #ded4ed;border-radius:9px;background:#f3ecfb;color:#694990;font-size:10px;font-weight:700;line-height:1.3}
+.gp-reading-helper button{min-height:44px;min-width:44px;margin:0;font-family:inherit;box-shadow:none;transform:none}
+.gp-reading-helper button:hover,.gp-reading-helper button:active{transform:none;margin:0}
+.gp-reading-helper button:focus-visible{outline:3px solid #173968;outline-offset:4px}
+.gp-reading-helper .gp-helper-close{position:absolute;right:1px;top:1px;display:grid;place-items:center;min-width:36px;min-height:36px;padding:3px;border:0;border-radius:12px;background:transparent;color:#79668a;font-size:22px;font-weight:400;line-height:1}
+.gp-reading-helper .gp-helper-close:hover{background:#f2eaf9}
+.gp-reading-helper .gp-helper-action{min-height:44px;width:100%;margin-top:11px;padding:8px 10px;border:1px solid #6b49a4;border-bottom:3px solid #5a378e;border-radius:11px;background:#7a55b3;color:#fff;font-size:12px;font-weight:700;line-height:1.3}
+.gp-reading-helper .gp-helper-action:hover:not(:disabled){background:#6b46a5}
+.gp-reading-helper .gp-helper-action:disabled{opacity:.5}
+.gp-reading-helper .gp-helper-toggle{position:relative;flex:0 0 58px;width:58px;height:58px;max-height:var(--gp-helper-max-height,58px);padding:0;border:3px solid #fffefa;border-bottom-width:3px;border-radius:50%;background:#ede3fa;box-shadow:0 0 0 2px #bba2d8,0 5px 18px #57466b20;pointer-events:auto;overflow:visible}
+.gp-helper-avatar{position:absolute;inset:0;display:grid;place-items:center;border-radius:50%;background:#f5f0ff;overflow:hidden;color:#78529f;font-size:18px;font-weight:700}
+.gp-helper-avatar>span{position:absolute}
+.gp-helper-avatar img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:scale(1.6);transform-origin:50% 0%}
+.gp-helper-avatar img[data-avatar=penny]{transform:translateY(5%) scale(1.4)}
+.gp-helper-avatar img[data-avatar=gerry]{transform:translateY(4%) scale(1.7)}
+.gp-helper-avatar img[data-avatar=syd]{transform:translateY(10%) scale(1.28)}
+.gp-helper-avatar img[data-avatar=don]{transform:translateY(-3%) scale(1.65)}
+.gp-helper-spark{position:absolute;right:-4px;top:-7px;display:grid;place-items:center;width:24px;height:24px;border:2px solid #fffefa;border-radius:50%;background:#ffdf9b;color:#7e562b;font-size:14px;font-weight:700}
+.gp-reading-helper.is-collapsed{width:auto}
+.gp-reading-helper [hidden]{display:none!important}
+@media(max-width:750px){
+  .gp-reading-helper{--gp-helper-avatar-size:50px;--gp-helper-gap:7px;--gp-helper-bottom:94px}
+  .gp-helper-bubble{width:242px;padding:12px 13px;border-radius:16px 16px 5px 16px}
+  .gp-helper-message{font-size:12px;line-height:1.45}
+  .gp-helper-name{font-size:10px;margin-bottom:6px}
+  .gp-helper-progress{margin-top:8px;gap:5px}
+  .gp-helper-progress span{font-size:9px;padding:4px 7px}
+  .gp-reading-helper .gp-helper-toggle{flex-basis:50px;width:50px;height:50px}
+  .gp-reading-helper .gp-helper-action{font-size:11px;margin-top:8px}
+}
+@media(prefers-reduced-motion:reduce){.gp-reading-helper button{transition:none}}

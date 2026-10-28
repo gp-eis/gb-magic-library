@@ -1,0 +1,198 @@
+LOCAL GP READING LIBRARY INTEGRATION
+
+This guide describes the staged working copy and its browser data. Public release
+is a separate authorized main-agent action; consult QA.json for its actual status.
+No hosted API is called by the activity itself and no local artwork is uploaded.
+
+Open ../index.html for the homepage. Monthly Goals and See more navigate only
+through book covers, not title or Coloring links. Sugar Bugs opens the copied
+reading packet; its Coloring CTA opens the three-activity coloring-book cover.
+The legacy/direct coloring/index.html?mode=color&edition=three route still works,
+but is not offered as a Monthly Goals shortcut.
+The supplied packet's Coloring CTA uses edition=three without mode=color to open
+the actual cover first. The homepage reading thumbnail opens the copied packet
+at reading/sugar-bugs/index.html instead. Edition-less URLs keep earlier single-page
+saves unchanged. The packet's mini-library is separate from main My Library.
+The editor is now presented inside the full-screen Color Studio dialog.
+
+Both pages load ../library-store.js (homepage: library-store.js).
+window.GPLibrary supplies async list(profileId), get(id), save(record), remove(id).
+
+Record shape:
+{ id, revision, profileId:'local-reader', bookId:'bye-bye-sugar-bugs', title,
+  type:'coloring', imageBlob:Blob, thumbnailBlob:Blob, createdAt:ISOstring,
+  updatedAt:ISOstring, activityUrl:'coloring/index.html', metadata:{}, editableState? }
+
+save accepts an absent id for a new record, or an existing id to update it.
+imageBlob is required and must have an image MIME type. list sorts newest first.
+Use URL.createObjectURL(record.thumbnailBlob || record.imageBlob) for previews.
+Revoke object URLs when no longer used. get returns null if the item is absent.
+
+The save bridge takes a genuine canvas snapshot of the current colored picture,
+plus actual committed handwritten images, on a printable PNG story spread.
+The preview is a small JPEG. Legacy records remain view/export snapshots. New
+Sugar Bugs projects additionally store exact editable paint-layer PNGs and cropped
+plus raw handwriting PNGs, so Continue can restore work instead of redoing it.
+
+Changed coloring and halfway handwriting autosave after a 600ms debounce. Only
+explicit Done intent marks completed; generic animation/photo moves save drafts.
+A Save now button permits an immediate flush. Home/Back wait for saving, while
+errors keep work visible and offer retry/export instead of pretending success.
+Home and Save are integrated into the storybook header. Save changes to a
+checkmark after success; a compact dismissible confirmation links to My Library.
+While the studio is open, the SAME existing save control and feedback are moved
+into its header/feedback mounts, then restored when it closes. No second save
+button or separate save implementation is created.
+The action stays available until dismissed or the child makes another edit.
+Merely opening a book, clicking Done on blank work, or trying a demo design
+without adding one's own coloring does not create a completed library item.
+Normal coloring-book entry starts blank with a new coloring-attempt:<profile>:<uuid>
+ID in memory and does not look up any prior project. Only an explicit Library
+?project= URL restores and updates previous work. After the first successful real
+save, history.replaceState adds that project query while preserving other query
+parameters/hash, so refresh resumes without duplication. Untouched blank visits
+create neither a record nor a resume URL. Prior draft and legacy work is preserved.
+
+Profile key: localStorage['gp.reading.profile.v1'] with {id:'local-reader',name,avatarId}.
+Cross-page update key: localStorage['gp.reading.library.updated'].
+Same-page event: window CustomEvent('gp-library-updated').
+
+Images are stored in IndexedDB database gp-reading-library-local-v1, artworks.
+They are kept only in this browser/origin. Clearing browser site data removes
+them. This is a local prototype, not a login/account/cloud synchronisation.
+
+Coworker activity hand-off:
+The future reading HTML can load library-store.js and save a genuine completed
+result using this same API, with its own bookId/title/type and actual imageBlob.
+Do not call save on entry or set complete flags merely when a link is opened.
+No unprovided reading activity or completion is simulated here.
+
+COMPLETED STORYBOOK PAGES (backward-compatible optional fields)
+
+New completed activities may pass pages to GPLibrary.save:
+pages: [{ id:'page-1', title:'My first page', imageBlob:actualPNGBlob,
+          layout:'page' }]
+Use layout:'spread' only when one saved image already contains both open pages.
+V1 Sugar Bugs saves its actual handwriting/coloring composite as one spread-1.
+V2 saves only actual worked activity spreads with stable scene IDs in story order.
+Its imageBlob/thumbnailBlob remain available for older flat-image library views.
+
+If provided, pages must contain 1 to 100 items. Each needs a nonempty Blob with
+MIME image/png, image/jpeg, image/webp, or image/gif. SVG snapshots are rejected.
+IDs are normalized to plain text, at most 120 characters; missing IDs become
+page-1, page-2, etc. IDs must be unique after normalization. Titles are plain
+text at most 240 characters; missing titles become Page 1, Page 2, etc.
+layout defaults to page; otherwise only page/spread are accepted.
+Explicit pages:[] is rejected, not silently converted into a completed book.
+Omitting pages during an update preserves the record's previous pages.
+Old records without pages remain valid: readers should display their imageBlob
+as one saved spread rather than invent additional pages.
+
+Optional coverBlob accepts the same snapshot image types. If absent, the reader
+may use that book's existing catalog cover. Omitting coverBlob during an update
+preserves its previous value; explicit coverBlob:null removes the custom cover.
+No IndexedDB version change or deletion/migration of old work is required.
+
+Future coworker activity code should take genuine page snapshots when the child
+finishes the activity. These stored pictures are page-turning read-only results.
+Editable resume additionally requires a real editor-state export/import contract;
+the supplied one applies only to Sugar Bugs.
+
+FULL-SCREEN COLOR STUDIO
+
+coloring-studio.js exposes window.coloringStudio = { open, close, isOpen }.
+The normal entry point remains storybook.show('color') / the existing Color
+action. Color mode on the activity page opens native dialog #coloringStudio.
+The same #editor, #drawingControls, #paperButton, #upload, #alignment, #photoBusy,
+#status, .library-save-control and .library-feedback nodes are mounted inside it.
+Their original positions are restored on exit. Reading/story text is not moved.
+The 1000x563 drawing buffer is unchanged; fitCanvas adjusts CSS size only.
+
+Close or native Escape waits for draft flush, restores nodes and returns to
+reading without completing the activity. Failed flush leaves the studio open.
+Saved editable layers/halfway writing restore on the next visit. A forced close
+or immediate refresh can interrupt an in-progress save; wait for All changes saved.
+Done restores nodes then calls the existing storybook.finish once; the resulting
+move-mode event reaches this same library bridge and autosaves eligible work.
+Done is blocked while the editor is unready, upload is busy, or alignment is open.
+Workbook input/alignment stay inside the popup so file selection/manual corners
+remain accessible; successful photo finish exits via the existing mode flow.
+The photo action itself is hidden/disabled outside the open studio, even if outer
+story controls try to reveal it. Only the supported original treats scene exposes
+the bright camera action; the other two scenes do not offer unsupported import.
+
+TOOL AND EVENT CONTRACT
+
+Load paint-textures.js before drawing.js. Its browser API GPPaintTextures exposes
+TOOLS, normalizeOptions, seededNoise, textureAlpha, strokeBounds and renderStroke.
+The six tool IDs are brush, pencil, marker, crayon, fill and erase. Four paint
+tools have distinct procedural marks; fill is contiguous-region coloring and
+erase restores original illustration pixels, not a flat white stroke.
+
+A changed completed gesture dispatches document CustomEvent('artwork-edited',
+{detail:{action,tool,changed:true}}). The bridge counts this real edit event;
+raw pointerup/pointercancel and changed:false events are not completed work.
+Unchanged fill/erase/taps emit no edit. Try a design resets demo-only eligibility
+even after earlier coloring. Photo artwork-applied remains a genuine source;
+actual committed handwriting is still eligible independently of the picture.
+The selected attempt ID is retained for Save, Done, popup reopen, refresh after
+first save and explicit Library Continue. A new normal entry gets a new ID.
+No studio entry, no-op, demo or restore creates a fake completed record.
+
+EDITABLE STATE AND REVISION SAFETY
+
+Earlier edition-less state uses kind:'sugar-bugs-v1',version:1 with drawing and handwriting.
+drawing: {version:1,mode:'draw'|'photo',parts:[{id,imageBlob}],tool,color,size}.
+Exactly donut/candy/soda PNG parts are required; each must decode at 1000x563.
+Tool is one of the six real tools, color is #RRGGBB, size is finite 1..96.
+handwriting: {version:1,lines:[{id,source,imageBlob,rawBlob?}],activeLineId?}.
+Known IDs are line-yum,line-donut,line-candy,line-yum-again, each at most once.
+Sources are screen or paper. Each PNG is nonempty and at most 16MB. Raw handwriting
+uses the exact editable-pad size; engine validation checks signature and dimensions.
+
+window.sampleTest and window.handwriting expose exportState/importState. Exports
+clone before asynchronous encoding; imports validate/decode all before replacement
+and do not emit fake edited events. document handwriting-edited changed:true is
+emitted for actual stroke-end/undo/clear changes, including halfway line work.
+The bridge captures preview from the same exported handwriting revision, not a
+possibly lagging inline DOM image. Restore failures never wipe the original save.
+
+GPLibrary.save supports expectedRevision. Zero means create only; a positive
+revision must match the existing record, within the SAME readwrite transaction.
+Conflicts/deleted records reject with code REVISION_CONFLICT. Omitted editableState
+preserves previous state. Old records are not upgraded just by get/list/view.
+GPAutoSave exposes flush({manual?,complete?}),isRestoring(),getState(). Its
+autosave-state-change event informs studio loading/exit state. Draft metadata is
+status:'in-progress',bookCompleted:false,completedPages:0,totalPages:1; explicit
+Done switches to completed/true/1, while later edits return to draft. These V1
+records remain one page and are not automatically expanded or rewritten.
+
+THREE-ACTIVITY EDITION
+New entry uses edition=three and kind:'sugar-bugs-v2',version:2:
+{ pages:[{id,completed,drawing,handwriting}],activePageId,lastVisitedPageId }.
+Known scene IDs are treats, sugar-bugs, toothache. Only worked states are saved;
+an untouched new attempt or an empty visited target creates no fake snapshot.
+Page two has bug-round/bug-long/tooth paint parts; pages one/three use
+donut/candy/soda masks. Each has its own four actual text rows, with an empty
+fourth row hidden on toothache. loadScene(config) and setPageLines(texts) prepare
+the proper masks/baseline/guides before importing that activity's saved ink.
+
+GPAutoSave also supplies switchPage(idOrIndex) and getPageInfo(), returning
+pages:[{id,title,completed}],activeIndex,completedPages,busy,multiPage.
+Switching awaits outgoing saves and locks edits until the new page is ready.
+Failure restores the prior scene/work rather than mixing layers across pages.
+Existing records persist last-visited navigation without inventing an image for
+an unworked target. Continue opens its valid unfinished last visit, otherwise
+the first unfinished activity. Done completes the active worked activity only.
+metadata.totalPages is 3 activity spreads; completedPages counts their Done flags;
+bookCompleted is true only at 3/3. Printed saved-book page numbers count both sides
+of each spread separately and must not be confused with activity completion.
+
+V2 record.pages contains only actual worked activity images in manifest order.
+Continue URLs retain edition=three; old V1 URLs omit it and stay single-page.
+Monthly Goals opens a distinct new attempt, while explicit Library Continue and
+refresh after first save update only the selected attempt. Workbook photo import
+is supported only for the original treats scene, not the other two source pages.
+
+All storage remains browser-local. Undo history, cloud backup/sync, arbitrary
+legacy-image editable restoration and editable-project export are not supplied.

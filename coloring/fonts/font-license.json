@@ -1,0 +1,12 @@
+{
+  "family": "Andika",
+  "version": "7.000",
+  "author": "SIL Global",
+  "source": "https://software.sil.org/downloads/r/andika/Andika-7.000.zip",
+  "design_reference": "https://software.sil.org/andika/design/",
+  "license": "SIL Open Font License 1.1",
+  "license_file": "OFL.txt",
+  "files": ["Andika-Regular.ttf", "Andika-Regular.woff2"],
+  "modifications": "None. The web uses the official WOFF2; the PDF embeds the original TrueType font for its searchable text layer.",
+  "purpose": "Single-storey lowercase a in English story text. Visible dotted tracing guides are separately authored single-stroke paths in tracing-strokes.json, not outlines or a modification of Andika."
+}

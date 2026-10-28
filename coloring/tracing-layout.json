@@ -1,0 +1,11 @@
+{
+  "width": 1600,
+  "height": 1131,
+  "scene": {"x": 650, "y": 340, "width": 850, "height": 478.125},
+  "lines": [
+    {"id": "line-yum", "text": "Yum!", "x": 90, "y": 330, "width": 500, "height": 100, "fontSize": 64, "baseline": 78},
+    {"id": "line-donut", "text": "A donut!", "x": 90, "y": 440, "width": 500, "height": 100, "fontSize": 64, "baseline": 78},
+    {"id": "line-candy", "text": "Candy and soda!", "x": 90, "y": 580, "width": 500, "height": 100, "fontSize": 64, "baseline": 78},
+    {"id": "line-yum-again", "text": "Yum!", "x": 90, "y": 690, "width": 500, "height": 100, "fontSize": 64, "baseline": 78}
+  ]
+}

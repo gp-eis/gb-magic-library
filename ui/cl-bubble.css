@@ -1,0 +1,44 @@
+/* Gerry's speech bubble, one look for every screen: library scenes (.bubble), activities (.say), book maker helper.
+   Cream bubble, gold outline, plum text, a tail pointing at Gerry and a little star badge. Pops when the text changes
+   (cl-bubble.js adds .pop). Tail side: default bottom-left; add .tail-right for Gerry on the right. */
+:root{--bb-cream:#fffaf0;--bb-line:#ffc94a;--bb-ink:#42298a;--bb-shadow:rgba(66,41,138,.22)}
+
+.app .bubble,#stage .say,body.cl-magic .gp-helper-bubble{
+  background:var(--bb-cream);color:var(--bb-ink);
+  border:3px solid var(--bb-line);border-radius:26px;
+  font-family:"Fredoka",ui-rounded,sans-serif;font-weight:600;letter-spacing:.005em;
+  box-shadow:0 5px 0 var(--bb-line),0 12px 26px var(--bb-shadow);
+  transform-origin:var(--bb-origin,18% 110%)}
+.app .bubble,#stage .say{padding:14px 20px 14px 22px}
+
+/* the tail: a rotated square sharing the outline */
+.app .bubble::after,#stage .say::after{content:"";position:absolute;bottom:-12px;left:var(--bb-tail,30px);width:20px;height:20px;
+  background:var(--bb-cream);border-right:3px solid var(--bb-line);border-bottom:3px solid var(--bb-line);
+  border-bottom-right-radius:6px;transform:rotate(45deg)}
+.app .bubble.tail-right,#outBubble,#nookBubble,#qBubble{--bb-tail:calc(100% - 50px);--bb-origin:82% 110%}
+
+/* the star badge */
+.app .bubble::before,#stage .say::before{content:"★";position:absolute;left:-12px;top:-14px;width:30px;height:30px;border-radius:50%;
+  display:grid;place-items:center;font-size:17px;line-height:1;color:#fff;background:linear-gradient(180deg,#ffd76b,#f5a623);
+  box-shadow:0 2px 0 #c98510,0 0 0 3px var(--bb-cream);animation:bbTwinkle 2.6s ease-in-out infinite}
+@keyframes bbTwinkle{0%,100%{transform:rotate(-8deg) scale(1)}50%{transform:rotate(10deg) scale(1.12)}}
+
+/* pop in when Gerry says something new */
+.app .bubble.pop,#stage .say.pop{animation:bbPop .45s cubic-bezier(.3,1.6,.5,1)}
+@keyframes bbPop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}
+.app .bubble:empty{display:none}
+
+/* read-along: the word being read gets a highlighter mark */
+#stage .say .w{border-radius:6px;transition:background .1s}
+#stage .say .w.lit{color:var(--bb-ink);background:#ffe08a;box-shadow:0 0 0 2px #ffe08a}
+#stage .say .replay{background:#efe9fb;color:var(--bb-ink)}
+
+/* book maker helper: inner pieces on the cream bubble */
+body.cl-magic .gp-helper-bubble{border-radius:26px 26px 8px 26px}
+body.cl-magic .gp-helper-name{color:#9a6a00}
+body.cl-magic .gp-helper-message{color:var(--bb-ink)}
+body.cl-magic .gp-helper-progress span{background:#efe9fb;color:var(--bb-ink)}
+body.cl-magic .gp-reading-helper .gp-helper-close{color:var(--bb-ink)}
+body.cl-magic .gp-reading-helper .gp-helper-close:hover{background:#efe9fb}
+
+@media (prefers-reduced-motion: reduce){.app .bubble::before,#stage .say::before,.app .bubble.pop,#stage .say.pop{animation:none}}

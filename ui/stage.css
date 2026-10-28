@@ -1,0 +1,53 @@
+/* Flexible screen, step 0 (ui/stage.js): the page's own background reaches the window edges.
+   --cl-l / --cl-r / --cl-t / --cl-b: stage pixels from the safe area (1180 x 820) out to each window edge. */
+
+/* ---------- library page (index.html; ?dev keeps the old framed preview) ---------- */
+html.cl-flex:not(.dev) .screen{position:fixed!important;inset:0;width:auto!important;height:auto!important;aspect-ratio:auto!important;
+  margin:0!important;overflow:hidden;background:#2b1f4f}
+html.cl-flex:not(.dev) .app{overflow:visible}
+/* each scene paints a soft, blurred copy of its picture behind itself, out to the window edges (a bit past them, so
+   the blur has no faded rim); the sharp picture already reaches 138 px past each side of the safe area */
+html.cl-flex .scene,html.cl-flex .cert-room{isolation:isolate}
+html.cl-flex .scene::before,html.cl-flex .cert-room::before{content:"";position:absolute;z-index:-1;pointer-events:none;background:inherit;
+  top:calc(var(--cl-t) * -1px - 40px);bottom:calc(var(--cl-b) * -1px - 40px);left:calc(var(--cl-l) * -1px - 40px);right:calc(var(--cl-r) * -1px - 40px)}
+html.cl-flex #outside::before{background:#7d6bd6 url(../art/exterior-clean.webp) center/cover;filter:blur(16px)}
+html.cl-flex #hall::before{background:#e9b56d url(../art/hall-clean.webp) center/cover;filter:blur(16px)}
+html.cl-flex #nook::before{top:104px;background:#c98a4a url(../art/my-library.webp) center/cover;filter:blur(16px)}
+html.cl-flex #nook::after{content:"";position:absolute;z-index:-1;pointer-events:none;background:linear-gradient(#3a2577,#4b3296);
+  top:calc(var(--cl-t) * -1px);height:calc(104px + var(--cl-t) * 1px);left:calc(var(--cl-l) * -1px - 40px);right:calc(var(--cl-r) * -1px - 40px)}
+html.cl-flex .cert-room{overflow:visible}
+html.cl-flex .cert-room::before{background:#2b1f4f url(../art/certificate-room.webp) center/cover;filter:blur(16px)}
+/* the sharp picture fades into the blur where it ends (only seen on very wide screens) */
+html.cl-flex .scene .bg,html.cl-flex .cert-room .bg{-webkit-mask-image:linear-gradient(90deg,transparent,#000 50px,#000 calc(100% - 50px),transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 50px,#000 calc(100% - 50px),transparent)}
+html.cl-flex #nook .bg{-webkit-mask-image:linear-gradient(transparent 0,#000 46px),linear-gradient(90deg,transparent,#000 50px,#000 calc(100% - 50px),transparent);
+  mask-image:linear-gradient(transparent 0,#000 46px),linear-gradient(90deg,transparent,#000 50px,#000 calc(100% - 50px),transparent);
+  -webkit-mask-composite:source-in;mask-composite:intersect}
+/* dimmed pop-up backgrounds cover the whole window (they stretch past the safe area; their content stays centred) */
+html.cl-flex .modal,html.cl-flex .wardrobe,html.cl-flex .pa-gate,html.cl-flex .cert-show,html.cl-flex .who,html.cl-flex #flash,
+html.cl-flex body.sb-stage #stage .overlay{top:calc(var(--cl-t) * -1px);bottom:calc(var(--cl-b) * -1px);left:calc(var(--cl-l) * -1px);right:calc(var(--cl-r) * -1px)}
+
+/* ---------- activity pages (activities/*: #stage) ---------- */
+html.cl-flex body.sb-stage{background:linear-gradient(rgba(255,250,240,.86),rgba(255,246,228,.9)),url(../art/hall.webp) center/cover fixed!important}
+html.cl-flex body.sb-stage #stage{border-radius:0;background:none}
+html.cl-flex body.sb-stage #stage::before{display:none}
+html.cl-flex body.sb-stage #stage{overflow:visible}
+
+/* ---------- Library Tower: its sky reaches the window edges ---------- */
+html.cl-flex .tw-scene{overflow:visible}
+html.cl-flex .tw-sky{top:calc(var(--cl-t) * -1px);bottom:calc(var(--cl-b) * -1px);left:calc(var(--cl-l) * -1px);right:calc(var(--cl-r) * -1px)}
+
+/* ---------- activity pages, step 1: the top bar and My Mate sit at the window edges ---------- */
+html.cl-flex:not(.cl-phone) body.sb-stage .bar{left:calc(20px - var(--cl-l) * 1px);right:calc(20px - var(--cl-r) * 1px);top:calc(16px - var(--cl-t) * 1px)}
+html.cl-flex:not(.cl-phone) body.sb-stage .gerry{left:calc(26px - var(--cl-l) * 1px);bottom:calc(14px - var(--cl-b) * 1px)}
+html.cl-flex:not(.cl-phone) body.sb-stage #stage .say{left:calc(150px - var(--cl-l) * 1px);bottom:calc(110px - var(--cl-b) * 1px)}
+/* phones (CLStage.usePhone in activities/sugar-bugs/kit.js): the activity fills the height; buttons stand in a column
+   on the left (stars and sound at its foot), My Mate and the speech bubble in a column on the right */
+html.cl-phone body.sb-stage .bar{left:calc(14px - var(--cl-l) * 1px);right:auto;top:calc(14px - var(--cl-t) * 1px);bottom:calc(14px - var(--cl-b) * 1px);
+  width:128px;flex-direction:column;align-items:center;gap:14px}
+html.cl-phone body.sb-stage .bar .stepchip{font-size:17px;padding:0 12px;height:36px}
+html.cl-phone body.sb-stage .bar .dots{margin:2px 0 0!important}
+html.cl-phone body.sb-stage .bar #sbStars{margin-top:auto}
+html.cl-phone body.sb-stage .gerry{left:auto;right:calc(91px - var(--cl-r) * 1px);bottom:calc(12px - var(--cl-b) * 1px);width:118px}
+html.cl-phone body.sb-stage #stage .say{left:auto;right:calc(14px - var(--cl-r) * 1px);bottom:calc(262px - var(--cl-b) * 1px);width:272px;
+  max-width:272px!important;font-size:26px!important;padding:14px 18px!important;border-radius:22px 22px 6px 22px}

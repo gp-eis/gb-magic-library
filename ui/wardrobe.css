@@ -1,0 +1,78 @@
+/* Gerry's Wardrobe: a magic dressing room inside the library stage (1180 x 820). See ui/wardrobe.js. */
+.wardrobe{position:absolute;inset:0;z-index:70;display:grid;place-items:center;background:rgba(32,20,66,.62);opacity:0;transition:opacity .25s}
+.wardrobe.on{opacity:1}
+.wardrobe[hidden]{display:none}
+.wd-panel{position:relative;width:1100px;height:744px;border-radius:36px;overflow:hidden;
+  background:radial-gradient(120% 90% at 22% 40%,#fff6e0 0,#fdf0d6 45%,#f6e2c0 100%);
+  box-shadow:0 0 0 6px #ffc94a,0 0 0 12px #5b3fa8,0 24px 60px rgba(20,10,50,.5);transform:scale(.92);transition:transform .3s cubic-bezier(.3,1.5,.5,1)}
+.wardrobe.on .wd-panel{transform:scale(1)}
+
+/* header */
+.wd-head{position:absolute;left:36px;right:28px;top:22px;display:flex;align-items:center;gap:14px;z-index:5}
+.wd-title{flex:1}
+.wd-kicker{display:block;font-family:"Sora",sans-serif;font-weight:600;font-size:12px;letter-spacing:.18em;color:#9a6a00}
+.wd-title h2{margin:2px 0 0;font-family:"Fredoka",sans-serif;font-weight:700;font-size:38px;color:#42298a;line-height:1}
+
+/* dressing stage: curtains, spotlight, round rug, Gerry */
+.wd-stage{position:absolute;left:24px;top:96px;width:430px;height:624px;border-radius:28px;overflow:hidden;
+  background:linear-gradient(180deg,#5b3fa8 0,#7a5cc8 55%,#8d6fd6 100%)}
+.wd-stage::before,.wd-stage::after{content:"";position:absolute;top:0;width:80px;height:100%;z-index:1;
+  background:repeating-linear-gradient(90deg,#c0392b 0 18px,#a93226 18px 28px);box-shadow:inset -6px 0 12px rgba(0,0,0,.25)}
+.wd-stage::before{left:0;border-bottom-right-radius:60px 100%}
+.wd-stage::after{right:0;border-bottom-left-radius:60px 100%;transform:scaleX(-1)}
+.wd-valance{position:absolute;left:0;right:0;top:0;height:38px;z-index:2;
+  background:radial-gradient(circle at 22px -6px,#c0392b 26px,transparent 27px) 0 0/44px 38px repeat-x;filter:none}
+.wd-valance::after{content:"";position:absolute;left:0;right:0;top:0;height:8px;background:#ffc94a}
+.wd-spot{position:absolute;left:50%;top:-40px;width:420px;height:700px;transform:translateX(-50%);
+  background:radial-gradient(50% 40% at 50% 100%,rgba(255,240,190,.55),rgba(255,240,190,0)),linear-gradient(180deg,rgba(255,240,190,.0),rgba(255,240,190,.28));
+  clip-path:polygon(38% 0,62% 0,100% 100%,0 100%)}
+.wd-rug{position:absolute;left:50%;bottom:34px;width:300px;height:70px;transform:translateX(-50%);border-radius:50%;
+  background:radial-gradient(closest-side,#ffd76b,#f5a623 70%,#c98510);box-shadow:0 8px 0 #8a5a0c,0 0 40px rgba(255,214,107,.6)}
+.wd-gerry{position:absolute;left:50%;bottom:62px;width:200px;aspect-ratio:430/818;margin-left:-100px;z-index:3;cursor:pointer}
+.wd-gerry img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
+.wd-gerry img.on{opacity:1}
+.wd-gerry.twirl{animation:wdTwirl .5s ease-in-out}
+.wd-gerry.talking{animation:wdNod .5s ease-in-out infinite}
+@keyframes wdTwirl{0%{transform:scaleX(1)}25%{transform:scaleX(0) translateY(-10px)}50%{transform:scaleX(-1) translateY(-14px)}75%{transform:scaleX(0) translateY(-10px)}100%{transform:scaleX(1)}}
+@keyframes wdNod{50%{translate:0 -1.5%;rotate:-1deg}}
+.wardrobe .bubble.wd-bubble{left:140px;top:36px;max-width:250px;z-index:4;font-size:20px;line-height:1.25}
+.wd-name{position:absolute;left:0;right:0;bottom:4px;z-index:3;text-align:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:19px;color:#fff;text-shadow:0 2px 0 rgba(0,0,0,.25)}
+
+/* My Mate row: the GP Friends to choose from */
+.wd-mates{position:absolute;left:480px;right:28px;top:100px;height:84px;display:flex;align-items:center;gap:8px;padding:0 12px;border-radius:22px;background:rgba(91,63,168,.08)}
+.wd-mates .lab{font-family:"Sora",sans-serif;font-weight:600;font-size:11px;letter-spacing:.14em;color:#7a6aa8;writing-mode:vertical-rl;transform:rotate(180deg);margin-right:2px}
+.wd-mate{position:relative;flex:1;display:grid;justify-items:center;gap:2px;border:0;background:none;padding:0;cursor:pointer;font-family:"Fredoka",sans-serif;font-weight:600;font-size:13px;color:#2a2340}
+.wd-mate img{width:52px;height:52px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px #fff,0 3px 8px rgba(40,20,60,.18);transition:transform .15s}
+.wd-mate.sel img{box-shadow:0 0 0 4px #ffc94a,0 0 16px rgba(255,201,74,.7);transform:scale(1.08)}
+.wd-mate.mine::after{content:"✓";position:absolute;right:6px;top:-2px;width:20px;height:20px;border-radius:50%;background:#20b486;color:#fff;font-size:12px;display:grid;place-items:center;box-shadow:0 0 0 2px #fff}
+.wd-mate.soon img{filter:grayscale(1) opacity(.5)}
+.wd-mate.soon span{color:#a39dbb}
+.wd-mate.soon::before{content:"🔒";position:absolute;top:16px;font-size:16px;z-index:1}
+
+/* outfit cards */
+.wd-grid{position:absolute;left:480px;right:28px;top:196px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.wd-card{position:relative;height:198px;border-radius:26px;background:#fff;box-shadow:0 6px 0 #e6d6b8,0 12px 24px rgba(60,40,10,.1);
+  display:grid;grid-template-rows:1fr auto auto;justify-items:center;padding:12px 8px 12px;gap:4px;transition:transform .15s,box-shadow .2s;cursor:pointer}
+.wd-card:active{transform:scale(.97)}
+.wd-card .pic{position:relative;width:100%;height:112px}
+.wd-card .pic img{position:absolute;left:50%;top:0;height:100%;transform:translateX(-50%)}
+.wd-card b{font-family:"Fredoka",sans-serif;font-weight:700;font-size:19px;color:#2a2340;line-height:1.1}
+.wd-card small{font-family:"Nunito",sans-serif;font-weight:800;font-size:13px;color:#8a83a3;margin-top:-2px}
+.wd-tag{position:absolute;right:10px;top:10px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:15px;padding:4px 10px;border-radius:999px;background:#fff3d1;color:#9a6a00;box-shadow:0 2px 0 #f0d58a}
+.wd-card.owned .wd-tag{background:#e1f5ed;color:#167a5c;box-shadow:0 2px 0 #b5e3cf}
+.wd-card.wearing .wd-tag{background:#5b3fa8;color:#fff;box-shadow:0 2px 0 #42298a}
+.wd-card.sel{box-shadow:0 0 0 5px #ffc94a,0 6px 0 #e6d6b8,0 0 30px rgba(255,201,74,.55);transform:translateY(-3px)}
+.wd-card.soon{cursor:default;background:repeating-linear-gradient(135deg,#f7f1ff 0 14px,#efe7fb 14px 28px)}
+.wd-card.soon .pic img{filter:brightness(0) opacity(.18)}
+.wd-card.soon .pic::after{content:"?";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:"Fredoka",sans-serif;font-weight:700;font-size:64px;color:#a58fe0}
+.wd-card.soon .wd-tag{background:#efe9fb;color:#5b3fa8;box-shadow:0 2px 0 #d9cff3}
+
+/* the one action under the cards */
+.wd-action{position:absolute;left:480px;right:28px;bottom:26px;display:flex;align-items:center;justify-content:center;gap:16px;min-height:76px;
+  border-radius:24px;background:rgba(91,63,168,.08)}
+.wd-action .clb[disabled]{opacity:.55;cursor:default;animation:none}
+.wd-hint{font-family:"Fredoka",sans-serif;font-weight:600;font-size:18px;color:#625e7a}
+
+/* stars flying from the counter to Gerry when an outfit is bought */
+.wd-fly{position:absolute;z-index:80;font-size:30px;pointer-events:none;transition:left .7s cubic-bezier(.5,0,.3,1),top .7s cubic-bezier(.5,-.5,.3,1),transform .7s,opacity .2s .6s}
+@media (prefers-reduced-motion: reduce){.wd-gerry.twirl,.wd-gerry.talking{animation:none}.wardrobe,.wd-panel{transition:none}}
