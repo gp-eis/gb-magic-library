@@ -78,8 +78,14 @@
   }
   setInterval(() => { if (box.hidden || g.classList.contains('talking')) return; frame('blink'); setTimeout(() => { if (!g.classList.contains('talking')) frame('idle'); }, 140); }, 3200);
 
+  /* Swap the mate's three frames (idle, talk, blink) only once the new outfit's pictures are loaded, all together:
+     swapping before they load left frames of two outfits flickering during the twirl and the talking. */
+  let dressToken = 0;
+  const loaded = url => { const im = new Image(); im.src = url; return (im.decode ? im.decode() : Promise.resolve()).catch(() => {}); };
   function dress(spin) {
-    const put = () => g.querySelectorAll('img').forEach(i => { i.src = M.src(i.dataset.f, '', pickMate, sel); });
+    const frames = [...g.querySelectorAll('img')], urls = frames.map(i => M.src(i.dataset.f, '', pickMate, sel)), token = ++dressToken;
+    const ready = Promise.all(urls.map(loaded));
+    const put = () => ready.then(() => { if (token === dressToken) frames.forEach((i, k) => { if (i.getAttribute('src') !== urls[k]) i.src = urls[k]; }); });
     if (!spin || RM) return put();
     g.classList.remove('twirl'); void g.offsetWidth; g.classList.add('twirl');
     setTimeout(put, 120); setTimeout(() => g.classList.remove('twirl'), 520);
@@ -175,7 +181,9 @@
   });
   g.addEventListener('click', () => { dress(true); say(T('wardrobe.twirl')); });
 
+  let warmed = false;
   function open() {
+    if (!warmed) { warmed = true; OUTFITS.forEach(o => ['idle', 'talk', 'blink'].forEach(f => loaded(M.src(f, '', 'gerry', o.id)))); }   // ready before the first try-on
     pickMate = state.mate; sel = state.mate === 'gerry' ? state.wearing : 'everyday'; dress(); draw();
     box.hidden = false; requestAnimationFrame(() => box.classList.add('on'));
     say(T('wardrobe.welcome'));

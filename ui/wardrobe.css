@@ -31,7 +31,7 @@
 .wd-gerry{position:absolute;left:50%;bottom:62px;width:200px;aspect-ratio:430/818;margin-left:-100px;z-index:3;cursor:pointer}
 .wd-gerry img{position:absolute;inset:0;width:100%;height:100%;opacity:0}
 .wd-gerry img.on{opacity:1}
-.wd-gerry.twirl{animation:wdTwirl .5s ease-in-out}
+.wd-gerry.twirl,.wd-gerry.twirl.talking{animation:wdTwirl .5s ease-in-out}   /* the twirl finishes before the nodding starts */
 .wd-gerry.talking{animation:wdNod .5s ease-in-out infinite}
 @keyframes wdTwirl{0%{transform:scaleX(1)}25%{transform:scaleX(0) translateY(-10px)}50%{transform:scaleX(-1) translateY(-14px)}75%{transform:scaleX(0) translateY(-10px)}100%{transform:scaleX(1)}}
 @keyframes wdNod{50%{translate:0 -1.5%;rotate:-1deg}}

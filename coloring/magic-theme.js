@@ -144,6 +144,12 @@
     if (!/book=bye-bye-sugar-bugs|project=/.test(location.search)) return;
     const span = a.querySelector('span'); if (span) span.textContent = 'Quest';
     a.setAttribute('aria-label', 'Back to my quest');
+    /* a second way out: straight to My Library, to look at the book so far. It goes through the Quest link's own
+       click, which saves the book before leaving. */
+    const my = document.createElement('a'); my.className = 'storybook-home-link cl-mylib'; my.href = '../index.html#myLibrary';
+    my.innerHTML = '<span aria-hidden="true">📚</span><span>My Library</span>'; my.setAttribute('aria-label', 'Go to My Library to see my book');
+    my.addEventListener('click', e => { e.preventDefault(); a.setAttribute('href', '../index.html#myLibrary'); a.click(); });
+    a.after(my);
   })(25);
 
   /* ---------- a sound switch next to the language buttons ---------- */
@@ -160,7 +166,7 @@
 (function () {
   'use strict';
   let top = null;
-  try { if (window.top !== window && window.top.location.pathname.endsWith('/coloring/pc.html')) top = window.top; } catch (e) { top = null; }
+  try { if (window.parent !== window && /\/coloring\/pc(\.html)?$/.test(window.parent.location.pathname)) top = window.parent; } catch (e) { top = null; }
   if (!top) return;
   // links that leave the book maker (Home, View My Library) open in the whole window, not inside the frame
   document.addEventListener('click', e => {

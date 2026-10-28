@@ -12,7 +12,7 @@
   $('.studio-art-heading').appendChild(zoomControls);
   canvasArea.setAttribute('tabindex','0');
   const korean=()=>window.ui?.getLanguage?.()==='ko'||document.documentElement?.lang==='ko';
-  const hints={brush:'Soft, painterly strokes',pencil:'Fine lines with a paper-like grain',marker:'Smooth, translucent color',crayon:'Rich, waxy texture',fill:'Fill one area with color',erase:'Gently erase your marks'};
+  const hints={brush:'Soft, see-through strokes that build up',pencil:'Fine lines with a paper-like grain',marker:'Smooth, solid color',crayon:'Rich, waxy texture',fill:'Fill one area with color',erase:'Gently erase your marks'};
   function move(node,mount){
     if(!node||!mount)return;
     const marker=document.createComment('Color Studio return point');

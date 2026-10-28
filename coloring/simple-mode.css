@@ -1,0 +1,50 @@
+/* Simple book maker (simple-mode.js adds html.cl-simple): fewer, bigger buttons for 5-7 year olds.
+   Nothing is removed from the book maker itself; grown-ups can switch back to the original in "For grown-ups". */
+
+/* ---------- story page ---------- */
+/* saving is automatic: no "Save now" or its note; language moves into the grown-ups menu */
+html.cl-simple .storybook-header .library-save-control,
+html.cl-simple .storybook-header .library-autosave-status{display:none!important}
+html.cl-simple .storybook-header .header-tools>.language-switch{display:none!important}
+html.cl-simple .grownups>summary{font-size:13px!important;opacity:.85}
+html.cl-simple .grownups .language-switch{display:flex!important;margin:6px 0 10px}
+/* bigger way-out buttons */
+html.cl-simple .storybook-home-link{min-height:56px;font-size:19px;padding:10px 20px}
+html.cl-simple .storybook-home-group .brand{display:none}
+/* pages: round numbered stepping stones instead of long text tabs (the page name stays for screen readers and hover) */
+html.cl-simple .book-activity-nav .activity-tab>span:not(.activity-tab-number){position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+html.cl-simple .book-activity-nav .activity-tab{min-width:58px;min-height:58px;padding:0!important;border-radius:50%!important;justify-content:center}
+html.cl-simple .book-activity-nav .activity-tab .activity-tab-number{width:auto!important;height:auto!important;background:none!important;font-size:24px;color:inherit}
+html.cl-simple .book-activity-nav{gap:14px}
+/* one clear next step at the bottom: Color, and Done appears big and green once the page is ready */
+html.cl-simple #pageIndicator{display:none}
+html.cl-simple .main-controls #finish{display:none}
+html.cl-simple .main-controls.cl-ready #finish{display:inline-flex}
+html.cl-simple .main-controls.cl-ready #begin,html.cl-simple .main-controls.cl-ready #edit{transform:scale(.82);opacity:.9}
+html.cl-simple .main-controls #begin,html.cl-simple .main-controls #edit,html.cl-simple .main-controls.cl-ready #finish{min-height:76px;font-size:28px;padding:0 38px}
+html.cl-simple #paperButton{display:none!important}
+
+/* ---------- coloring screen ---------- */
+/* five big tools with clearly different looks: Brush (soft, see-through), Pencil (grainy), Marker (solid),
+   Bucket, Eraser. The crayon is hidden: it looked too much like the pencil */
+html.cl-simple .tool-buttons button[data-tool=crayon]{display:none!important}
+html.cl-simple .tool-buttons{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px}
+html.cl-simple .tool-buttons button{min-height:72px;font-size:16px}
+html.cl-simple .tool-buttons button svg{width:34px;height:34px}
+/* colours: eight big dots, "More colors" stays as the rainbow choice */
+html.cl-simple .swatches{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+html.cl-simple .swatches button{width:100%!important;height:auto!important;aspect-ratio:1;min-width:0}
+/* sizes stay, bigger; hidden: Start again (too easy to press by mistake), More choices, zoom buttons
+   (pinch still zooms), the workbook photo, the motto, Save now */
+html.cl-simple .size-buttons button{min-height:58px}
+html.cl-simple #clear,html.cl-simple .more-tools,html.cl-simple .studio-zoom-controls,
+html.cl-simple .studio-eyebrow,html.cl-simple .studio-tool-hint,html.cl-simple .studio-photo-mount,html.cl-simple .studio-photo-note,
+html.cl-simple .coloring-studio .library-save-control{display:none!important}
+html.cl-simple #undo{min-height:64px;font-size:20px;width:100%}
+html.cl-simple .studio-done,html.cl-simple .studio-back{min-height:60px;font-size:21px;padding:0 26px}
+/* phones (pc.html adds html.cl-pc-phone): slimmer tools so Undo stays in view */
+html.cl-simple.cl-pc-phone .tool-buttons button{min-height:48px;font-size:14px}
+html.cl-simple.cl-pc-phone .size-buttons button{min-height:42px}
+html.cl-simple.cl-pc-phone .tool-buttons{gap:8px}
+html.cl-simple.cl-pc-phone .swatches{gap:6px}
+html.cl-simple.cl-pc-phone #undo{min-height:48px}

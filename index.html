@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>GB Magic Library</title>
 <script>/* if a page opens the library inside the PC-size book frame, fill the whole window (or the phone frame, play.html) instead */
-(function(){try{let w=window;while(w.parent!==w&&w.parent.location.origin===location.origin&&!w.parent.CL_SHELL)w=w.parent;if(w!==window)w.location.replace(location.href);}catch(e){}
+(function(){try{let w=window;while(w.parent!==w&&w.parent.location.origin===location.origin&&!w.parent.CL_SHELL)w=w.parent;if(w!==window){window.CL_LEAVING=true;w.location.replace(location.href);}}catch(e){}
 /* phones and tablets open inside play.html, which keeps the screen full and sideways from page to page */
 if(window.top===window&&matchMedia('(pointer: coarse)').matches&&!/[?&]dev/.test(location.search))location.replace('play.html'+location.hash);})();</script>
 <link rel="manifest" href="manifest.webmanifest">
@@ -230,6 +230,8 @@ h1{font-family:var(--f-ui);font-weight:600;font-size:clamp(26px,4vw,34px);margin
 #nookBooks{position:absolute;inset:0}
 #nookBooks .nbook{position:absolute;width:100px;padding:0!important;z-index:2}
 #nookBooks .nbook img{display:block;width:100px;height:56px;object-fit:cover;border-radius:4px;box-shadow:0 6px 10px rgba(60,25,5,.45)}
+#nookBooks .made{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);white-space:nowrap;font-family:"Fredoka";font-weight:700;font-size:11px;padding:2px 8px;border-radius:999px;background:#fff;color:#5b3fa8;box-shadow:0 2px 0 rgba(60,25,5,.25)}
+#nookBooks .made.part{background:#ffe7a8;color:#6b4a00}
 #nookBooks .count{position:absolute;left:-6px;top:-10px;font-family:"Fredoka";font-weight:700;font-size:12px;background:#b9a2ff;color:#2a2340;padding:2px 8px;border-radius:999px;box-shadow:0 2px 0 rgba(0,0,0,.2)}
 .nook-empty{position:absolute;width:220px;transform:translateX(-50%);text-align:center;font-family:"Fredoka";font-weight:600;font-size:15px;color:#fff3dc;background:rgba(61,36,24,.75);padding:8px 10px;border-radius:12px;z-index:2}
 .artframe{position:absolute;overflow:hidden;z-index:2}
@@ -563,7 +565,8 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
   function buildNook(){
     const box=$('nookBooks'); box.innerHTML='';
     const groups={reading:[],done:[]};
-    Object.keys(progress).sort().forEach(k=>{ const p=progress[k]; if(p) groups[p>=totalOf(k)?'done':'reading'].push(k); });
+    const keys=new Set(Object.keys(progress)); if(realRecord&&REAL_KEY!=='none') keys.add(REAL_KEY);   // a book being made shows even with no step finished yet
+    [...keys].sort().forEach(k=>{ const p=progress[k]||0; if(p||(k===REAL_KEY&&realRecord)) groups[p>=totalOf(k)?'done':'reading'].push(k); });
     Object.keys(groups).forEach(g=>{
       const s=NOOK[g], list=groups[g].slice(0,4), pad=(s.w-2*100-14)/2;
       list.forEach((k,n)=>{
@@ -572,8 +575,11 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
         b.setAttribute('aria-label','Level '+L+', '+bk.t+(p>=totalOf(k)?', finished':', '+p+' of '+totalOf(k)+' steps'));
         b.innerHTML='<img src="'+bk.c+'" alt="">'+(p>=totalOf(k)?'<span class="seal">★</span>':'<span class="mark"></span><span class="count">'+p+'/5</span>');
         b.style.left=(s.x+pad+(n%2)*114)+'px'; b.style.top=(s.ledges[n<2?0:1]-58)+'px';
-        // a finished book the child made opens like a real storybook (their own pages); others open their quest
-        b.addEventListener('click',()=>(p>=totalOf(k)&&k===REAL_KEY&&realRecord)?openReader(realRecord):openBook(b,L,i,'nook'));
+        // a book the child has started making opens like a real storybook (their own pages so far, marked as still
+        // being made or finished); other books open their quest
+        const made=k===REAL_KEY&&realRecord;
+        if(made) b.insertAdjacentHTML('beforeend','<span class="made '+(realMake==='done'?'done':'part')+'">'+(realMake==='done'?'📖 My book':'✏️ Making')+'</span>');
+        b.addEventListener('click',()=>made?openReader(realRecord):openBook(b,L,i,'nook'));
         box.appendChild(b);
       });
       if(!list.length){ const e=document.createElement('div'); e.className='nook-empty'; e.style.left=s.cx+'px'; e.style.top=(s.ledges[0]-46)+'px';
@@ -797,10 +803,38 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
     try{ sessionStorage.setItem('cl.return','quest:'+(current?current.L+current.i:REAL_KEY)); }catch(e){}
     $('flash').classList.add('on'); setTimeout(()=>{ location.href=url; }, RM?0:320);
   }
-  function openReader(record){
+  async function openReader(record){
     if(!window.GPStorybookViewer) return;
     const cat=((window.GPCatalog&&window.GPCatalog.books)||[]).find(b=>b.id===record.bookId);
+    try{ record=await wholeBook(record); }catch(e){}
     window.GPStorybookViewer.open(record,{readerName:READER.name||'Anna',catalogBook:cat});
+  }
+  /* The reader shows the whole book: pages not made yet appear as they will be, the picture still white and the words
+     in dotted outline (not traced yet). Drawn like the book maker's own saved pages (coloring/library-bridge.js). */
+  let andika=null;
+  async function wholeBook(record){
+    const P=window.GPBookPages; if(!P||record.editableState?.kind!=='sugar-bugs-v3') return record;
+    const have=new Map((record.pages||[]).map(p=>[p.id,p])), pages=[];
+    for(const cfg of P.pages) pages.push(have.get(cfg.id)||await blankSpread(cfg));
+    let coverBlob=record.coverBlob;
+    if(!(coverBlob instanceof Blob)){ try{ coverBlob=await (await fetch('coloring/book-cover.webp')).blob(); }catch(e){} }
+    return {...record,pages,coverBlob};
+  }
+  async function blankSpread(cfg){
+    if(!andika){ andika=new FontFace('Andika Literacy','url(coloring/fonts/Andika-Regular.woff2)'); try{ await andika.load(); document.fonts.add(andika); }catch(e){} }
+    const art=new Image(); art.src='coloring/'+cfg.template; await art.decode();
+    const c=document.createElement('canvas'); c.width=1500; c.height=740; const x=c.getContext('2d');
+    x.fillStyle='#fffdf7'; x.fillRect(0,0,1500,740);
+    x.fillStyle='#254e49'; x.font='bold 34px "Andika Literacy", sans-serif'; x.fillText('Bye-Bye Sugar Bugs!',42,65);
+    x.font='20px "Andika Literacy", sans-serif'; x.fillStyle='#658277'; x.fillText(cfg.title,42,103);
+    x.fillStyle='#f2eee3'; x.fillRect(412,140,2,563); x.drawImage(art,438,140,1000,563);
+    x.font='46px "Andika Literacy", sans-serif'; x.strokeStyle='#4f6470'; x.lineWidth=2.2; x.setLineDash([6,4]);
+    cfg.lines.filter(t=>t&&t.trim()).forEach((t,i)=>{   // each line fits the left page (up to 350px wide)
+      x.font='46px "Andika Literacy", sans-serif'; const k=Math.min(1,350/x.measureText(t).width);
+      x.font=Math.floor(46*k)+'px "Andika Literacy", sans-serif'; x.strokeText(t,42,185+i*116+58);
+    });
+    const imageBlob=await new Promise(r=>c.toBlob(r,'image/png'));
+    return {id:cfg.id,title:cfg.title,imageBlob,layout:'spread'};
   }
   function realTap(n){
     if(n===0) openVideo();
@@ -858,6 +892,7 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
   $('shareBtn').addEventListener('click',()=>toast('Sharing with friends comes with parent accounts.'));
   
   function restoreReturn(){
+    if(window.CL_LEAVING) return;   // this copy is only passing through on its way to the full window: leave the return note for it
     let ret=null; try{ ret=sessionStorage.getItem('cl.return'); sessionStorage.removeItem('cl.return'); }catch(e){}
     if(location.hash==='#myLibrary'){
       seenOwl=true; buildNook(); fillFrames(); show('nook');

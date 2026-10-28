@@ -138,7 +138,10 @@
             const scale = Math.min(326 / image.naturalWidth, 86 / image.naturalHeight);
             context.drawImage(image, 42, rowTop, image.naturalWidth * scale, image.naturalHeight * scale);
           } finally { URL.revokeObjectURL(url); }
-        } else { context.font = '34px "Andika Literacy", sans-serif'; context.fillStyle = '#273e4c'; context.fillText(lines[i].text, 42, rowTop + 55); }
+        } else {   // not traced yet: the words in dotted outline, like the tracing guide
+          context.font = '34px "Andika Literacy", sans-serif'; context.strokeStyle = '#4f6470'; context.lineWidth = 1.6; context.setLineDash([5, 3]);
+          context.strokeText(lines[i].text, 42, rowTop + 55); context.setLineDash([]);
+        }
       }
       const thumbnail = document.createElement('canvas'); thumbnail.width = 480; thumbnail.height = Math.round(480 * 740 / 1500);
       thumbnail.getContext('2d').drawImage(canvas, 0, 0, thumbnail.width, thumbnail.height);

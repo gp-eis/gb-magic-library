@@ -26,7 +26,7 @@
   }
 
   function textureAlpha(tool, x, y, seed = 1) {
-    if (tool === 'marker') return .52;
+    if (tool === 'marker') return 1;   // solid, flat colour like the bucket
     if (tool === 'erase' || tool === 'fill') return 1;
     const fine = seededNoise(x, y, seed);
     if (tool === 'pencil') {
@@ -39,9 +39,9 @@
       const wax = seededNoise(Math.floor(x / 4), Math.floor(y / 4), seed + 37);
       return wax < .12 || fine < .08 ? .06 : clamp(.34 + wax * .47 + fine * .19, .08, .98);
     }
-    // Bristle-scale texture is subtle; the mask supplies a soft feathered edge.
+    // Brush: a little see-through (layers build up), with subtle bristle streaks; the mask feathers the edge.
     const bristle = seededNoise(Math.floor(x / 2), Math.floor(y / 5), seed + 23);
-    return clamp(.72 + fine * .18 + (bristle - .5) * .20, .58, .98);
+    return clamp(.56 + fine * .14 + (bristle - .5) * .18, .42, .74);
   }
 
   function pointsOnly(points) {
