@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>THINK · Why Do We Wait?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Sora:wght@600&display=swap">
+<link rel="stylesheet" href="../sugar-bugs/kit.css">
+<link rel="stylesheet" href="../../ui/cl-buttons.css">
+<link rel="stylesheet" href="../../ui/cl-bubble.css">
+<style>
+/* THINK = the online version of the printed workbook pages for Why Do We Wait? (Reading Literacy, Level B · 8, Week 3,
+   pages 18-21 of the designer's final workbook; pictures cut from content/m8/final/wb by tools/cut_final_wb.py b8-3). Four rounds. */
+#stage section>*{position:absolute}
+.ask{left:230px;top:92px;width:910px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:28px;line-height:1.15;color:var(--ink);z-index:5}
+.ask .w.lit{color:var(--plum)}
+.hint{left:600px;width:540px;top:650px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:600;font-size:17px;color:var(--soft);z-index:8}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes glow{50%{box-shadow:0 0 0 7px var(--gold),0 0 30px rgba(255,200,60,.9)}}
+/* round 1: We wait ... (page 18): six pictures */
+.grid{left:250px;top:140px;width:880px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;z-index:6}
+.pic{border:0;padding:0;border-radius:16px;overflow:hidden;background:#fff;box-shadow:0 6px 0 #e6d6b8;cursor:pointer;position:relative;transition:transform .2s}
+.pic img{width:100%;display:block;pointer-events:none}
+.pic.done{box-shadow:0 0 0 5px #20b486,0 6px 0 #bfe8d7}
+.pic.done::after{content:'✓';position:absolute;right:8px;top:6px;width:36px;height:36px;border-radius:50%;background:#20b486;color:#fff;font:700 24px Fredoka,sans-serif;display:grid;place-items:center}
+.pic.bad{animation:shake .45s}
+/* round 2: what happens if we don't wait (page 19): four pictures, number the circle */
+.grid2{left:310px;top:168px;width:760px;display:grid;grid-template-columns:repeat(2,1fr);gap:14px;z-index:6}
+.grid2 .pic .num{position:absolute;left:5.5%;top:8%;width:12.5%;aspect-ratio:1;border-radius:50%;background:#fff;border:3px solid #2b2b2b;display:grid;place-items:center;font:700 28px Fredoka,sans-serif;color:#1f7a2e}
+.sent{left:250px;top:128px;width:880px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:24px;color:var(--plum);z-index:7}
+/* round 3: stand in line (page 20): stars onto pictures */
+.stars{left:250px;top:134px;display:grid;gap:10px;z-index:8}
+.sbtn{display:grid;grid-template-columns:36px 1fr;align-items:center;gap:8px;width:250px;font-family:"Nunito",sans-serif;font-weight:800;font-size:18px;border-radius:999px;border:3px solid;padding:7px 14px;box-shadow:0 4px 0 #e6d6b8;touch-action:none;cursor:grab;transition:transform .15s;text-align:left}
+.sbtn i{font-style:normal;font-size:26px;line-height:1}
+.sbtn.picked{box-shadow:0 0 0 5px var(--gold),0 4px 0 #e6d6b8;transform:scale(1.05)}
+.sbtn.dragging{z-index:30;transform:scale(1.1);box-shadow:0 16px 30px rgba(60,40,10,.25)}
+.sbtn.bad{animation:shake .45s}
+.c-y{background:#fff7d6;border-color:#f2c744;color:#8a6a00}.c-b{background:#dcebfb;border-color:#8ab6e8;color:#2a5a8a}.c-p{background:#fbe3ea;border-color:#e9a1b8;color:#9a3560}.c-g{background:#e3efe0;border-color:#9fc69a;color:#3c6b35}
+.grid3{left:530px;top:134px;width:600px;display:grid;grid-template-columns:repeat(2,1fr);gap:12px;z-index:6}
+.grid3 .pic .slot{position:absolute;left:4%;top:4%;width:14%;aspect-ratio:1;border-radius:50%;display:grid;place-items:center;font-size:28px;background:#fff;border:3px dashed #9a9a9a}
+.grid3 .pic.done .slot{border-style:solid}
+/* round 4: I am good at waiting (page 21) */
+.cards{left:250px;top:130px;width:520px;display:grid;gap:10px;z-index:6}
+.wcard{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center;background:#fff;border-radius:16px;border:4px solid #2b2b2b;padding:8px;box-shadow:0 5px 0 #e6d6b8;text-align:left;cursor:pointer;opacity:.6;transition:opacity .3s}
+.wcard img{width:150px;height:92px;object-fit:cover;border-radius:10px;display:block}
+.wcard b{display:block;font-family:"Fredoka",sans-serif;font-weight:700;font-size:19px;color:#1f5f8a}
+.wcard small{display:block;font-family:"Nunito",sans-serif;font-weight:700;font-size:13px;line-height:1.3;color:var(--ink)}
+.wcard.go{opacity:1;box-shadow:0 0 0 5px var(--gold),0 5px 0 #e6d6b8}
+.wcard.done{opacity:1;border-color:#20b486}
+.pad{left:800px;top:130px;width:330px;height:300px;border-radius:22px;background:#fff;border:5px dashed #5a9a3a;z-index:6;overflow:hidden}
+.pad .ph{position:absolute;left:0;right:0;top:12px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:20px;color:#5a9a3a;pointer-events:none;transition:opacity .2s}
+.pad.used .ph{opacity:0}
+.pad canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.paints{left:800px;top:444px;width:340px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;z-index:7}
+.paints button{width:38px;height:38px;border-radius:50%;border:4px solid #fff;box-shadow:0 3px 0 #d9c9a8;padding:0}
+.paints button.on{box-shadow:0 0 0 4px var(--gold),0 3px 0 #d9c9a8;transform:scale(1.1)}
+.paints .wipe{width:auto;border-radius:999px;padding:0 12px;height:38px;background:#fff;font-family:"Fredoka",sans-serif;font-weight:700;font-size:15px;color:var(--plum)}
+.ddone{left:800px;top:545px;z-index:9}
+#stage .hidden{display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- workbook page 18 -->
+  <section id="r1">
+    <div class="ask" id="ask1">We take turns and wait in line!</div>
+    <div class="grid" id="grid1"></div>
+  </section>
+  <!-- workbook page 19 -->
+  <section id="r2" class="hidden">
+    <div class="ask" id="ask2">What happens if we don’t wait in line?</div>
+    <div class="sent" id="sent2"></div>
+    <div class="grid2" id="grid2"></div>
+  </section>
+  <!-- workbook page 20 -->
+  <section id="r3" class="hidden">
+    <div class="ask" id="ask3">Stand in line. Put each star on its picture.</div>
+    <div class="stars" id="stars"></div>
+    <div class="grid3" id="grid3"></div>
+  </section>
+  <!-- workbook page 21 -->
+  <section id="r4" class="hidden">
+    <div class="ask" id="ask4">I am good at waiting!</div>
+    <div class="cards" id="cards"></div>
+    <div class="pad" id="pad4"><div class="ph">Draw yourself waiting.</div><canvas id="cv4" width="660" height="600"></canvas></div>
+    <div class="paints" id="paints4"></div>
+    <div class="ddone"><button class="clb clb--go clb--lg" id="drawDone4" disabled>Done <span class="i">✓</span></button></div>
+  </section>
+</div>
+<script src="../../months/current.js"></script>
+<script>
+  (function () { const p = new URLSearchParams(location.search); window.SB_BOOK = { id: p.get('id') || 'b8-3', key: p.get('key') || 'B2' }; })();
+</script>
+<script src="../../ui/mate.js"></script>
+<script src="../../ui/rotate.js" data-base="../../"></script>
+<script src="../../ui/stage.js" data-base="../../"></script>
+<script src="../../ui/mate-lines.js"></script>
+<script src="../sugar-bugs/kit.js"></script>
+<script src="../book/draw.js"></script>
+<script src="../../ui/cl-bubble.js"></script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  SB.bar('think','We take turns and wait in line!');
+  SB.gerry();
+  document.querySelectorAll('section').forEach(s=>{ s.style.position='absolute'; s.style.inset='0'; });
+  const title=t=>{ const el=document.querySelector('.title'); if(el) el.textContent=t; };
+  const go=(from,to)=>{ $(from).classList.add('hidden'); $(to).classList.remove('hidden'); };
+  const shake=el=>{ SB.sfx.bad(); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); };
+  const KEY='cl.bk.'+SB_BOOK.id+'.';
+
+  /* ---------- round 1 (page 18): We wait ... listen, tap the picture, say the sentence ---------- */
+  const WAITS=['in the restroom','in the cafeteria','on the slide','on the swing','at the checkout counter','at the bus'];
+  const ORDER1=[3,0,5,2,1,4]; let q1=0;
+  function askWait(){ SB.say('We wait '+WAITS[ORDER1[q1]]+'.',{el:$('ask1'),gerry:true,rate:.85,replay:false}); }
+  function r1(){
+    WAITS.forEach((t,n)=>{ const b=document.createElement('button'); b.className='pic'; b.dataset.n=n; b.setAttribute('aria-label','We wait '+t); b.innerHTML='<img src="wb/wait'+(n+1)+'.webp" alt="">';
+      b.addEventListener('click',()=>{
+        if(b.classList.contains('done')) return;
+        if(+b.dataset.n!==ORDER1[q1]){ shake(b); SB.say('Listen again. We wait '+WAITS[ORDER1[q1]]+'.',{el:$('ask1'),gerry:true,rate:.85,replay:false}); return; }
+        SB.sfx.good(); b.classList.add('done'); SB.sparkle(b,10); q1++;
+        SB.say('Yes! We wait '+t+'. Say it with me: we wait '+t+'.').then(()=>{ if(q1<WAITS.length) askWait(); else { SB.star($('grid1')); SB.say('We take turns and wait in line! But what happens if we don’t?').then(()=>setTimeout(r2,400)); } });
+      }); $('grid1').appendChild(b); });
+    SB.say('We take turns and wait in line! Look at the pictures. Listen, then tap the right picture.').then(askWait);
+  }
+
+  /* ---------- round 2 (page 19): what happens if we don't wait in line? number the pictures ---------- */
+  const BAD=['We bump into each other.','A friend may fall down.','We may fight over who goes first.','We don’t know whose turn it is.'];
+  const ORDER2=[2,0,3,1]; let q2=0;
+  function askBad(){ const n=ORDER2[q2]; $('sent2').textContent=(n+1)+'. '+BAD[n]; SB.say(BAD[n],{el:$('sent2'),gerry:true,rate:.85,replay:false}); }
+  function r2(){
+    go('r1','r2'); title('What happens if we don’t wait?');
+    BAD.forEach((t,n)=>{ const b=document.createElement('button'); b.className='pic'; b.dataset.n=n; b.setAttribute('aria-label','Picture '+(n+1)); b.innerHTML='<img src="wb/bad'+(n+1)+'.webp" alt=""><span class="num"></span>';
+      b.addEventListener('click',()=>{
+        if(b.classList.contains('done')) return;
+        if(+b.dataset.n!==ORDER2[q2]){ shake(b); SB.say('Look again. '+BAD[ORDER2[q2]],{el:$('sent2'),gerry:true,rate:.85,replay:false}); return; }
+        SB.sfx.good(); b.classList.add('done'); b.querySelector('.num').textContent=n+1; SB.sparkle(b,10); q2++;
+        if(q2<BAD.length) setTimeout(askBad,500);
+        else { SB.star($('grid2')); SB.say('That’s why we wait in line. Let’s stand in line nicely!').then(()=>setTimeout(r3,400)); }
+      }); $('grid2').appendChild(b); });
+    SB.say('What happens if we don’t wait in line? Listen to the sentence, then tap its picture.').then(askBad);
+  }
+
+  /* ---------- round 3 (page 20): stand in line. put each star on its picture ---------- */
+  const LINES=[{id:'y',c:'c-y',text:'Wait for your turn.',pic:0},{id:'b',c:'c-b',text:'Don’t push.',pic:1},{id:'p',c:'c-p',text:'It’s my turn!',pic:2},{id:'g',c:'c-g',text:'After you.',pic:3}];
+  let placed3=0;
+  function r3(){
+    go('r2','r3'); title('Stand in line');
+    LINES.forEach(l=>{ const b=document.createElement('button'); b.className='sbtn '+l.c; b.dataset.id=l.id; b.innerHTML='<i>★</i><span>'+l.text+'</span>'; $('stars').appendChild(b); });
+    [0,1,2,3].forEach(n=>{ const b=document.createElement('div'); b.className='pic'; b.dataset.n=n; b.setAttribute('role','button'); b.setAttribute('aria-label','Picture '+(n+1)); b.innerHTML='<img src="wb/line'+(n+1)+'.webp" alt=""><span class="slot">☆</span>'; $('grid3').appendChild(b); });
+    SB.dragTap([...$('stars').children],[...$('grid3').children],(el,pic)=>{
+      if(pic.classList.contains('done')) return;
+      const l=LINES.find(x=>x.id===el.dataset.id);
+      if(+pic.dataset.n!==l.pic){ shake(el); SB.say('Hmm. Which picture shows: '+l.text); return; }
+      SB.sfx.good(); el.dataset.placed='1'; el.remove(); pic.classList.add('done'); const s=pic.querySelector('.slot'); s.textContent='★'; s.className='slot '+l.c; SB.sparkle(pic,10); placed3++;
+      SB.say(l.text).then(()=>{ if(placed3===LINES.length){ SB.star($('grid3')); SB.say('Wait for your turn, don’t push, and say: after you! Now, are you good at waiting?').then(()=>setTimeout(r4,400)); } });
+    });
+    SB.say('Stand in line. Put each star on its picture. Listen: '+LINES.map(l=>l.text).join(' '));
+  }
+
+  /* ---------- round 4 (page 21): I am good at waiting. listen to the three stories, draw yourself waiting ---------- */
+  const WAITING=[{img:'seeds',t:'Seeds grow over time.',s:['We plant a seed and give it water.','A little sprout grows.']},
+                 {img:'ice',t:'Ice melts when it gets warm.',s:['Ice melts when it gets warm.','It turns into water.']},
+                 {img:'dough',t:'Dough rises as it rests.',s:['Yeast makes tiny bubbles in the dough.','The dough gets bigger.']}];
+  let q4=0, d4=null;
+  function r4(){
+    go('r3','r4'); title('I am good at waiting');
+    WAITING.forEach((w,n)=>{ const b=document.createElement('button'); b.className='wcard'+(n===0?' go':''); b.dataset.n=n; b.innerHTML='<img src="wb/'+w.img+'.webp" alt=""><span><b>'+w.t+'</b><small>1. '+w.s[0]+'<br>2. '+w.s[1]+'</small></span>';
+      b.addEventListener('click',()=>{
+        if(+b.dataset.n!==q4) { if(!b.classList.contains('done')) shake(b); return; }
+        b.classList.remove('go'); b.classList.add('done'); SB.sfx.pop(); q4++;
+        SB.say(w.t+' '+w.s[0]+' '+w.s[1],{el:b.querySelector('span'),gerry:true,rate:.9,replay:false}).then(()=>{
+          b.innerHTML='<img src="wb/'+w.img+'.webp" alt=""><span><b>'+w.t+'</b><small>1. '+w.s[0]+'<br>2. '+w.s[1]+'</small></span>';
+          if(q4<WAITING.length) { $('cards').children[q4].classList.add('go'); SB.say('Tap the next one.'); }
+          else SB.say('Good things take time. I can wait! Now draw yourself waiting.');
+        });
+      }); $('cards').appendChild(b); });
+    d4=SBDraw.make({pad:$('pad4'),canvas:$('cv4'),paints:$('paints4'),done:$('drawDone4')});
+    $('drawDone4').addEventListener('click',()=>{
+      if(!d4.strokes()) return;
+      if(q4<WAITING.length){ SB.say('First tap the three pictures and listen.'); shake($('cards')); return; }
+      SB.store.set(KEY+'draw.waiting',d4.snapshot(330,300));
+      SB.sfx.good(); SB.star($('pad4')); SB.sparkle($('pad4'),14); $('drawDone4').disabled=true;
+      SB.say('I can wait! I am proud of myself!').then(()=>SB.finish('think',{title:'I can wait!',text:'You know where we wait, why we wait, how to stand in line, and that good things take time. Your next step is EXPRESS.',img:'wb/medal.webp'}));
+    });
+    SB.say('I am good at waiting! I can be proud of myself for waiting. Tap each picture and listen.');
+  }
+
+  SB.startScreen({kicker:'STEP 4 · THINK',title:'Why do we wait?',text:'Find where we wait, see what happens if we don’t, stand in line nicely and draw yourself waiting, just like in your workbook.',img:'wb/queue.webp'}).then(r1);
+})();
+</script>
+</body>
+</html>

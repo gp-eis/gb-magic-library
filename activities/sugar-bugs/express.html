@@ -10,10 +10,13 @@
 <link rel="stylesheet" href="../../ui/cl-bubble.css">
 <style>
 .pic{left:200px;top:108px;width:330px;height:330px;border-radius:34px;background:#fff;box-shadow:0 8px 0 #e6d6b8,0 14px 30px rgba(60,40,10,.12);display:grid;place-items:center;z-index:5}
-.pic img{max-width:80%;max-height:80%;object-fit:contain}
+.pic{overflow:hidden;left:222px;width:286px}
+.pic img{width:100%;height:100%;object-fit:cover}   /* the printed storybook page itself (stories/<id>/pNN.webp) */
+.sentence.rows4{font-size:42px}.sentence.rows5{font-size:35px}.sentence.rows6{font-size:30px}
 .pic .emoji{font-size:170px}
 .count{left:200px;top:452px;width:330px;text-align:center;font-family:"Sora",sans-serif;font-weight:600;font-size:14px;letter-spacing:.14em;color:var(--plum);z-index:5}
-.sentence{left:570px;top:120px;width:560px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:56px;line-height:1.15;color:var(--ink);z-index:5}
+.sentence{left:570px;top:112px;width:570px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:50px;line-height:1.18;color:var(--ink);z-index:5}
+.speaker{position:absolute;left:570px;top:84px;font-family:"Sora",sans-serif;font-weight:600;font-size:13px;letter-spacing:.14em;color:var(--plum);z-index:5;text-transform:uppercase}
 .sentence .w{display:inline-block;transition:color .1s,transform .1s}
 .sentence .w.lit{color:var(--plum);transform:translateY(-3px)}
 .actions{left:570px;top:330px;display:flex;gap:14px;z-index:6}
@@ -33,7 +36,8 @@
 <body>
 <div id="stage">
   <div class="pic" id="pic"></div>
-  <div class="count" id="count">SENTENCE 1 OF 3</div>
+  <div class="count" id="count">PAGE 1 OF 6</div>
+  <div class="speaker" id="who"></div>
   <div class="sentence" id="sentence" aria-live="polite"></div>
   <div class="actions">
     <button class="act go" id="listen"><i>👂</i>Listen</button>
@@ -48,16 +52,16 @@
 <script src="../../ui/rotate.js" data-base="../../"></script>
 <script src="../../ui/stage.js" data-base="../../"></script>
 <script src="../../ui/mate-lines.js"></script>
+<script src="../../stories/b8-4/story.js"></script>
 <script src="kit.js"></script>
 <script src="../../ui/cl-bubble.js"></script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
-  const LINES=[
-    {id:'brush',text:'Brush in little circles.',img:'img/teeth_clean.webp'},
-    {id:'water',text:'Drink water after sweets.',emoji:'💧'},
-    {id:'byebye',text:'Bye-bye, sugar bugs!',img:'img/sugar_bug_giggle.webp'}
-  ];
+  /* the printed storybook, page by page (book/story.js, stories/b8-4/story.js, made by tools/make_final_stories.py from the designer's final reading book):
+     the child listens to a page's lines, then says them */
+  const LINES=(window.SB_STORY?SB_STORY.pages:[]).map(p=>{ let n=0; const breaks=p.lines.slice(0,-1).map(l=>(n+=l.text.split(' ').length)-1);
+    return {id:p.id,text:p.lines.map(l=>l.text).join(' '),breaks,who:p.who||'',rows:p.lines.length,img:'../../stories/'+SB_STORY.id+'/'+p.picture}; });
   let i=0, clips={}, recorder=null, stream=null, micOK=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder);
   SB.bar('express','Say it!');
   SB.gerry();
@@ -70,17 +74,18 @@
 
   function show(){
     const L=LINES[i];
-    $('count').textContent='SENTENCE '+(i+1)+' OF 3';
+    $('count').textContent='PAGE '+(i+1)+' OF '+LINES.length; $('who').textContent=L.who;
     $('pic').innerHTML=L.img?'<img src="'+L.img+'" alt="">':'<span class="emoji" aria-hidden="true">'+L.emoji+'</span>';
-    $('sentence').innerHTML=L.text.split(' ').map((w,n)=>'<span class="w" data-i="'+n+'">'+w+'</span>').join(' ');
+    $('sentence').innerHTML=L.text.split(' ').map((w,n)=>'<span class="w" data-i="'+n+'">'+w+'</span>'+(L.breaks.includes(n)?'<br>':' ')).join('');   // one printed line per row
     $('listen').className='act go'; $('say').disabled=true; $('say').className='act'; $('hear').disabled=!clips[L.id]; $('hear').className='act';
     $('sayLab').textContent=micOK?'Say it!':'I said it!';
+    $('sentence').className='sentence'+(L.rows>3?' rows'+Math.min(6,L.rows):'');
     $('next').classList.add('hidden');
     SB.say(i===0?SB.line('express.listenFirst'):SB.line('express.next'));
   }
   $('listen').addEventListener('click',()=>{
     $('listen').className='act done-mark';
-    SB.say(LINES[i].text,{el:$('sentence'),gerry:true,rate:.8,replay:false}).then(()=>{ $('say').disabled=false; $('say').className='act go'; SB.say(micOK?SB.line('express.yourTurnMic'):SB.line('express.yourTurnSay')); });
+    SB.say(LINES[i].text,{el:$('sentence'),gerry:true,rate:.8,replay:false,breaks:LINES[i].breaks}).then(()=>{ $('say').disabled=false; $('say').className='act go'; SB.say(micOK?SB.line('express.yourTurnMic'):SB.line('express.yourTurnSay')); });
   });
 
   $('say').addEventListener('click',async()=>{
@@ -92,7 +97,7 @@
     const chunks=[]; recorder=new MediaRecorder(stream); recorder.ondataavailable=e=>{ if(e.data.size) chunks.push(e.data); };
     recorder.onstop=()=>{ meterStop(); $('say').className='act done-mark'; $('sayLab').textContent='Say it again'; said(new Blob(chunks,{type:recorder.mimeType||'audio/webm'})); };
     recorder.start(); $('say').className='act rec'; $('sayLab').textContent='Stop'; meterStart();
-    setTimeout(()=>{ if(recorder&&recorder.state==='recording') recorder.stop(); },6000);
+    setTimeout(()=>{ if(recorder&&recorder.state==='recording') recorder.stop(); },6000+500*LINES[i].text.split(' ').length);
   });
   function said(blob){
     const L=LINES[i]; const first=!clips[L.id];
@@ -111,7 +116,7 @@
   $('nextBtn').addEventListener('click',()=>{
     SB.stopVoice(); i++;
     if(i<LINES.length) show();
-    else { if(stream) stream.getTracks().forEach(t=>t.stop()); SB.finish('express',{title:'You said it all!',text:'Your voice is saved for your book. Your last step is CREATE: make your very own book!',img:'img/girl_grin.webp'}); }
+    else { if(stream) stream.getTracks().forEach(t=>t.stop()); SB.finish('express',{title:'You read the whole story!',text:'Your voice is saved for your book. Your last step is CREATE: make your very own book!',img:'img/girl_grin.webp'}); }
   });
 
   /* live loudness bars while recording */
@@ -127,7 +132,7 @@
   function meterStop(){ cancelAnimationFrame(raf); $('meter').classList.add('hidden'); }
 
   if(!micOK) $('note').textContent='Recording isn’t available here, so just say it out loud.';
-  SB.startScreen({kicker:'STEP 4 · EXPRESS',title:'Say it!',text:'Listen to '+(window.CLMate?CLMate.name():'Gerry')+', then say each sentence yourself. You can hear your own voice!',img:'img/girl_grin.webp'}).then(show);
+  SB.startScreen({kicker:'STEP 5 · EXPRESS',title:'Say it!',text:'Listen to '+(window.CLMate?CLMate.name():'Gerry')+' read each page of the story, then say it yourself. You can hear your own voice!',img:'img/girl_grin.webp'}).then(show);
 })();
 </script>
 </body>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>THINK · Hello! Hello!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Sora:wght@600&display=swap">
+<link rel="stylesheet" href="../sugar-bugs/kit.css">
+<link rel="stylesheet" href="../../ui/cl-buttons.css">
+<link rel="stylesheet" href="../../ui/cl-bubble.css">
+<style>
+/* THINK = the online version of the printed workbook pages for Hello! Hello! (Reading Literacy, Level B · 8, Week 1,
+   pages 6-9 of the designer's final workbook; pictures cut from content/m8/final/wb by tools/cut_b8-1_wb.py). Three rounds. */
+#stage section>*{position:absolute}
+.ask{left:230px;top:92px;width:910px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:28px;line-height:1.15;color:var(--ink);z-index:5}
+.ask .w.lit{color:var(--plum)}
+.hint{left:600px;width:540px;top:640px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:600;font-size:17px;color:var(--soft);z-index:8}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes glow{50%{box-shadow:0 0 0 7px var(--gold),0 0 30px rgba(255,200,60,.9)}}
+/* round 1: the park (pages 6-7) */
+.park{left:250px;top:136px;width:860px;height:497px;border-radius:22px;overflow:hidden;box-shadow:0 10px 30px rgba(60,20,10,.25);z-index:5}
+.park>img{width:100%;height:100%;display:block}
+.fig{position:absolute;border:0;background:transparent;padding:0;border-radius:16px;cursor:pointer}
+.fig img{width:100%;height:100%;display:block;object-fit:fill;border-radius:14px;box-shadow:0 0 0 4px #fff,0 8px 18px rgba(0,0,0,.35);opacity:0;transition:opacity .35s,transform .35s;transform:scale(.9)}
+.fig.done img{opacity:1;transform:scale(1)}
+.fig.go{box-shadow:0 0 0 5px var(--gold);animation:glow 1.3s ease-in-out infinite}
+.fig.bad{animation:shake .45s}
+/* round 2: the cup phone (page 8) */
+.caller{top:150px;width:250px;border:0;padding:0;background:transparent;cursor:pointer;border-radius:12px;z-index:6;transition:transform .2s}
+.caller img{width:100%;display:block;border-radius:10px}
+.caller.go{box-shadow:0 0 0 6px var(--gold);animation:glow 1.3s ease-in-out infinite}
+.caller.bad{animation:shake .45s}
+.caller.off{opacity:.55}
+#woman{left:240px}#man{left:890px}
+.call{left:508px;top:150px;width:364px;display:grid;gap:12px;z-index:6}
+.bub{display:grid;grid-template-columns:52px 1fr;align-items:center;gap:10px;background:#fff;border-radius:999px;padding:5px 16px 5px 6px;box-shadow:0 5px 0 #e6d6b8;font-family:"Fredoka",sans-serif;font-weight:700;font-size:21px;color:var(--ink);animation:pop .35s}
+.bub.m{grid-template-columns:1fr 52px;padding:5px 6px 5px 16px;text-align:right}
+.bub img{width:52px;height:52px;border-radius:50%;object-fit:cover}
+.bub .w.lit{color:var(--plum)}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.06)}}
+.stand{top:540px;width:60px;z-index:5}.stand img{width:100%;display:block}
+#standW{left:430px}#standM{left:690px}
+/* round 3: make a cup phone (page 9) */
+.slots{left:250px;top:140px;width:880px;display:flex;gap:12px;z-index:6}
+.slot{flex:1;height:214px;border-radius:18px;border:5px dashed #c99a4a;background:rgba(255,250,240,.9);display:grid;grid-template-rows:auto 128px 1fr;justify-items:center;padding:4px 6px 6px;position:relative}
+.slot .n{font-family:"Fredoka",sans-serif;font-weight:700;font-size:26px;color:#b4322a;line-height:1}
+.slot .ph{width:200px;height:128px;border-radius:12px;background:rgba(0,0,0,.05);overflow:hidden}
+.slot .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.slot .t{font-family:"Nunito",sans-serif;font-weight:700;font-size:13px;line-height:1.2;color:var(--ink);text-align:center;padding-top:4px;opacity:0;transition:opacity .3s}
+.slot.filled{border-style:solid;border-color:#7fd3b4}.slot.filled .t{opacity:1}
+.slot.go{box-shadow:0 0 0 5px var(--gold);animation:glow 1.3s ease-in-out infinite}
+.tray3{left:250px;top:400px;width:880px;display:flex;gap:16px;justify-content:center;z-index:8}
+.photo{width:200px;height:128px;border-radius:14px;overflow:hidden;background:#fff;box-shadow:0 6px 0 #e6d6b8;padding:0;border:0;touch-action:none;cursor:grab;transition:transform .15s}
+.photo img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.photo.picked{box-shadow:0 0 0 5px var(--gold),0 6px 0 #e6d6b8;transform:scale(1.06)}
+.photo.dragging{z-index:30;transform:scale(1.1);box-shadow:0 16px 30px rgba(60,40,10,.25)}
+.photo.bad{animation:shake .45s}
+#stage .hidden{display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- workbook pages 6-7 -->
+  <section id="r1">
+    <div class="ask" id="ask1">Who do you want to meet at the park?</div>
+    <div class="park" id="park"><img src="wb/park.webp" alt="The park from the workbook, with four dotted children"></div>
+    <div class="hint" id="hint1">Listen, then tap the right child.</div>
+  </section>
+  <!-- workbook page 8 -->
+  <section id="r2" class="hidden">
+    <div class="ask" id="ask2">Ring, ring! Who speaks next?</div>
+    <button class="caller" id="woman" aria-label="The lady on the phone"><img src="wb/woman-frame.webp" alt=""></button>
+    <div class="call" id="call"></div>
+    <button class="caller" id="man" aria-label="The man on the phone"><img src="wb/man-frame.webp" alt=""></button>
+    <div class="hint" id="hint2">Tap the one whose turn it is to talk.</div>
+  </section>
+  <!-- workbook page 9 -->
+  <section id="r3" class="hidden">
+    <div class="ask" id="ask3">Let’s make a cup phone!</div>
+    <div class="slots" id="slots"></div>
+    <div class="tray3" id="tray3"></div>
+    <div class="hint" id="hint3">Listen to the step, then drag its picture into the box, or tap the picture and then the box.</div>
+  </section>
+</div>
+<script src="../../months/current.js"></script>
+<script>
+  /* which book: ?id=<book id>&key=<shelf key, e.g. B0> */
+  (function () {
+    const p = new URLSearchParams(location.search);
+    window.SB_BOOK = { id: p.get('id') || 'b8-1', key: p.get('key') || 'B0' };
+  })();
+</script>
+<script src="../../ui/mate.js"></script>
+<script src="../../ui/rotate.js" data-base="../../"></script>
+<script src="../../ui/stage.js" data-base="../../"></script>
+<script src="../../ui/mate-lines.js"></script>
+<script src="../sugar-bugs/kit.js"></script>
+<script src="../../ui/cl-bubble.js"></script>
+<script src="../book/science-video.js"></script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  SB.bar('think','A hello makes a friend!');
+  SB.gerry();
+  document.querySelectorAll('section').forEach(s=>{ s.style.position='absolute'; s.style.inset='0'; });
+  const title=t=>{ const el=document.querySelector('.title'); if(el) el.textContent=t; };
+  const go=(from,to)=>{ $(from).classList.add('hidden'); $(to).classList.remove('hidden'); };
+  const shake=el=>{ SB.sfx.bad(); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); };
+
+  /* ---------- round 1 (pages 6-7): A hello makes a friend! listen, tap the child who greets that way ---------- */
+  /* hot boxes in park picture units (the two pages side by side, 2400 x 1387) */
+  const FIGS=[{id:'shake',say:'Shake hands!',box:[95,585,565,1005],after:'Shake hands. Nice to meet you!'},
+              {id:'hello',say:'Say hello!',box:[725,700,1005,1135],after:'Hello! A hello makes a friend.'},
+              {id:'wave',say:'Wave!',box:[1335,705,1605,1125],after:'Wave your hand. Hello, friend!'},
+              {id:'bow',say:'Bow!',box:[1715,475,2305,895],after:'Bow. Hello! In Korea we bow.'}];
+  const ORDER1=[2,0,3,1]; let q1=0;
+  function askFig(){ const f=FIGS[ORDER1[q1]]; document.querySelectorAll('.fig').forEach(b=>b.classList.toggle('go',b.dataset.id===f.id&&false)); SB.say(f.say,{el:$('ask1'),gerry:true,rate:.85,replay:false}); }
+  function r1(){
+    const park=$('park'), k=860/2400;
+    FIGS.forEach(f=>{
+      const b=document.createElement('button'); b.className='fig'; b.dataset.id=f.id; b.setAttribute('aria-label',f.say);
+      b.style.left=(f.box[0]*k)+'px'; b.style.top=(f.box[1]*k)+'px'; b.style.width=((f.box[2]-f.box[0])*k)+'px'; b.style.height=((f.box[3]-f.box[1])*k)+'px';
+      b.innerHTML='<img src="wb/fig-'+f.id+'.webp" alt="">';
+      b.addEventListener('click',()=>{
+        if(b.classList.contains('done')) return;
+        const want=FIGS[ORDER1[q1]];
+        if(f.id!==want.id){ shake(b); SB.say('Listen again. '+want.say,{el:$('ask1'),gerry:true,rate:.85,replay:false}); return; }
+        SB.sfx.good(); b.classList.add('done'); SB.sparkle(b,12); q1++;
+        SB.say(f.after).then(()=>{ if(q1<FIGS.length) askFig(); else { SB.star(park); SB.say('Every hello makes a friend! Now, let’s talk on the phone.').then(()=>setTimeout(r2,400)); } });
+      });
+      park.appendChild(b);
+    });
+    SB.say('A hello makes a friend! Who do you want to meet at the park? Listen, then tap the child.').then(askFig);
+  }
+
+  /* ---------- round 2 (page 8): the cup phone call. tap the one whose turn it is; the line is said ---------- */
+  const CALL=[['w','Hello!'],['m','How are you?'],['w','I miss you!'],['m','I miss you, too.'],['w','Let’s meet soon!'],['m','Take care!']];
+  let q2=0;
+  function turn(){ const w=CALL[q2][0]==='w'; $('woman').classList.toggle('go',w); $('man').classList.toggle('go',!w); $('woman').classList.toggle('off',!w); $('man').classList.toggle('off',w); }
+  function r2(){
+    go('r1','r2'); title('Hello on the phone');
+    [['woman','w'],['man','m']].forEach(([id,s])=>{
+      $(id).addEventListener('click',()=>{
+        if(q2>=CALL.length) return;
+        const [who,text]=CALL[q2];
+        if(who!==s){ shake($(id)); SB.say(who==='w'?'Not yet. It is her turn to talk.':'Not yet. It is his turn to talk.'); return; }
+        SB.sfx.pop(); q2++;
+        const b=document.createElement('div'); b.className='bub '+who; b.innerHTML=who==='w'?'<img src="wb/woman-face.webp" alt=""><span></span>':'<span></span><img src="wb/man-face.webp" alt="">';
+        b.querySelector('span').textContent=text; $('call').appendChild(b);
+        SB.say(text,{el:b.querySelector('span'),gerry:false,rate:.85,replay:false}).then(()=>{
+          if(q2<CALL.length){ turn(); SB.say(CALL[q2][0]==='w'?'Now it is her turn. Tap the lady.':'Now it is his turn. Tap the man.'); }
+          else { $('woman').className="caller"; $('man').className="caller"; SB.star($('call')); SB.say('What a lovely call! We can share our love through the phone. But how does a cup phone work? Let’s watch!').then(()=>setTimeout(science,400)); }
+        });
+      });
+    });
+    turn();
+    SB.say('Ring, ring! The lady and the man talk on the phone. Who speaks first? Tap the lady.');
+  }
+
+  /* the science video plays before the science page (user, 2026-11-11): video/cup-phone -> science.mp4 */
+  function science(){ SBVideo.play({src:'science.mp4',title:'How does a cup phone work?',text:'Watch the cups show you: vibration, sound waves, microphone and speaker!',img:'wb/step4.webp'}).then(r3); }
+
+  /* ---------- round 3 (page 9): Let's Make a Cup Phone! put the four step pictures in order ---------- */
+  const STEPS=['Prepare two paper cups, string and a sharp pencil.','Make a small hole in the bottom of each cup.','Thread the string through the holes.','Tie a knot at each end. Your cup phone is ready!'];
+  let q3=0;
+  function askStep(){ document.querySelectorAll('.slot').forEach((s,n)=>s.classList.toggle('go',n===q3)); SB.say('Step '+(q3+1)+'. '+STEPS[q3],{el:$('ask3'),gerry:true,rate:.85,replay:false}); }
+  function r3(){
+    go('r2','r3'); title('Let’s make a cup phone!');
+    const slots=$('slots'), tray=$('tray3');
+    STEPS.forEach((t,n)=>{ const s=document.createElement('div'); s.className='slot'; s.dataset.n=n; s.setAttribute('role','button'); s.setAttribute('aria-label','Step '+(n+1)); s.innerHTML='<span class="n">'+(n+1)+'</span><div class="ph"></div><span class="t">'+t+'</span>'; slots.appendChild(s); });
+    [2,0,3,1].forEach(n=>{ const b=document.createElement('button'); b.className='photo'; b.dataset.n=n; b.setAttribute('aria-label','Picture'); b.innerHTML='<img src="wb/step'+(n+1)+'.webp" alt="">'; tray.appendChild(b); });
+    SB.dragTap([...tray.children],[...slots.children],(el,slot)=>{
+      if(slot.classList.contains('filled')) return;
+      if(+el.dataset.n!==q3||+slot.dataset.n!==q3){ shake(el); SB.say('Hmm, not that one. Step '+(q3+1)+'. '+STEPS[q3],{el:$('ask3'),gerry:true,rate:.85,replay:false}); return; }
+      SB.sfx.good(); el.dataset.placed='1'; el.remove(); slot.classList.add('filled'); slot.classList.remove('go'); slot.querySelector('.ph').innerHTML='<img src="wb/step'+(q3+1)+'.webp" alt="">'; SB.sparkle(slot,10); q3++;
+      if(q3<STEPS.length) setTimeout(askStep,500);
+      else { SB.star(slots); SB.say('Your cup phone is ready! Use your cup phone and talk with a friend.').then(()=>SB.finish('think',{title:'Super thinking!',text:'You greeted four friends, talked on the phone and made a cup phone. Your next step is EXPRESS.',img:'wb/step4.webp'})); }
+    });
+    SB.say('Let’s make a cup phone! Follow the steps. Listen, then put the right picture in the box.').then(askStep);
+  }
+
+  SB.startScreen({kicker:'STEP 4 · THINK',title:'A hello makes a friend!',text:'Meet friends at the park, talk on the phone and make a cup phone, just like in your workbook.',img:'wb/fig-wave.webp'}).then(()=>{ if(new URLSearchParams(location.search).has('science')){ $('r1').classList.add('hidden'); science(); } else r1(); });   // ?science jumps straight to the science video (for checking)
+})();
+</script>
+</body>
+</html>

@@ -11,7 +11,8 @@ window.CLParentData = {
     note: '위대한 바칼로레아: 프랑스 바칼로레아의 교육 철학에서 영감을 받아, 스스로 질문하고 생각을 표현하는 힘을 기르는 독서 과정이에요.'
   },
   cycle: [
-    { key: 'read', en: 'READ', ko: '깊이 읽기', text: '이야기를 듣고 읽어요.' },
+    { key: 'peek', en: 'PEEK', ko: '표지 살펴보기', text: '표지를 살펴보며 이야기를 상상해요.' },
+    { key: 'read', en: 'VIDEO', ko: '이야기 보기', text: '이야기 영상을 보고 들어요.' },
     { key: 'question', en: 'QUESTION', ko: '질문하기', text: '이야기에 대한 질문에 답해요.' },
     { key: 'think', en: 'THINK', ko: '생각하기', text: '이유를 생각하고 골라요.' },
     { key: 'express', en: 'EXPRESS', ko: '표현하기', text: '문장을 듣고 직접 말해 봐요.' },

@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>THINK · Where Is Your Home?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Sora:wght@600&display=swap">
+<link rel="stylesheet" href="../sugar-bugs/kit.css">
+<link rel="stylesheet" href="../../ui/cl-buttons.css">
+<link rel="stylesheet" href="../../ui/cl-bubble.css">
+<style>
+/* THINK = the online version of the printed workbook pages for Where Is Your Home? (Reading Literacy, Level B · 8, Week 2,
+   pages 12-15 of the designer's final workbook; pictures cut from content/m8/final/wb by tools/cut_final_wb.py b8-2). Four rounds. */
+#stage section>*{position:absolute}
+.ask{left:230px;top:92px;width:910px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:28px;line-height:1.15;color:var(--ink);z-index:5}
+.ask .w.lit{color:var(--plum)}
+.hint{left:600px;width:540px;top:640px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:600;font-size:17px;color:var(--soft);z-index:8}
+@keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes glow{50%{box-shadow:0 0 0 7px var(--gold),0 0 30px rgba(255,200,60,.9)}}
+/* round 1: the bouquet (page 12) */
+.field{left:290px;top:132px;width:680px;height:446px;border-radius:22px;overflow:hidden;box-shadow:0 10px 30px rgba(20,40,80,.25);z-index:5}
+.field>img{width:100%;height:100%;display:block}
+.fig{position:absolute;border:0;background:transparent;padding:0;border-radius:50%;cursor:pointer}
+.fig img{width:100%;height:100%;display:block;object-fit:fill;border-radius:18px;box-shadow:0 0 0 5px #fff,0 8px 18px rgba(0,0,0,.35);opacity:0;transition:opacity .35s,transform .35s;transform:scale(.8)}
+.fig.done img{opacity:1;transform:scale(1.06)}
+.fig.bad{animation:shake .45s}
+/* rounds 2-3: drawing pads */
+.pad{border-radius:22px;background:#fff;border:5px dashed #2f8fe0;z-index:6;overflow:hidden}
+.pad>img{position:absolute;inset:0;width:100%;height:100%;display:block}
+.pad canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.paints{display:flex;gap:10px;align-items:center;z-index:7;flex-wrap:wrap}
+.paints button{width:42px;height:42px;border-radius:50%;border:4px solid #fff;box-shadow:0 3px 0 #d9c9a8;padding:0}
+.paints button.on{box-shadow:0 0 0 4px var(--gold),0 3px 0 #d9c9a8;transform:scale(1.1)}
+.paints .wipe{width:auto;border-radius:999px;padding:0 14px;height:42px;background:#fff;font-family:"Fredoka",sans-serif;font-weight:700;font-size:16px;color:var(--plum)}
+#pad2{left:600px;top:122px;width:300px;height:401px}
+#paints2{left:600px;top:540px;width:420px}
+#pad3{left:480px;top:136px;width:400px;height:440px}
+#paints3{left:480px;top:592px;width:440px}
+.ddone{z-index:9}#done2{left:930px;top:140px}#done3{left:920px;top:420px}
+.whois{left:240px;top:130px;width:330px;z-index:7}
+.whois h3{margin:0 0 8px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:24px;color:var(--ink)}
+.whois .chips{display:flex;flex-wrap:wrap;gap:10px}
+.chip{border:4px solid #f29a2e;background:#fff;border-radius:999px;padding:8px 18px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:19px;color:#b85c00;box-shadow:0 4px 0 #e6d6b8;cursor:pointer}
+.chip.on{background:#f29a2e;color:#fff;box-shadow:0 0 0 4px var(--gold),0 4px 0 #e6d6b8}
+.whois .line{margin-top:14px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:22px;color:var(--plum)}
+.card{left:240px;top:150px;width:210px;background:#fff;border-radius:20px;padding:16px 18px;box-shadow:0 6px 0 #e6d6b8;font-family:"Nunito",sans-serif;font-weight:800;font-size:17px;line-height:1.35;color:#2b4a9a;z-index:6}
+.card p{margin:0 0 10px}.card p:last-child{margin:0}
+/* round 4: building materials (page 15) */
+.words{left:250px;top:136px;display:grid;gap:12px;z-index:8}
+.word{width:200px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:21px;background:#fff;border:4px solid #2b2b2b;border-radius:999px;padding:9px 16px;box-shadow:0 5px 0 #e6d6b8;touch-action:none;cursor:grab;transition:transform .15s;color:var(--ink)}
+.word.picked{box-shadow:0 0 0 5px var(--gold),0 5px 0 #e6d6b8;transform:scale(1.06)}
+.word.dragging{z-index:30;transform:scale(1.1);box-shadow:0 16px 30px rgba(60,40,10,.25)}
+.word.bad{animation:shake .45s}
+.mats{left:560px;top:136px;display:grid;gap:12px;z-index:7}
+.mat{display:grid;grid-template-columns:290px 190px;gap:12px;align-items:center;height:68px}
+.mat .ph{width:290px;height:68px;border-radius:12px;overflow:hidden;border:4px solid #2b2b2b;background:#fff;cursor:pointer}
+.mat .ph img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.mat .ph.go{box-shadow:0 0 0 5px var(--gold)}
+.mat .tag{font-family:"Fredoka",sans-serif;font-weight:700;font-size:20px;color:#1f6fae;opacity:0;transition:opacity .3s}
+.mat.on .ph{border-color:#20b486}.mat.on .tag{opacity:1}
+#stage .hidden{display:none}
+</style>
+</head>
+<body>
+<div id="stage">
+  <!-- workbook page 12 -->
+  <section id="r1">
+    <div class="ask" id="ask1">This bouquet is for you!</div>
+    <div class="field" id="field"><img src="wb/bouquet.webp" alt="A bouquet with four dotted flowers: rose, tulip, sunflowers, daisy"></div>
+    <div class="hint" id="hint1">Listen, then tap the right flower.</div>
+  </section>
+  <!-- workbook page 13 -->
+  <section id="r2" class="hidden">
+    <div class="ask" id="ask2">You are so sweet.</div>
+    <div class="whois" id="whois"><h3>Who is your honey?</h3><div class="chips" id="chips"></div><div class="line" id="honeyLine">My honey is ____.</div></div>
+    <div class="pad" id="pad2"><img src="wb/face-frame.webp" alt=""><canvas id="cv2" width="600" height="802"></canvas></div>
+    <div class="paints" id="paints2"></div>
+    <div class="ddone" id="done2"><button class="clb clb--go clb--lg" id="drawDone2" disabled>Done <span class="i">✓</span></button></div>
+  </section>
+  <!-- workbook page 14 -->
+  <section id="r3" class="hidden">
+    <div class="ask" id="ask3">Draw your family in the house.</div>
+    <div class="card" id="card3"><p>A home is more than a house.</p><p>A home is where love grows.</p><p>A home is where we care for each other.</p></div>
+    <div class="pad" id="pad3"><img src="wb/house.webp" alt=""><canvas id="cv3" width="720" height="792"></canvas></div>
+    <div class="paints" id="paints3"></div>
+    <div class="ddone" id="done3"><button class="clb clb--go clb--lg" id="drawDone3" disabled>Done <span class="i">✓</span></button></div>
+  </section>
+  <!-- workbook page 15 -->
+  <section id="r4" class="hidden">
+    <div class="ask" id="ask4">Building materials: match the words to the pictures.</div>
+    <div class="words" id="words"></div>
+    <div class="mats" id="mats"></div>
+    <div class="hint" id="hint4">Drag a word onto its picture, or tap the word and then the picture.</div>
+  </section>
+</div>
+<script src="../../months/current.js"></script>
+<script>
+  (function () { const p = new URLSearchParams(location.search); window.SB_BOOK = { id: p.get('id') || 'b8-2', key: p.get('key') || 'B1' }; })();
+</script>
+<script src="../../ui/mate.js"></script>
+<script src="../../ui/rotate.js" data-base="../../"></script>
+<script src="../../ui/stage.js" data-base="../../"></script>
+<script src="../../ui/mate-lines.js"></script>
+<script src="../sugar-bugs/kit.js"></script>
+<script src="../book/draw.js"></script>
+<script src="../../ui/cl-bubble.js"></script>
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  SB.bar('think','This bouquet is for you!');
+  SB.gerry();
+  document.querySelectorAll('section').forEach(s=>{ s.style.position='absolute'; s.style.inset='0'; });
+  const title=t=>{ const el=document.querySelector('.title'); if(el) el.textContent=t; };
+  const go=(from,to)=>{ $(from).classList.add('hidden'); $(to).classList.remove('hidden'); };
+  const shake=el=>{ SB.sfx.bad(); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); };
+  const KEY='cl.bk.'+SB_BOOK.id+'.';
+
+  /* ---------- round 1 (page 12): the bouquet. listen, tap the flower ---------- */
+  const FLOWERS=[{id:'rose',say:'Rose!',box:[345,385,615,600],after:'A red rose. It smells sweet!'},
+                 {id:'tulip',say:'Tulip!',box:[620,395,850,600],after:'A yellow tulip, like a little cup.'},
+                 {id:'sunflowers',say:'Sunflowers!',box:[320,610,590,850],after:'Sunflowers turn to the sun.'},
+                 {id:'daisy',say:'Daisy!',box:[600,610,860,850],after:'A white daisy. Your bouquet is ready!'}];
+  const ORDER1=[1,2,0,3]; let q1=0;
+  function askFlower(){ SB.say(FLOWERS[ORDER1[q1]].say,{el:$('ask1'),gerry:true,rate:.85,replay:false}); }
+  function r1(){
+    const f=$("field"), k=680/1080, ox=60, oy=290;
+    FLOWERS.forEach(fl=>{
+      const b=document.createElement('button'); b.className='fig'; b.dataset.id=fl.id; b.setAttribute('aria-label',fl.say);
+      b.style.left=((fl.box[0]-ox)*k)+'px'; b.style.top=((fl.box[1]-oy)*k)+'px'; b.style.width=((fl.box[2]-fl.box[0])*k)+'px'; b.style.height=((fl.box[3]-fl.box[1])*k)+'px';
+      b.innerHTML='<img src="wb/'+fl.id+'.webp" alt="">';
+      b.addEventListener('click',()=>{
+        if(b.classList.contains('done')) return;
+        const want=FLOWERS[ORDER1[q1]];
+        if(fl.id!==want.id){ shake(b); SB.say('Listen again. '+want.say,{el:$('ask1'),gerry:true,rate:.85,replay:false}); return; }
+        SB.sfx.good(); b.classList.add('done'); SB.sparkle(b,12); q1++;
+        SB.say(fl.after).then(()=>{ if(q1<FLOWERS.length) askFlower(); else { SB.star(f); SB.say('Make a flower bouquet. Give it to your honey!').then(()=>setTimeout(r2,400)); } });
+      });
+      f.appendChild(b);
+    });
+    SB.say('This bouquet is for you! Listen, then tap the flower.').then(askFlower);
+  }
+
+  /* ---------- round 2 (page 13): You are so sweet. who is your honey? draw the face ---------- */
+  const HONEYS=['Mom','Dad','Grandma','Grandpa','Sister','Brother','Friend'];
+  let honey='', d2=null;
+  function r2(){
+    go('r1','r2'); title('You are so sweet.');
+    HONEYS.forEach(h=>{ const c=document.createElement('button'); c.className='chip'; c.textContent=h; c.addEventListener('click',()=>{ honey=h; [...$('chips').children].forEach(x=>x.classList.toggle('on',x===c)); $('honeyLine').textContent='My honey is '+h+'.'; SB.sfx.pop(); SB.say('My honey is '+h+'. Look at your honey’s face. Draw the eyes, nose, mouth and hair.'); }); $('chips').appendChild(c); });
+    d2=SBDraw.make({pad:$('pad2'),canvas:$('cv2'),paints:$('paints2'),done:$('drawDone2')});
+    $('drawDone2').addEventListener('click',()=>{
+      if(!d2.strokes()) return;
+      if(!honey){ SB.say('Who is your honey? Tap a name first.'); shake($('whois')); return; }
+      SB.store.set(KEY+'draw.honey',d2.snapshot(300,401)); SB.store.set(KEY+'honey',honey);
+      SB.sfx.good(); SB.star($('pad2')); SB.sparkle($('pad2'),14); $('drawDone2').disabled=true;
+      SB.say('What a lovely face! '+honey+' will love your flowers.').then(()=>setTimeout(r3,300));
+    });
+    SB.say('You are so sweet. Who is your honey? Is it Mom or Dad? Or someone else? Tap a name, then draw your honey’s face.');
+  }
+
+  /* ---------- round 3 (page 14): draw your family in the house ---------- */
+  let d3=null;
+  function r3(){
+    go('r2','r3'); title('A home is where love grows');
+    d3=SBDraw.make({pad:$('pad3'),canvas:$('cv3'),paints:$('paints3'),done:$('drawDone3')});
+    $('drawDone3').addEventListener('click',()=>{
+      if(!d3.strokes()) return;
+      SB.store.set(KEY+'draw.family',d3.snapshot(420,462));
+      SB.sfx.good(); SB.star($('pad3')); SB.sparkle($('pad3'),14); $('drawDone3').disabled=true;
+      SB.say('Home is where love is! Now, what are houses made of?').then(()=>setTimeout(r4,300));
+    });
+    SB.say('A home is more than a house. A home is where love grows. A home is where we care for each other. Draw your family in the house!',{el:$('card3'),gerry:true,rate:.9,replay:false}).then(()=>{ $('card3').innerHTML='<p>A home is more than a house.</p><p>A home is where love grows.</p><p>A home is where we care for each other.</p>'; });
+  }
+
+  /* ---------- round 4 (page 15): building materials. match the words to the pictures ---------- */
+  const MATS=[{id:'bricks',name:'Bricks',fact:'Bricks! Many houses are made of bricks.'},{id:'wood',name:'Wood',fact:'Wood comes from trees.'},{id:'stone',name:'Stone',fact:'Stone is hard and strong.'},
+              {id:'glass',name:'Glass',fact:'Glass! We can see through the windows.'},{id:'straw',name:'Straw',fact:'Straw is light. The giraffe’s home has grass!'},{id:'concrete',name:'Concrete',fact:'Concrete is grey and very strong.'}];
+  const PICS=['wood','straw','bricks','stone','glass','concrete']; let matched=0;
+  function r4(){
+    go('r3','r4'); title('Building materials');
+    MATS.forEach(m=>{ const b=document.createElement('button'); b.className='word'; b.dataset.id=m.id; b.textContent=m.name; $('words').appendChild(b); });
+    PICS.forEach(id=>{ const row=document.createElement('div'); row.className='mat'; row.dataset.id=id; row.innerHTML='<div class="ph" data-id="'+id+'" role="button" aria-label="A picture of a building material"><img src="wb/'+id+'.webp" alt=""></div><span class="tag"></span>'; $('mats').appendChild(row); });
+    SB.dragTap([...$('words').children],[...document.querySelectorAll('.mat .ph')],(el,ph)=>{
+      const row=ph.parentElement; if(row.classList.contains('on')) return;
+      const m=MATS.find(x=>x.id===el.dataset.id);
+      if(ph.dataset.id!==m.id){ shake(el); SB.say('Hmm, look again. Where is the '+m.name.toLowerCase()+'?'); return; }
+      SB.sfx.good(); el.dataset.placed='1'; el.remove(); row.classList.add('on'); row.querySelector('.tag').textContent=m.name; SB.sparkle(ph,10); matched++;
+      SB.say(m.fact).then(()=>{ if(matched===MATS.length){ SB.star($('mats')); SB.finish('think',{title:'Super thinking!',text:'You made a bouquet, drew your honey and your family, and matched the building materials. Your next step is EXPRESS.',img:'wb/houses.webp'}); } });
+    });
+    SB.say('Building materials! What are houses made of? Match the words to the pictures.');
+  }
+
+  SB.startScreen({kicker:'STEP 4 · THINK',title:'This bouquet is for you!',text:'Make a bouquet, draw your honey and your family, and find out what houses are made of, just like in your workbook.',img:'wb/boy.webp'}).then(r1);
+})();
+</script>
+</body>
+</html>

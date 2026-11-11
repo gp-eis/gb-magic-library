@@ -21,6 +21,7 @@
 /* the room */
 .pa-room{position:absolute;inset:0;display:grid;grid-template-columns:236px 1fr;background:#f7f5fb}
 .pa-nav{background:#2f2160;color:#fff;padding:26px 16px 20px;display:flex;flex-direction:column;gap:6px}
+.pa-logo{margin:0 6px 14px;background:#fffaf0;border-radius:14px;padding:10px 12px}.pa-logo img{display:block;width:100%;height:auto}
 .pa-brand{padding:0 10px 18px}
 .pa-brand b{display:block;font-size:20px;font-weight:700;line-height:1.25}
 .pa-brand span{display:block;margin-top:4px;font-size:12px;letter-spacing:.12em;color:#c9bdf0;font-family:"Sora",sans-serif}

@@ -15,13 +15,13 @@
 
   /* ---------- progress on this device ---------- */
   function realSteps() {
-    const s = {}; ['read', 'question', 'think', 'express'].forEach(k => { s[k] = get('cl.sb5.' + k) === '1'; });
+    const s = { peek: get('cl.sb5.explore') === '1' }; ['read', 'question', 'think', 'express'].forEach(k => { s[k] = get('cl.sb5.' + k) === '1'; });
     s.create = get('cl.sb5.createDone') === '1'; return s;
   }
   function bookState(level, i) {
     const key = level + i;
-    if (key === REAL) { const n = Object.values(realSteps()).filter(Boolean).length; return { n, of: 5 }; }
-    const p = (window.clProgress ? window.clProgress() : {})[key] || 0; return { n: Math.min(p, 5), of: 5 };
+    if (key === REAL) { const n = Object.values(realSteps()).filter(Boolean).length; return { n, of: 6 }; }
+    const p = (window.clProgress ? window.clProgress() : {})[key] || 0; return { n: Math.min(p, 6), of: 6 };
   }
   function pill(st) {
     if (st.n >= st.of) return '<span class="pa-pill done">완료 ✓</span>';
@@ -77,6 +77,7 @@
   function room() {
     box.innerHTML = `<div class="pa-room">
       <nav class="pa-nav" role="tablist">
+        <div class="pa-logo"><img src="art/logo/logo-small.webp" alt="GB Magic Library"></div>
         <div class="pa-brand"><b>부모님 공간</b><span>FOR PARENTS</span></div>
         ${TABS.map(([id, ic, ko, en]) => `<button class="tab" type="button" role="tab" data-tab="${id}" aria-selected="${tab === id}"><i>${ic}</i><span>${ko}<small>${en}</small></span></button>`).join('')}
         <div class="spacer"></div>

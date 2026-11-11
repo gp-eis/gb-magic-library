@@ -20,6 +20,7 @@
 .answers{left:440px;width:640px;top:290px;display:flex;justify-content:center;gap:36px;z-index:5}
 .answers .card{width:290px;height:300px;grid-template-rows:1fr auto;padding:16px 0 16px}
 .answers .card img{max-width:86%;max-height:196px;border-radius:16px;object-fit:contain}
+.answers .card .lab{font-size:19px;line-height:1.15;padding:0 10px}
 .answers .card.dim{opacity:.35}
 .next{right:40px;bottom:36px;z-index:18}
 </style>
@@ -42,6 +43,11 @@
     window.SB_BOOK = { id: id || 'unknown', key: p.get('key') || 'B0' };
   })();
 </script>
+<script src="../../stories/index.js"></script>
+<script>
+  /* questions written on the designer's final storybook (stories/<id>/questions.js) */
+  if ((window.CLQuestion || []).includes(SB_BOOK.id)) document.write('<script src="../../stories/' + SB_BOOK.id + '/questions.js"><\/script>');
+</script>
 <script src="../../ui/mate.js"></script>
 <script src="../../ui/rotate.js" data-base="../../"></script>
 <script src="../../ui/stage.js" data-base="../../"></script>
@@ -53,7 +59,8 @@
   const $=id=>document.getElementById(id), B=window.MB, R='../../';
   SB.bar('question','Ask and answer');
   SB.gerry();
-  const Q=(B&&B.activities&&B.activities.question)||[];
+  const SQ=window.SB_QUESTIONS&&SB_QUESTIONS.id===SB_BOOK.id?SB_QUESTIONS:null, SR='stories/'+SB_BOOK.id+'/';
+  const Q=SQ?SQ.questions.map(q=>({q:q.q,img:SR+q.img,choices:q.choices.map(c=>({label:c.label,img:SR+c.img})),correct:q.correct,praise:q.praise})):((B&&B.activities&&B.activities.question)||[]);
   if(!Q.length){ $('qbubble').textContent='This book’s questions are not ready yet.'; return; }
   let r=0, locked=false, firstTry=true;
 
@@ -86,7 +93,7 @@
     if(r<Q.length) round();
     else SB.finish('question',{title:'Great answers!',text:'You answered every question about '+B.title+'. Next: THINK about the story!',img:R+B.cover});
   });
-  SB.startScreen({kicker:'STEP 2 · QUESTION',title:B.title,text:'Listen to each question and tap the right picture.',img:R+B.cover}).then(round);
+  SB.startScreen({kicker:'STEP 3 · QUESTION',title:B.title,text:'Listen to each question and tap the right picture.',img:R+B.cover}).then(round);
 })();
 </script>
 </body>

@@ -11,6 +11,9 @@
 <style>
 .pic{left:200px;top:108px;width:330px;height:330px;border-radius:34px;background:#fff;box-shadow:0 8px 0 #e6d6b8,0 14px 30px rgba(60,40,10,.12);display:grid;place-items:center;z-index:5}
 .pic img{max-width:80%;max-height:80%;object-fit:contain}
+.pic.page{overflow:hidden;left:222px;width:286px}.pic.page img{max-width:none;max-height:none;width:100%;height:100%;object-fit:cover}   /* a printed storybook page */
+.sentence.rows3{font-size:50px}.sentence.rows4{font-size:42px}.sentence.rows5{font-size:35px}.sentence.rows6{font-size:30px}
+.speaker{position:absolute;left:570px;top:84px;font-family:"Sora",sans-serif;font-weight:600;font-size:13px;letter-spacing:.14em;color:var(--plum);z-index:5;text-transform:uppercase}
 .pic .emoji{font-size:170px}
 .count{left:200px;top:452px;width:330px;text-align:center;font-family:"Sora",sans-serif;font-weight:600;font-size:14px;letter-spacing:.14em;color:var(--plum);z-index:5}
 .sentence{left:570px;top:120px;width:560px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:56px;line-height:1.15;color:var(--ink);z-index:5}
@@ -34,6 +37,7 @@
 <div id="stage">
   <div class="pic" id="pic"></div>
   <div class="count" id="count"></div>
+  <div class="speaker" id="who"></div>
   <div class="sentence" id="sentence" aria-live="polite"></div>
   <div class="actions">
     <button class="act go" id="listen"><i>👂</i>Listen</button>
@@ -54,6 +58,11 @@
     window.SB_BOOK = { id: id || 'unknown', key: p.get('key') || 'B0' };
   })();
 </script>
+<script src="../../stories/index.js"></script>
+<script>
+  /* the printed storybook of this book, when the designer's final pages are in (stories/<id>/story.js) */
+  if ((window.CLStories || []).includes(SB_BOOK.id)) document.write('<script src="../../stories/' + SB_BOOK.id + '/story.js"><\/script>');
+</script>
 <script src="../../ui/mate.js"></script>
 <script src="../../ui/rotate.js" data-base="../../"></script>
 <script src="../../ui/stage.js" data-base="../../"></script>
@@ -65,7 +74,10 @@
   const $=id=>document.getElementById(id);
   const R='../../', B=window.MB;
   /* the book's own sentences to say, written for this library (activities.express in the month data) */
-  const LINES=((B&&B.activities&&B.activities.express)||[]).map((e,n)=>({id:'s'+(n+1),text:e.text,img:e.img?R+e.img:(B?R+B.cover:'')}));
+  const ST=window.SB_STORY&&SB_STORY.id===SB_BOOK.id?SB_STORY:null;
+  const LINES=ST?ST.pages.map(p=>{ let n=0; const breaks=p.lines.slice(0,-1).map(l=>(n+=l.text.split(' ').length)-1);
+      return {id:p.id,text:p.lines.map(l=>l.text).join(' '),breaks,who:p.who||'',rows:p.lines.length,page:true,img:R+'stories/'+ST.id+'/'+p.picture}; })
+    :((B&&B.activities&&B.activities.express)||[]).map((e,n)=>({id:'s'+(n+1),text:e.text,breaks:[],who:'',rows:1,img:e.img?R+e.img:(B?R+B.cover:'')}));
   let i=0, clips={}, recorder=null, stream=null, micOK=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia&&window.MediaRecorder);
   SB.bar('express','Say it!');
   SB.gerry();
@@ -78,9 +90,10 @@
 
   function show(){
     const L=LINES[i];
-    $('count').textContent='SENTENCE '+(i+1)+' OF '+LINES.length;
+    $('count').textContent=(ST?'PAGE ':'SENTENCE ')+(i+1)+' OF '+LINES.length; $('who').textContent=L.who;
+    $('pic').className='pic'+(L.page?' page':''); $('sentence').className='sentence'+(ST?' rows'+Math.max(3,Math.min(6,L.rows)):'');
     $('pic').innerHTML=L.img?'<img src="'+L.img+'" alt="">':'<span class="emoji" aria-hidden="true">'+L.emoji+'</span>';
-    $('sentence').innerHTML=L.text.split(' ').map((w,n)=>'<span class="w" data-i="'+n+'">'+w+'</span>').join(' ');
+    $('sentence').innerHTML=L.text.split(' ').map((w,n)=>'<span class="w" data-i="'+n+'">'+w+'</span>'+(L.breaks.includes(n)?'<br>':' ')).join('');   // one printed line per row
     $('listen').className='act go'; $('say').disabled=true; $('say').className='act'; $('hear').disabled=!clips[L.id]; $('hear').className='act';
     $('sayLab').textContent=micOK?'Say it!':'I said it!';
     $('next').classList.add('hidden');
@@ -88,7 +101,7 @@
   }
   $('listen').addEventListener('click',()=>{
     $('listen').className='act done-mark';
-    SB.say(LINES[i].text,{el:$('sentence'),gerry:true,rate:.8,replay:false}).then(()=>{ $('say').disabled=false; $('say').className='act go'; SB.say(micOK?SB.line('express.yourTurnMic'):SB.line('express.yourTurnSay')); });
+    SB.say(LINES[i].text,{el:$('sentence'),gerry:true,rate:.8,replay:false,breaks:LINES[i].breaks}).then(()=>{ $('say').disabled=false; $('say').className='act go'; SB.say(micOK?SB.line('express.yourTurnMic'):SB.line('express.yourTurnSay')); });
   });
 
   $('say').addEventListener('click',async()=>{
@@ -100,7 +113,7 @@
     const chunks=[]; recorder=new MediaRecorder(stream); recorder.ondataavailable=e=>{ if(e.data.size) chunks.push(e.data); };
     recorder.onstop=()=>{ meterStop(); $('say').className='act done-mark'; $('sayLab').textContent='Say it again'; said(new Blob(chunks,{type:recorder.mimeType||'audio/webm'})); };
     recorder.start(); $('say').className='act rec'; $('sayLab').textContent='Stop'; meterStart();
-    setTimeout(()=>{ if(recorder&&recorder.state==='recording') recorder.stop(); },6000);
+    setTimeout(()=>{ if(recorder&&recorder.state==='recording') recorder.stop(); },6000+500*LINES[i].text.split(' ').length);
   });
   function said(blob){
     const L=LINES[i]; const first=!clips[L.id];
@@ -119,7 +132,7 @@
   $('nextBtn').addEventListener('click',()=>{
     SB.stopVoice(); i++;
     if(i<LINES.length) show();
-    else { if(stream) stream.getTracks().forEach(t=>t.stop()); SB.finish('express',{title:'You said it all!',text:'Your voice is saved. Your last step is CREATE!',img:(B?R+B.cover:'')}); }
+    else { if(stream) stream.getTracks().forEach(t=>t.stop()); SB.finish('express',{title:ST?'You read the whole story!':'You said it all!',text:'Your voice is saved. Your last step is CREATE!',img:(B?R+B.cover:'')}); }
   });
 
   /* live loudness bars while recording */
@@ -135,7 +148,7 @@
   function meterStop(){ cancelAnimationFrame(raf); $('meter').classList.add('hidden'); }
 
   if(!micOK) $('note').textContent='Recording isn’t available here, so just say it out loud.';
-  SB.startScreen({kicker:'STEP 4 · EXPRESS',title:'Say it!',text:'Listen to '+(window.CLMate?CLMate.name():'Gerry')+', then say each sentence yourself. You can hear your own voice!',img:(B?R+B.cover:'')}).then(show);
+  SB.startScreen({kicker:'STEP 5 · EXPRESS',title:'Say it!',text:'Listen to '+(window.CLMate?CLMate.name():'Gerry')+(ST?' read each page of the story, then say it yourself.':', then say each sentence yourself.')+' You can hear your own voice!',img:(B?R+B.cover:'')}).then(show);
 })();
 </script>
 </body>

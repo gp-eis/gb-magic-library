@@ -179,7 +179,7 @@ h1{font-family:var(--f-ui);font-weight:600;font-size:clamp(26px,4vw,34px);margin
 .qinfo .lv{display:inline-block;font-family:"Fredoka";font-weight:700;font-size:15px;color:#2a2340;background:#ffd36b;padding:5px 14px;border-radius:999px}
 .qinfo h2{font-family:"Fredoka";font-weight:700;font-size:40px;line-height:1.05;margin:10px 0 6px}
 .qinfo p{margin:0;font-size:18px;font-weight:700;color:#e2d8ff}
-.trail{position:absolute;left:660px;top:100px;width:480px;height:640px}
+.trail{position:absolute;left:600px;top:100px;width:560px;height:660px}
 .trail svg{position:absolute;inset:0}
 .stop{position:absolute;width:220px;display:flex;align-items:center;gap:14px}
 .stop .dot{width:96px;height:96px;flex:none;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ffffff,#e6dcff 60%,#b9a2ff);display:grid;place-items:center;font-size:42px;position:relative;box-shadow:0 0 0 4px rgba(255,255,255,.4)}
@@ -216,6 +216,9 @@ h1{font-family:var(--f-ui);font-weight:600;font-size:clamp(26px,4vw,34px);margin
 @keyframes halo{0%,100%{opacity:.35}50%{opacity:1}}
 .plaque-text{position:absolute;left:589px;top:461px;transform:translate(-50%,-50%);pointer-events:none}
 .plaque-text .wordmark{font-size:23px;gap:6px}
+.cl-logo{display:block;height:auto}
+.plaque-text .cl-logo{width:200px;filter:drop-shadow(0 1px 0 rgba(255,250,235,.9))}
+.topbar .cl-logo{height:44px;width:auto;background:rgba(255,255,255,.88);padding:7px 16px;border-radius:16px;box-sizing:content-box}
 .plaque-text .wordmark small{font-size:10px;padding:2px 7px}
 #hall{background:#e9b56d}
 #cases{position:absolute;inset:0}
@@ -258,7 +261,7 @@ h1{font-family:var(--f-ui);font-weight:600;font-size:clamp(26px,4vw,34px);margin
 .row-btns{display:flex;gap:12px;justify-content:center}
 .stop .lab small{display:block;font-family:"Sora",sans-serif;font-size:12px;font-weight:600;letter-spacing:.16em;color:#ffd36b;margin-bottom:2px}
 .qextras{position:absolute;left:60px;top:600px;display:flex;gap:12px;z-index:6}
-#quest .bubble{left:auto;right:36px;bottom:22px}
+#quest .bubble{left:60px;right:auto;bottom:40px;max-width:520px}   /* under the title, clear of the six-stop trail */
 [hidden]{display:none!important}
 .qcover{transition:transform .2s}
 .qcover.explorable{cursor:pointer}
@@ -266,7 +269,16 @@ h1{font-family:var(--f-ui);font-weight:600;font-size:clamp(26px,4vw,34px);margin
 .qcover.explorable:focus-visible{outline:5px solid #fff;outline-offset:6px}
 .qcover.first{animation:coverGlow 1.6s ease-in-out infinite}
 @keyframes coverGlow{0%,100%{box-shadow:0 0 0 6px #ffd36b,0 0 40px rgba(255,211,107,.5)}50%{box-shadow:0 0 0 8px #ffd36b,0 0 70px 18px rgba(255,211,107,.95)}}
-.explore-tag{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:#ffd36b;color:#2a2340;font-family:"Fredoka",sans-serif;font-weight:700;font-size:21px;padding:8px 20px;border-radius:999px;box-shadow:0 4px 0 #c99a2e;white-space:nowrap;pointer-events:none}
+.peek-lab{position:absolute;left:340px;top:94px;transform:translateX(-50%);z-index:3;display:flex;align-items:center;gap:10px;font-family:"Fredoka";font-weight:700;font-size:19px;line-height:1.15;color:#fff;pointer-events:none;background:#5b3fa8;border-radius:999px;padding:5px 18px 5px 6px;box-shadow:0 4px 0 #42298a,0 0 18px rgba(255,211,107,.35)}
+.peek-lab .ico{width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#ffffff,#e6dcff 60%,#b9a2ff);display:grid;place-items:center;box-shadow:0 0 0 3px rgba(255,255,255,.4)}
+.peek-lab .ico svg{width:24px;height:24px}
+.peek-lab small{display:block;font-family:"Sora",sans-serif;font-size:12px;font-weight:600;letter-spacing:.16em;color:#ffd36b;margin-bottom:2px}
+.peek-lab .star{display:none;width:30px;height:30px;border-radius:50%;background:#ffd36b;color:#5b3fa8;font-size:16px;place-items:center;box-shadow:0 0 12px #ffd36b}
+.peek-lab.done .star{display:grid}
+.peek-lab.current .ico{box-shadow:0 0 0 4px #ffd36b,0 0 22px 6px rgba(255,211,107,.7);animation:hop 1.2s ease-in-out infinite}
+.stop .dot svg{width:60px;height:60px}
+.stop .dot img{width:74px;height:74px;object-fit:contain;filter:drop-shadow(0 2px 2px rgba(60,30,120,.25))}
+.explore-tag{display:none;position:absolute;left:50%;bottom:16px;transform:translateX(-50%);background:#ffd36b;color:#2a2340;font-family:"Fredoka",sans-serif;font-weight:700;font-size:21px;padding:8px 20px;border-radius:999px;box-shadow:0 4px 0 #c99a2e;white-space:nowrap;pointer-events:none}
 .qcover.first .explore-tag{animation:tagBob 1.6s ease-in-out infinite}
 @keyframes tagBob{50%{transform:translateX(-50%) translateY(-6px)}}
 .cta.danger{background:#c2412f;box-shadow:0 6px 0 #8f2c1f}
@@ -282,6 +294,7 @@ h1{font-family:var(--f-ui);font-weight:600;font-size:clamp(26px,4vw,34px);margin
 <script src="ui/stage.js" data-base=""></script>
 <script src="ui/mate-lines.js"></script>
 <script src="months/current.js"></script>
+<script src="stories/index.js"></script>
 <script src="months/catalog.js"></script>
 <link rel="stylesheet" href="ui/cl-buttons.css">
 <link rel="stylesheet" href="ui/cl-bubble.css">
@@ -321,7 +334,7 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
 <div class="page">
   <header class="intro">
     <h1>GB Magic Library, with Bye-Bye Sugar Bugs</h1>
-    <p>The magic library with your real Sugar Bugs activities inside. Walk in, open <b>Bye-Bye Sugar Bugs</b> on the Level B shelf, and follow its four quests: explore the cover, watch the story, make your own book by tracing and coloring, then read it. Your finished book appears in My Library. The other books still use stand-in quests.</p>
+    <p>The magic library with your real Sugar Bugs activities inside. Walk in, open <b>Bye-Bye Sugar Bugs</b> on the Level B shelf, and follow its six steps: peek at the cover, watch the story video, question, think, express, then make your own book by tracing and coloring. Your finished book appears in My Library. The other books still use stand-in quests.</p>
   </header>
 
   <div class="device"><div class="screen" id="screen">
@@ -334,7 +347,7 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
           <div class="owl" aria-hidden="true"><div class="bob"><img class="up" src="art/owl-up.webp" alt=""><img class="down" src="art/owl-down.webp" alt=""></div></div>
           <div class="doorhalo"></div>
           <div class="doorglow"></div>
-          <div class="plaque-text"><span class="wordmark"><small>GB</small>Magic Library</span></div>
+          <!-- the GB Magic Library logo is engraved in the castle painting (art/exterior-clean.webp) -->
           <div class="guide" style="left:1028px;top:604px;width:100px"><img class="gf on" data-f="idle" src="art/gerry-idle.webp" alt=""><img class="gf" data-f="talk" src="art/gerry-talk.webp" alt=""><img class="gf" data-f="blink" src="art/gerry-blink.webp" alt=""></div>
           <div class="bubble" id="outBubble" style="left:790px;top:520px;max-width:230px">Welcome, Anna! New magic books are here!</div>
         </div>
@@ -354,7 +367,7 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
         <div class="owlnote" id="owlnote"><img src="art/owl-up.webp" alt="">The owl brought 4 new books this month!</div>
         <div class="topbar clbar">
           <button class="clb" id="exitBtn"><span class="i">🚪</span>Exit</button>
-          <div class="clmid"><span class="wordmark"><small>GB</small>Magic Library</span></div>
+          <div class="clmid"><img class="cl-logo" src="art/logo/logo.webp" alt="GB Magic Library"></div>
           <div class="clright"><button class="clb clb--place" data-wardrobe type="button"><span class="i">👕</span>Wardrobe</button><button class="clb clb--place" id="myLibBtn"><span class="i">📚</span>My Library</button><span class="clchip" data-stars>⭐ 12</span><button class="clb clb--icon" data-sound type="button" aria-label="Turn My Mate’s voice off">🔊</button><button class="clb clb--ko parents" type="button" aria-label="부모님 메뉴">부모님</button><img class="clprofile" src="assets/ria.webp" alt="My profile"></div>
         </div>
       </section>
@@ -386,10 +399,11 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
           <div class="clmid"></div>
           <div class="clright"><button class="clb clb--place" id="qLibBtn"><span class="i">📚</span>My Library</button><span class="clchip" data-stars>⭐ 12</span><button class="clb clb--icon" data-sound type="button" aria-label="Turn My Mate’s voice off">🔊</button><button class="clb clb--ko parents" type="button" aria-label="부모님 메뉴">부모님</button><img class="clprofile" src="assets/ria.webp" alt="My profile"></div>
         </div>
-        <div class="qcover" id="qcover"><img id="qimg" src="assets/month8-week2.webp" alt=""><span class="explore-tag" id="exploreTag" hidden>🔍 Tap to explore</span></div>
+        <div class="peek-lab" id="peekLab"><span class="ico"><svg viewBox="0 0 48 48"><path d="M4 24s8-12 20-12 20 12 20 12-8 12-20 12S4 24 4 24z" fill="#fff" stroke="#5b3fa8" stroke-width="3"/><circle cx="24" cy="24" r="7" fill="#5b3fa8"/><circle cx="26.5" cy="21.5" r="2.5" fill="#fff"/></svg></span><span><small>PEEK</small>Peek at the cover!</span><span class="star">★</span></div>
+        <div class="qcover" id="qcover"><img id="qimg" src="assets/month8-week2.webp" alt=""><span class="explore-tag" id="exploreTag" hidden></span></div>
         <div class="qinfo"><span class="lv" id="qlv">Level B</span><h2 id="qtitle">Where Is Your Home?</h2><p id="qprog">2 of 4 quests done</p></div>
         <div class="trail" id="trail">
-          <svg viewBox="0 0 480 640" aria-hidden="true"><path d="M110 70 C 330 90, 360 180, 330 230 S 90 300, 110 390 S 360 480, 330 560" fill="none" stroke="#ffd36b" stroke-width="10" stroke-linecap="round" stroke-dasharray="2 24" opacity=".85"/></svg>
+          <svg viewBox="0 0 560 660" aria-hidden="true"><path d="M 16 60 C 70 60, 100 48, 158 48 C 268 48, 268 166, 378 166 C 268 166, 268 284, 158 284 C 268 284, 268 402, 378 402 C 268 402, 268 520, 158 520" fill="none" stroke="#ffd36b" stroke-width="10" stroke-linecap="round" stroke-dasharray="2 24" opacity=".85"/></svg>
         </div>
         <div class="qextras" id="qExtras" hidden><button class="clb clb--place" id="openBookBtn" hidden><span class="i">📖</span>Open my book</button></div>
         <div class="bubble" id="qBubble">Tap the glowing star!</div>
@@ -504,7 +518,7 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
     return {id:b.id,key:L+i,t:b.title,c:b.cover,cat:'Week '+b.week,video:b.video,act:b.activities||{},custom:b.custom};
   }
   window.clBook=bookOf;
-  const STEP_KEYS=['read','question','think','express','create'];
+  const STEP_KEYS=['peek','read','question','think','express','create'];   // PEEK (cover) · VIDEO · QUESTION · THINK · EXPRESS · CREATE
   function bflag(id,step,set){ const k='cl.bk.'+id+'.'+step; try{ if(set){ localStorage.setItem(k,'1'); return true; } return localStorage.getItem(k)==='1'; }catch(e){ return false; } }
   function bookSteps(L,i){ const b=bookOf(L,i); return STEP_KEYS.map(s=>bflag(b.id,s)); }
   const QUESTS=[['📖','Read the story','Reading time!','In the real product, the storybook opens here with narration.'],
@@ -537,7 +551,7 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
   window.clStars=()=>stars; window.clDrawStars=drawStars; window.clProgress=()=>progress;
   function bump(){ document.querySelectorAll('[data-stars]').forEach(e=>{e.classList.add('bump');setTimeout(()=>e.classList.remove('bump'),220);}); }
   function tagFor(k){const p=progress[k]||0, n=totalOf(k); return p>=n?['done','★ Done']:p>0?['part',p+'/'+n]:['new','✨ NEW'];}
-  function totalOf(k){ return 5; }
+  function totalOf(k){ return 6; }
 
   // Ledge positions measured on the painted hall (app coordinates).
   const HALL={A:{x:86,w:259,ledges:[431,521]},B:{x:458,w:262,ledges:[440,527]},C:{x:836,w:261,ledges:[431,521]}};
@@ -573,7 +587,7 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
         const p=progress[k], L=k[0], i=+k.slice(1), bk=bookOf(L,i);
         const b=document.createElement('button'); b.className='nbook'; b.dataset.key=k;
         b.setAttribute('aria-label','Level '+L+', '+bk.t+(p>=totalOf(k)?', finished':', '+p+' of '+totalOf(k)+' steps'));
-        b.innerHTML='<img src="'+bk.c+'" alt="">'+(p>=totalOf(k)?'<span class="seal">★</span>':'<span class="mark"></span><span class="count">'+p+'/5</span>');
+        b.innerHTML='<img src="'+bk.c+'" alt="">'+(p>=totalOf(k)?'<span class="seal">★</span>':'<span class="mark"></span><span class="count">'+p+'/'+totalOf(k)+'</span>');
         b.style.left=(s.x+pad+(n%2)*114)+'px'; b.style.top=(s.ledges[n<2?0:1]-58)+'px';
         // a book the child has started making opens like a real storybook (their own pages so far, marked as still
         // being made or finished); other books open their quest
@@ -676,42 +690,44 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
     const flyer=await fly(bookOf(current.L,current.i).c,{left:60,top:120,width:560,height:315}, rectIn(btn.querySelector('img')));
     flyer.remove(); btn.style.visibility='';
     const p=progress[current.L+current.i]||0;
-    $('hallBubble').textContent=p>=5?ml('hallBookDone'):ml('hallArrive');
+    $('hallBubble').textContent=p>=6?ml('hallBookDone'):ml('hallArrive');
     current=null; busy=false;
   }
 
   // stand-ins for steps a book does not have yet
   // stand-ins for steps whose activities have not been written for this book yet (content/m<N>/<id>/activities.json)
-  const SOON={question:['❓','Question time!','Questions about this story are on their way. Tap to collect your star!'],
+  const SOON={peek:['👀','Peek time!','Peeking at this cover is on its way. Tap to collect your star!'],
+              question:['❓','Question time!','Questions about this story are on their way. Tap to collect your star!'],
               think:['💭','Thinking time!','A thinking game made from this story is on its way. Tap to collect your star!'],
               express:['🗣️','Speaking time!','Saying sentences from this story is on its way. Tap to collect your star!'],
               create:['🎨','Making time!','Making your own book of this story is coming soon. Tap to collect your star!']};
   function drawTrail(){
     if(isReal()) return drawRealTrail();
-    setTrail(false); document.querySelector('#trail svg path').setAttribute('d',PATH5);
+    setTrail(bflag(bookOf(current.L,current.i).id,'peek'));
     const tr=$('trail'); tr.querySelectorAll('.stop').forEach(s=>s.remove());
     const state=bookSteps(current.L,current.i), next=state.findIndex(v=>!v), d=state.filter(Boolean).length;
-    REAL_STOPS.forEach((q,n)=>{
+    REAL_STOPS.forEach((q,i)=>{ const n=i+1;
       const st=document.createElement('button');
       st.className='stop '+(state[n]?'done':n===next?'current':'');
-      st.style.left=REAL_POS[n][0]+'px'; st.style.top=REAL_POS[n][1]+'px';
+      st.style.left=REAL_POS[i][0]+'px'; st.style.top=REAL_POS[i][1]+'px';
       st.innerHTML='<span class="dot">'+q[0]+'</span><span class="lab"><small>'+q[1]+'</small>'+q[2]+'</span>';
       st.setAttribute('aria-label',q[1]+': '+q[2]+(state[n]?', done':''));
       st.addEventListener('click',()=>tapStop(n));
       tr.appendChild(st);
     });
     $('openBookBtn').hidden=true;
-    $('qprog').textContent=d>=5?'All five steps done! This book has a gold seal.':'Read · Question · Think · Express · Create · '+d+' of 5 done';
-    const NAMES=['READ','QUESTION','THINK','EXPRESS','CREATE'];
+    $('qprog').textContent=d>=6?'All six steps done! This book has a gold seal.':'Peek · Video · Question · Think · Express · Create · '+d+' of 6 done';
+    const NAMES=['PEEK','VIDEO','QUESTION','THINK','EXPRESS','CREATE'];
     $('qBubble').textContent=d>=5?ml('questAllDone'):(d>0&&next>0&&CLLines.has('questResume'))?ml('questResume',{last:NAMES[next-1],step:NAMES[next]}):ml('quest.'+STEP_KEYS[next]);
   }
   let pending=null;
   function tapStop(n){
     if(isReal()) return realTap(n);
     const b=bookOf(current.L,current.i), q='&key='+b.key+'&id='+encodeURIComponent(b.id);
-    if(n===0) return openVideo(b.video);
-    if(n===1 && (b.act.question||[]).length) return leaveTo('activities/book/question.html?'+q.slice(1));
-    if(n===3 && (b.act.express||[]).length) return leaveTo('activities/book/express.html?'+q.slice(1));
+    if(n===1) return openVideo(b.video);
+    if(n===2 && ((b.act.question||[]).length || (window.CLQuestion||[]).includes(b.id))) return leaveTo('activities/book/question.html?'+q.slice(1));
+    if(n===3 && (window.CLThink||[]).includes(b.id)) return leaveTo('activities/'+b.id+'/think.html?'+q.slice(1));
+    if(n===4 && ((b.act.express||[]).length || (window.CLStories||[]).includes(b.id))) return leaveTo('activities/book/express.html?'+q.slice(1));
     pending=STEP_KEYS[n]; const m=SOON[pending];
     $('mIcon').textContent=m[0]; $('mTitle').textContent=m[1]; $('mText').textContent=m[2];
     $('modal').classList.add('on'); $('mBtn').focus();
@@ -719,11 +735,11 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
   // a step finished in the library itself (video, stand-ins): save it, give a star, celebrate a finished book
   async function stepDone(step){
     const b=bookOf(current.L,current.i), k=b.key;
-    if(!bflag(b.id,step)){ bflag(b.id,step,true); bonus(1); const n=STEP_KEYS.indexOf(step), stop=$('trail').querySelectorAll('.stop')[n]; if(stop){const r=rectIn(stop.querySelector('.dot'));sparkle(r.left+48,r.top+48,12);} }
+    if(!bflag(b.id,step)){ bflag(b.id,step,true); bonus(1); const n=STEP_KEYS.indexOf(step), stop=n>0?$('trail').querySelectorAll('.stop')[n-1]:null; if(stop){const r=rectIn(stop.querySelector('.dot'));sparkle(r.left+48,r.top+48,12);} }
     const before=progress[k]||0; progress[k]=bookSteps(current.L,current.i).filter(Boolean).length;
     stars=12+earned(); drawStars(); bump(); drawTrail();
     if(before===0 && progress[k]===1) toast('🔖 Saved to Reading now in My Library');
-    if(progress[k]>=5 && before<5){ await finishBook(); if(window.CLCerts) setTimeout(()=>CLCerts.check(),400); }
+    if(progress[k]>=6 && before<6){ await finishBook(); if(window.CLCerts) setTimeout(()=>CLCerts.check(),400); }
   }
   $('mBtn').addEventListener('click',()=>{ $('modal').classList.remove('on'); const s=pending; pending=null; if(s) stepDone(s); });
   function toast(msg){ const t=$('toast'); t.textContent=msg; t.classList.add('on'); setTimeout(()=>t.classList.remove('on'),2200); }
@@ -740,28 +756,24 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
   }
 
   // ===== Real book: Bye-Bye Sugar Bugs (Level B, week 4) follows the GB learning cycle =====
-  // READ (story video) · QUESTION · THINK · EXPRESS (activities/sugar-bugs/*.html) · CREATE (the book maker).
+  // PEEK (interactive cover) · VIDEO (story video) · QUESTION · THINK · EXPRESS (activities/sugar-bugs/*.html) · CREATE (the book maker).
   const REAL_KEY=(()=>{ if(!MONTH) return 'B3'; for(const L of ['A','B','C']){ const i=MONTH.levels[L].findIndex(b=>b.custom==='sugar-bugs'); if(i>=0) return L+i; } return 'none'; })(), REAL_BOOK='bye-bye-sugar-bugs';
   window.clRealKey=REAL_KEY;
-  const REAL_STOPS=[['📖','READ','Watch the story'],['❓','QUESTION','Ask and answer'],['💭','THINK','Sort it out'],['🗣️','EXPRESS','Say it!'],['🎨','CREATE','Make my book']];
-  const REAL_POS=[[40,0],[250,118],[40,236],[250,354],[40,472]];
-  const PATH4=document.querySelector('#trail svg path').getAttribute('d');
-  const PATH5='M90 48 C 300 60, 330 120, 300 166 S 70 230, 90 284 S 330 350, 300 402 S 70 470, 90 520';
+  const REAL_STOPS=[['<img src="art/steps/video.webp" alt="">','VIDEO','Watch the story'],['<img src="art/steps/question.webp" alt="">','QUESTION','Ask and answer'],['<img src="art/steps/think.webp" alt="">','THINK','Sort it out'],['<img src="art/steps/express.webp" alt="">','EXPRESS','Say it!'],['<img src="art/steps/create.webp" alt="">','CREATE','Make my book']];   // steps 2-6; step 1 (PEEK) is the cover itself
+  const REAL_POS=[[110,0],[330,118],[110,236],[330,354],[110,472]];   // dots alternate left/right, 100px apart; the trail path in the HTML joins their centres from the cover's edge
   const READER=(()=>{try{return JSON.parse(localStorage.getItem('gp.reading.profile.v1'))||{};}catch(e){return {};}})();
   const PROFILE=READER.id||'local-reader';
-  let realRecord=null, realState=[false,false,false,false,false], realMake='none', frameUrls=[];
+  let realRecord=null, realState=[false,false,false,false,false,false], realMake='none', frameUrls=[];
   function flag(k,set){ try{ if(set){ localStorage.setItem('cl.sb5.'+k,'1'); return true; } return localStorage.getItem('cl.sb5.'+k)==='1'; }catch(e){ return false; } }
   function bonus(n){ try{ localStorage.setItem('cl.sb5.stars',String((+localStorage.getItem('cl.sb5.stars')||0)+n)); }catch(e){} }
   function earned(){ try{ return +localStorage.getItem('cl.sb5.stars')||0; }catch(e){ return 0; } }
   function isReal(){ return !!current && (current.L+current.i)===REAL_KEY; }
-  function setTrail(real){
-    document.querySelector('#trail svg path').setAttribute('d', real?PATH5:PATH4);
-    $('qExtras').hidden=!real;
-    const c=$('qcover'), explored=flag('explore');
-    c.classList.toggle('explorable',real); c.classList.toggle('first',real&&!explored);
-    $('exploreTag').hidden=!real;
-    if(real){ c.setAttribute('role','button'); c.tabIndex=0; c.setAttribute('aria-label','Explore the Bye-Bye Sugar Bugs cover'); }
-    else { c.removeAttribute('role'); c.removeAttribute('tabindex'); c.removeAttribute('aria-label'); }
+  function setTrail(peeked){   // the cover is step one: it glows until it has been peeked at
+    $('qExtras').hidden=!isReal();
+    const c=$('qcover');
+    c.classList.add('explorable'); c.classList.toggle('first',!peeked);
+    $('peekLab').classList.toggle('done',peeked); $('peekLab').classList.toggle('current',!peeked);
+    c.setAttribute('role','button'); c.tabIndex=0; c.setAttribute('aria-label','Peek at the cover of '+$('qtitle').textContent);
   }
   async function refreshReal(){
     let records=[];
@@ -769,22 +781,22 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
     realRecord=records.find(r=>r.metadata&&r.metadata.bookCompleted)||records[0]||null;
     realMake=!realRecord?'none':(realRecord.metadata&&realRecord.metadata.bookCompleted)?'done':'part';
     if(realMake==='done'){ flag('createDone',true); if(!flag('createStars')){ flag('createStars',true); bonus(3); } }
-    realState=[flag('read'),flag('question'),flag('think'),flag('express'),realMake==='done'];
+    realState=[flag('explore'),flag('read'),flag('question'),flag('think'),flag('express'),realMake==='done'];
     if(REAL_KEY!=='none') progress[REAL_KEY]=realState.filter(Boolean).length;
     stars=12+earned(); drawStars(); if(window.CLCerts) CLCerts.check();
     buildShelves(); buildNook(); fillFrames();
     if(current && $('quest').classList.contains('on')) drawTrail();
   }
   function drawRealTrail(){
-    setTrail(true);
-    const tr=$('trail'); tr.querySelectorAll('.stop').forEach(s=>s.remove());
     const explored=flag('explore');
-    const next=explored?realState.findIndex(v=>!v):-1;
-    REAL_STOPS.forEach((q,n)=>{
+    setTrail(explored);
+    const tr=$('trail'); tr.querySelectorAll('.stop').forEach(s=>s.remove());
+    const next=realState.findIndex(v=>!v);
+    REAL_STOPS.forEach((q,i)=>{ const n=i+1;
       const st=document.createElement('button');
       st.className='stop '+(realState[n]?'done':n===next?'current':'');
-      st.style.left=REAL_POS[n][0]+'px'; st.style.top=REAL_POS[n][1]+'px';
-      const lab=(n===4&&realMake==='part')?'Keep making my book':q[2];
+      st.style.left=REAL_POS[i][0]+'px'; st.style.top=REAL_POS[i][1]+'px';
+      const lab=(n===5&&realMake==='part')?'Keep making my book':q[2];
       st.innerHTML='<span class="dot">'+q[0]+'</span><span class="lab"><small>'+q[1]+'</small>'+lab+'</span>';
       st.setAttribute('aria-label',q[1]+': '+lab+(realState[n]?', done':''));
       st.addEventListener('click',()=>realTap(n));
@@ -792,9 +804,9 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
     });
     $('openBookBtn').hidden=!realRecord;
     const d=realState.filter(Boolean).length;
-    $('qprog').textContent=d>=5?'All five steps done! Your book is in My Library.':'Read · Question · Think · Express · Create · '+d+' of 5 done';
-    const lines=[ml('quest.read'),'The sugar bug has questions for you!','Time to think! Which snacks make teeth happy?','Now say it out loud, like a real speaker!',realMake==='part'?'Let\u2019s keep making your book!':'Now make your very own book!'];
-    $('qBubble').textContent=!explored?'Tap the cover to explore it! Everything on it has something to say.':d>=5?'You did all five steps! Open your book anytime.':lines[next];
+    $('qprog').textContent=d>=6?'All six steps done! Your book is in My Library.':'Peek · Video · Question · Think · Express · Create · '+d+' of 6 done';
+    const lines=[ml('quest.peek'),ml('quest.read'),'The sugar bug has questions for you!','Time to think! Which snacks make teeth happy?','Now say it out loud, like a real speaker!',realMake==='part'?'Let\u2019s keep making your book!':'Now make your very own book!'];
+    $('qBubble').textContent=d>=6?'You did all six steps! Open your book anytime.':lines[next];
   }
   function pcBook(url){ url=String(url); return url.indexOf('coloring/index.html')===0 ? 'coloring/pc.html'+url.slice('coloring/index.html'.length) : url; }
   document.addEventListener('click',e=>{ const l=e.target.closest('a[href^="coloring/index.html"]'); if(l) l.setAttribute('href',pcBook(l.getAttribute('href'))); },true);
@@ -837,14 +849,16 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
     return {id:cfg.id,title:cfg.title,imageBlob,layout:'spread'};
   }
   function realTap(n){
-    if(n===0) openVideo();
-    else if(n===1) leaveTo('activities/sugar-bugs/question.html');
-    else if(n===2) leaveTo('activities/sugar-bugs/think.html');
-    else if(n===3) leaveTo('activities/sugar-bugs/express.html');
+    if(n===0) exploreCover();
+    else if(n===1) openVideo();
+    else if(n===2) leaveTo('activities/sugar-bugs/question.html');
+    else if(n===3) leaveTo('activities/sugar-bugs/think.html');
+    else if(n===4) leaveTo('activities/sugar-bugs/express.html');
     else leaveTo(realMake==='part'&&realRecord&&realRecord.activityUrl?realRecord.activityUrl:'coloring/index.html?edition=creative&book='+REAL_BOOK);
   }
   function exploreCover(){
-    if(!isReal()||busy) return;
+    if(busy) return;
+    if(!isReal()) return tapStop(0);   // stand-in books: the PEEK stand-in
     if(!flag('explore')){ flag('explore',true); bonus(1); }
     leaveTo('reading/sugar-bugs/index.html');
   }
@@ -859,7 +873,7 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
   function closeVideo(){
     const v=$('storyVid'); const watched=v.ended||v.currentTime>15; v.pause(); $('vidModal').classList.remove('on');
     if(!isReal()){ if(watched&&current) stepDone('read'); return; }
-    if(watched && !flag('read')){ flag('read',true); bonus(1); const r=rectIn($('trail')); sparkle(r.left+90,r.top+48,16); }
+    if(watched && !flag('read')){ flag('read',true); bonus(1); const st=$('trail').querySelectorAll('.stop')[0]; if(st){ const r=rectIn(st.querySelector('.dot')); sparkle(r.left+48,r.top+48,16); } }
     refreshReal();
   }
   $('vidDone').addEventListener('click',closeVideo);

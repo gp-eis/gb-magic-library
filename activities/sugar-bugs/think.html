@@ -9,54 +9,105 @@
 <link rel="stylesheet" href="../../ui/cl-buttons.css">
 <link rel="stylesheet" href="../../ui/cl-bubble.css">
 <style>
+/* THINK = the online version of the printed workbook pages for this story (Reading Literacy, Level B · 8, Week 4,
+   pages 24-27; data and pictures from content/m8/b8-4/workbook.json, web copies in wb/). Four rounds, one per page. */
 #stage section>*{position:absolute}
-.zone{top:100px;width:420px;height:320px;border-radius:30px;border:5px dashed;display:grid;grid-template-rows:auto 1fr;padding:12px 16px;z-index:5;transition:background .2s,transform .2s}
-.zone.happy{left:230px;border-color:#7fd3b4;background:rgba(225,245,237,.92)}
-.zone.bugs{left:690px;border-color:#ffb3a8;background:rgba(255,232,227,.92)}
+.ask{left:230px;top:92px;width:910px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:30px;line-height:1.15;color:var(--ink);z-index:5}
+.ask .w.lit{color:var(--plum)}
+#ask1{font-size:23px;white-space:nowrap;top:98px}
+/* round 1: What Do We Eat? */
+.zone{top:138px;width:445px;height:176px;border-radius:28px;border:5px dashed;display:grid;grid-template-rows:auto 1fr;padding:8px 14px;z-index:5;transition:background .2s,transform .2s}
+.zone.good{left:230px;border-color:#7fd3b4;background:rgba(225,245,237,.94)}
+.zone.bad{left:695px;border-color:#ffb3a8;background:rgba(255,232,227,.94)}
 .zone.flash{transform:scale(1.03)}
-.zone h2{margin:0;display:flex;align-items:center;gap:12px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:26px}
-.zone h2 img{height:62px}
-.zone .inside{display:flex;flex-wrap:wrap;gap:8px;align-content:flex-start;padding-top:10px}
-.zone .inside .item{width:70px;height:70px;box-shadow:none;background:rgba(255,255,255,.8);cursor:default}
-.zone .inside .item img{max-width:80%;max-height:80%}
-.zone .inside .item .emoji{font-size:42px}
-.tray{left:250px;right:30px;top:452px;display:flex;justify-content:center;gap:12px;z-index:8}
-.item{width:100px;height:100px;border-radius:22px;background:#fff;box-shadow:0 6px 0 #e6d6b8;display:grid;place-items:center;touch-action:none;cursor:grab;transition:transform .15s}
-.item img{max-width:82%;max-height:82%;object-fit:contain;pointer-events:none}
-.item .emoji{font-size:62px;line-height:1;pointer-events:none}
-.item.picked{box-shadow:0 0 0 5px var(--gold),0 6px 0 #e6d6b8;transform:scale(1.08)}
-.item.dragging{z-index:30;transform:scale(1.12);cursor:grabbing;box-shadow:0 16px 30px rgba(60,40,10,.25)}
+.zone h2{margin:0;display:flex;align-items:center;gap:10px;font-family:"Fredoka",sans-serif;font-weight:700;font-size:23px}
+.zone h2 img{height:52px}
+.zone .inside{display:flex;gap:6px;align-items:center;padding-top:6px}
+.zone .inside .item{width:62px;height:62px;border-radius:14px;box-shadow:none;background:rgba(255,255,255,.85);cursor:default;padding:0}
+.zone .inside .item b{display:none}
+.zone .inside .item img{max-height:48px;max-width:50px}
+.tray{left:230px;width:910px;top:328px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 12px;z-index:8}
+.item{width:140px;height:118px;border-radius:20px;background:#fff;box-shadow:0 6px 0 #e6d6b8;display:grid;grid-template-rows:1fr auto;justify-items:center;align-items:center;padding:8px 6px 6px;touch-action:none;cursor:grab;transition:transform .15s}
+.item img{max-width:104px;max-height:72px;object-fit:contain;pointer-events:none}
+.item b{font-family:"Fredoka",sans-serif;font-weight:600;font-size:17px;color:#b0195c;pointer-events:none}
+.item.picked{box-shadow:0 0 0 5px var(--gold),0 6px 0 #e6d6b8;transform:scale(1.06)}
+.item.dragging{z-index:30;transform:scale(1.1);cursor:grabbing;box-shadow:0 16px 30px rgba(60,40,10,.25)}
 .item.bad{animation:shake .45s}
-.label-hint{left:250px;right:30px;top:566px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:600;font-size:18px;color:var(--soft);z-index:8}
-/* round 2 */
-.slot{top:110px;width:240px;height:300px;border-radius:28px;border:5px dashed #cbb6f0;background:rgba(239,233,251,.9);display:grid;grid-template-rows:auto 1fr;justify-items:center;padding-top:10px;z-index:5}
-.slot b{width:54px;height:54px;border-radius:50%;background:var(--plum);color:#fff;font-family:"Fredoka",sans-serif;font-size:30px;display:grid;place-items:center}
-.slot .inside{display:grid;place-items:center;width:100%}
-.slot.filled{border-style:solid;border-color:var(--mint);background:#e1f5ed}
-.steps{left:300px;right:60px;top:440px;display:flex;justify-content:center;gap:24px;z-index:8}
-.stepcard{width:240px;height:180px;border-radius:24px;background:#fff;box-shadow:0 6px 0 #e6d6b8;display:grid;grid-template-rows:1fr auto;justify-items:center;padding:12px 8px;touch-action:none;cursor:grab;transition:transform .15s}
-.stepcard img{max-width:80%;max-height:96px;object-fit:contain;pointer-events:none}
-.stepcard .emoji{font-size:80px;line-height:1;pointer-events:none}
-.stepcard span.t{font-family:"Fredoka",sans-serif;font-weight:600;font-size:20px;text-align:center;pointer-events:none}
-.stepcard.picked{box-shadow:0 0 0 5px var(--gold),0 6px 0 #e6d6b8;transform:scale(1.05)}
-.stepcard.dragging{z-index:30;transform:scale(1.08);box-shadow:0 16px 30px rgba(60,40,10,.25)}
-.stepcard.bad{animation:shake .45s}
-.slot .inside .stepcard{box-shadow:none;background:transparent;height:200px;cursor:default}
+.label-hint{left:230px;width:910px;top:590px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:600;font-size:17px;color:var(--soft);z-index:8}
+/* round 2: draw the food */
+.dtooth{left:235px;top:170px;width:230px;z-index:5}
+.dtooth img{width:100%;display:block}
+.pad{left:490px;top:150px;width:640px;height:380px;border-radius:22px;background:#fff;border:5px dashed #2f9aa0;z-index:6;overflow:hidden}
+.pad.decayed{border-color:#c4135f}
+.pad canvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.pad .ph{position:absolute;left:0;right:0;top:14px;text-align:center;font-family:"Fredoka",sans-serif;font-weight:700;font-size:24px;color:#2f9aa0;pointer-events:none;transition:opacity .2s}
+.pad.decayed .ph{color:#c4135f}
+.pad.used .ph{opacity:0}
+.paints{left:490px;top:546px;display:flex;gap:10px;align-items:center;z-index:7}
+.paints button{width:46px;height:46px;border-radius:50%;border:4px solid #fff;box-shadow:0 3px 0 #d9c9a8;padding:0}
+.paints button.on{box-shadow:0 0 0 4px var(--gold),0 3px 0 #d9c9a8;transform:scale(1.1)}
+.paints .wipe{width:auto;border-radius:999px;padding:0 16px;height:46px;background:#fff;font-family:"Fredoka",sans-serif;font-weight:700;font-size:17px;color:var(--plum)}
+.ddone{left:262px;top:452px;z-index:7}
+/* round 3: How can I keep my teeth healthy? */
+.habits{left:240px;width:890px;top:176px;display:flex;flex-wrap:wrap;justify-content:center;gap:14px;z-index:6}
+.habit{width:286px;height:204px;border-radius:20px;background:#fff;box-shadow:0 6px 0 #e6d6b8;padding:8px 8px 4px;display:grid;grid-template-rows:auto 1fr;justify-items:center;position:relative;transition:transform .15s}
+.habit img{width:100%;border-radius:13px;display:block;border:3px solid #1d1a2b}
+.habit span{font-family:"Fredoka",sans-serif;font-weight:600;font-size:16px;line-height:1.1;color:var(--ink);align-self:center;text-align:center;opacity:0}
+.habit.done{box-shadow:0 0 0 5px var(--mint),0 6px 0 #bfe8d7}
+.habit.done span{opacity:1}
+.habit.done::after{content:"✓";position:absolute;right:-8px;top:-8px;width:38px;height:38px;border-radius:50%;background:#20b486;color:#fff;font:700 22px Fredoka,sans-serif;display:grid;place-items:center}
+.habit.bad{animation:shake .45s}
+/* round 4: My Teeth */
+.mouth{left:420px;top:128px;width:600px;height:338px;z-index:5}
+.mouth>img{width:100%;height:100%;display:block}
+.spot{position:absolute;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;border:5px dashed #fff;background:rgba(255,255,255,.28);box-shadow:0 0 0 3px rgba(40,20,60,.35);display:grid;place-items:center;font:700 30px Fredoka,sans-serif;color:#fff;text-shadow:0 2px 0 rgba(40,20,60,.5)}
+.spot.filled{border-style:solid;background:rgba(255,255,255,.45);font-size:24px}
+.spot .tag{position:absolute;left:50%;bottom:-32px;transform:translateX(-50%);white-space:nowrap}
+.names{left:225px;top:140px;display:grid;gap:14px;z-index:8}
+.tname,.spot .tag{font-family:"Fredoka",sans-serif;font-weight:700;font-size:20px;background:#fff;border:4px solid;border-radius:999px;padding:8px 18px;text-shadow:none}
+.tname{width:170px;text-align:center;box-shadow:0 5px 0 #e6d6b8;touch-action:none;cursor:grab;transition:transform .15s}
+.spot .tag{font-size:16px;padding:3px 12px;border-width:3px}
+.tname.picked{box-shadow:0 0 0 5px var(--gold),0 5px 0 #e6d6b8;transform:scale(1.06)}
+.tname.dragging{z-index:30;transform:scale(1.1);box-shadow:0 16px 30px rgba(60,40,10,.25)}
+.tname.bad{animation:shake .45s}
+.c-incisors{border-color:#3d9bd8;color:#1f6fae}.c-canines{border-color:#d9a400;color:#a67c00}.c-premolars{border-color:#9a5fd0;color:#7340a8}.c-molars{border-color:#4f9a3a;color:#3a7a28}
+.facts{left:225px;width:920px;top:486px;display:flex;gap:12px;z-index:6}
+.fact{flex:1;height:112px;border-radius:18px;border:4px solid;background:#fff;display:grid;grid-template-columns:44px 1fr 54px;align-items:center;gap:6px;padding:6px 8px;opacity:.28;filter:grayscale(1);transition:opacity .3s,filter .3s,transform .3s}
+.fact.on{opacity:1;filter:none;transform:translateY(-4px)}
+.fact img{max-width:100%;max-height:84px;object-fit:contain;justify-self:center}
+.fact b{display:block;font-family:"Fredoka",sans-serif;font-weight:700;font-size:19px}
+.fact i{font-style:normal;font-family:"Fredoka",sans-serif;font-weight:600;font-size:15px;color:var(--ink);white-space:nowrap}
 </style>
 </head>
 <body>
 <div id="stage">
+  <!-- workbook page 24 -->
   <section id="r1">
-    <div class="zone happy" id="zHappy" data-kind="happy" role="button" aria-label="Happy teeth basket"><h2><img src="img/teeth_sparkle.webp" alt="">Happy teeth</h2><div class="inside"></div></div>
-    <div class="zone bugs" id="zBugs" data-kind="bugs" role="button" aria-label="Sugar bugs love it basket"><h2><img src="img/sugar_bug_giggle.webp" alt="">Sugar bugs love it</h2><div class="inside"></div></div>
+    <div class="ask" id="ask1">Which foods are good for our teeth? Which foods can cause tooth decay?</div>
+    <div class="zone good" id="zGood" data-kind="good" role="button" aria-label="Good for our teeth"><h2><img src="wb/tooth-happy.webp" alt="">Good for our teeth</h2><div class="inside"></div></div>
+    <div class="zone bad" id="zBad" data-kind="bad" role="button" aria-label="Bad for our teeth"><h2><img src="wb/bug.webp" alt="">Bad for our teeth</h2><div class="inside"></div></div>
     <div class="tray" id="tray"></div>
-    <div class="label-hint">Drag a picture into a basket, or tap the picture and then the basket.</div>
+    <div class="label-hint">Drag a food into a box, or tap the food and then the box.</div>
   </section>
+  <!-- workbook page 25 -->
   <section id="r2" class="hidden">
-    <div class="slot" style="left:300px" data-n="1"><b>1</b><div class="inside"></div></div>
-    <div class="slot" style="left:564px" data-n="2"><b>2</b><div class="inside"></div></div>
-    <div class="slot" style="left:828px" data-n="3"><b>3</b><div class="inside"></div></div>
-    <div class="steps" id="steps"></div>
+    <div class="ask" id="ask2"></div>
+    <div class="dtooth"><img id="dtooth" src="wb/tooth-happy.webp" alt=""></div>
+    <div class="pad" id="pad"><canvas id="cv" width="1280" height="760"></canvas><div class="ph">Draw the food.</div></div>
+    <div class="paints" id="paints"></div>
+    <div class="ddone"><button class="clb clb--go clb--lg" id="drawDone" disabled>Done <span class="i">✓</span></button></div>
+  </section>
+  <!-- workbook page 26 -->
+  <section id="r3" class="hidden">
+    <div class="ask" id="ask3"></div>
+    <div class="habits" id="habits"></div>
+  </section>
+  <!-- workbook page 27 -->
+  <section id="r4" class="hidden">
+    <div class="ask" id="ask4"></div>
+    <div class="names" id="names"></div>
+    <div class="mouth" id="mouth"><img src="wb/mouth.webp" alt="An open mouth with teeth in four colours"></div>
+    <div class="facts" id="facts"></div>
   </section>
 </div>
 <script src="../../ui/mate.js"></script>
@@ -65,78 +116,126 @@
 <script src="../../ui/mate-lines.js"></script>
 <script src="kit.js"></script>
 <script src="../../ui/cl-bubble.js"></script>
+<script src="../book/science-video.js"></script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
-  SB.bar('think','Sort it out');
+  SB.bar('think','What do we eat?');
   SB.gerry();
   document.querySelectorAll('section').forEach(s=>{ s.style.position='absolute'; s.style.inset='0'; });
+  const title=t=>{ const el=document.querySelector('.title'); if(el) el.textContent=t; };
+  const go=(from,to)=>{ $(from).classList.add('hidden'); $(to).classList.remove('hidden'); };
+  const shake=el=>{ SB.sfx.bad(); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); };
 
-  /* ---------- round 1: happy teeth or sugar bugs ---------- */
-  const ITEMS=[
-    {id:'apple',img:'img/apple.webp',name:'apple',kind:'happy',ok:'Crunch! Apples help scrub your teeth.'},
-    {id:'soda',img:'img/can.webp',name:'soda',kind:'bugs',ok:'Yes! Soda is full of sugar.',no:'Soda has lots and lots of sugar. Sugar bugs love it!'},
-    {id:'water',emoji:'💧',name:'water',kind:'happy',ok:'Water washes sugar away!',no:'Water washes the sugar away. Teeth love water!'},
-    {id:'donut',img:'img/donut_color.webp',name:'donut',kind:'bugs',ok:'Right! Sticky donuts hug your teeth.',no:'A donut is sweet and sticky. Sugar bugs love it!'},
-    {id:'carrot',emoji:'🥕',name:'carrot',kind:'happy',ok:'Crunchy carrots are great for teeth!',no:'Carrots are crunchy and not sugary. Happy teeth!'},
-    {id:'lollipop',img:'img/lollipop.webp',name:'lollipop',kind:'bugs',ok:'Yes! A lollipop is full of sugar.',no:'A lollipop is full of sugar. Sugar bugs love it!'},
-    {id:'cheese',emoji:'🧀',name:'cheese',kind:'happy',ok:'Cheese is a tooth-friendly snack!',no:'Cheese is not sugary. It is a happy-teeth snack!'},
-    {id:'sugar',img:'img/sugar_cubes.webp',name:'sugar',kind:'bugs',ok:'Of course! Sugar bugs love sugar.',no:'That is sugar! The sugar bugs love it.'}
-  ];
-  ITEMS[0].no='Apples are crunchy and good for teeth. Happy teeth!';
+  /* ---------- round 1 (page 24): What Do We Eat? good or bad for our teeth ---------- */
+  const FOODS=[['apple','Apple','good'],['candy','Candy','bad'],['cheese','Cheese','good'],['chocolate','Chocolate','bad'],['milk','Milk','good'],['cookies','Cookies','bad','are'],
+               ['carrot','Carrots','good','are'],['jelly','Jellies','bad','are'],['yogurt','Yogurt','good'],['cucumber','Cucumber','good'],['soda','Coke','bad'],['caramel','Caramels','bad','are']]
+    .map(([id,name,kind,verb])=>({id,name,kind,verb:verb||'is'}));
   let sorted=0;
   function r1(){
     const tray=$('tray');
-    ITEMS.forEach(it=>{
-      const b=document.createElement('button'); b.className='item'; b.dataset.id=it.id; b.setAttribute('aria-label',it.name);
-      b.innerHTML=it.img?'<img src="'+it.img+'" alt="">':'<span class="emoji" aria-hidden="true">'+it.emoji+'</span>';
-      tray.appendChild(b);
+    FOODS.forEach(f=>{
+      const b=document.createElement('button'); b.className='item'; b.dataset.id=f.id; b.setAttribute('aria-label',f.name);
+      b.innerHTML='<img src="wb/'+f.id+'.webp" alt=""><b>'+f.name+'</b>'; tray.appendChild(b);
     });
-    SB.dragTap([...tray.children],[$('zHappy'),$('zBugs')],(el,zone)=>{
-      const it=ITEMS.find(x=>x.id===el.dataset.id);
-      if(zone.dataset.kind!==it.kind){ SB.sfx.bad(); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad'); SB.say(it.no); return; }
+    SB.dragTap([...tray.children],[$('zGood'),$('zBad')],(el,zone)=>{
+      const f=FOODS.find(x=>x.id===el.dataset.id);
+      const fact=f.name+' '+f.verb+(f.kind==='good'?' good for our teeth!':' bad for our teeth. Sugar bugs love it!');
+      if(zone.dataset.kind!==f.kind){ shake(el); SB.say('Hmm. '+fact); return; }
       SB.sfx.good(); el.dataset.placed='1'; el.classList.remove('picked'); zone.querySelector('.inside').appendChild(el);
       zone.classList.add('flash'); setTimeout(()=>zone.classList.remove('flash'),200); SB.sparkle(el,10);
       sorted++;
-      if(sorted<ITEMS.length){ if(sorted%3===1) SB.say(it.ok); }
-      else { SB.star($('zHappy')); SB.star($('zBugs')); SB.say('You sorted them all! Now let’s brush like a champion.').then(()=>setTimeout(r2,400)); }
+      if(sorted<FOODS.length){ if(sorted%3===1) SB.say(fact); }
+      else { SB.star($('zGood')); SB.star($('zBad')); SB.say('You sorted all twelve foods! Now it’s drawing time.').then(()=>setTimeout(r2,400)); }
     });
-    SB.say('Which snacks make teeth happy, and which ones do sugar bugs love? Put each one in a basket!');
+    SB.say('Look at the pictures. Which foods are good for our teeth? Which foods can cause tooth decay?');
   }
 
-  /* ---------- round 2: brushing in order ---------- */
-  const STEPS=[
-    {n:1,img:'img/toothbrush_paste.webp',t:'A pea of toothpaste'},
-    {n:2,img:'img/teeth_clean.webp',t:'Brush in little circles'},
-    {n:3,emoji:'💧',t:'Rinse with water'}
-  ];
-  let placed=0;
-  function r2(){
-    $('r1').classList.add('hidden'); $('r2').classList.remove('hidden');
-    document.querySelector('.title').textContent='Brush like a champion';
-    const box=$('steps'); const order=[STEPS[2],STEPS[0],STEPS[1]];
-    order.forEach(s=>{
-      const c=document.createElement('button'); c.className='stepcard'; c.dataset.n=s.n; c.setAttribute('aria-label',s.t);
-      c.innerHTML=(s.img?'<img src="'+s.img+'" alt="">':'<span class="emoji" aria-hidden="true">'+s.emoji+'</span>')+'<span class="t">'+s.t+'</span>';
-      box.appendChild(c);
+  /* ---------- round 2 (page 25): draw the food for the healthy tooth, then for the decayed tooth ---------- */
+  const DRAW=[{id:'healthy',ask:'My teeth are healthy! What did I eat?',img:'wb/tooth-happy.webp',done:'Yum! Good food keeps teeth happy and healthy.'},
+              {id:'decayed',ask:'My teeth have cavities! What did I eat?',img:'wb/tooth-sad.webp',done:'Oh no! Too many sweets make teeth sad.'}];
+  const COLORS=['#e5342e','#ff8a1f','#ffd21f','#3fae49','#2f8fe0','#8a4fd0','#7a4a2a','#1d1a2b'];
+  let part=0, color=COLORS[0], strokes=0, drawing=false, last=null;
+  const cv=$('cv'), ctx=cv.getContext('2d');
+  function pos(e){ const r=cv.getBoundingClientRect(); return {x:(e.clientX-r.left)/r.width*cv.width,y:(e.clientY-r.top)/r.height*cv.height}; }
+  function dot(p){ ctx.fillStyle=color; ctx.beginPath(); ctx.arc(p.x,p.y,9,0,7); ctx.fill(); }
+  cv.addEventListener('pointerdown',e=>{ e.preventDefault(); try{ cv.setPointerCapture(e.pointerId); }catch(x){} drawing=true; last=pos(e); dot(last); $('pad').classList.add('used'); });
+  cv.addEventListener('pointermove',e=>{ if(!drawing) return; const p=pos(e); ctx.strokeStyle=color; ctx.lineWidth=18; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p; });
+  const up=()=>{ if(!drawing) return; drawing=false; strokes++; $('drawDone').disabled=false; $('drawDone').classList.add('clb--pulse'); };
+  cv.addEventListener('pointerup',up); cv.addEventListener('pointercancel',up);
+  function wipe(){ ctx.fillStyle='#fff'; ctx.fillRect(0,0,cv.width,cv.height); strokes=0; $('pad').classList.remove('used'); $('drawDone').disabled=true; $('drawDone').classList.remove('clb--pulse'); }
+  function paints(){
+    const box=$('paints'); box.innerHTML='';
+    COLORS.forEach((c,n)=>{ const b=document.createElement('button'); b.type='button'; b.style.background=c; b.setAttribute('aria-label','Colour '+(n+1)); if(c===color) b.className='on';
+      b.addEventListener('click',()=>{ color=c; [...box.querySelectorAll('button')].forEach(x=>x.classList.toggle('on',x===b)); }); box.appendChild(b); });
+    const w=document.createElement('button'); w.type='button'; w.className='wipe'; w.textContent='Start again'; w.addEventListener('click',wipe); box.appendChild(w);
+  }
+  function drawPart(){
+    const d=DRAW[part]; wipe();
+    $('dtooth').src=d.img; $('pad').classList.toggle('decayed',d.id==='decayed');
+    SB.say(d.ask+' Draw the food.',{el:$('ask2'),gerry:true,replay:false}).then(()=>{ $('ask2').textContent=d.ask; });
+  }
+  $('drawDone').addEventListener('click',()=>{
+    if(!strokes) return;
+    const d=DRAW[part];
+    try{ const s=document.createElement('canvas'); s.width=480; s.height=285; s.getContext('2d').drawImage(cv,0,0,480,285); SB.store.set('cl.sb5.draw.'+d.id,s.toDataURL('image/jpeg',.7)); }catch(e){}   // kept on this device for the grown-ups' report
+    SB.sfx.good(); SB.star($('pad')); SB.sparkle($('pad'),14); $('drawDone').disabled=true;
+    SB.say(d.done).then(()=>{ part++; if(part<DRAW.length) drawPart(); else setTimeout(r3,300); });
+  });
+  function r2(){ go('r1','r2'); title('Draw the food'); paints(); drawPart(); }
+
+  /* ---------- round 3 (page 26): How can I keep my teeth healthy? listen and tap the picture ---------- */
+  const HABITS=['I brush my teeth three times a day.','I eat healthy foods.','I take care of my teeth.','I have good daily habits.','I follow my daily routine.'];
+  const ORDER=[1,0,3,4,2]; let hq=0;
+  function askHabit(){ SB.say(HABITS[ORDER[hq]],{el:$('ask3'),gerry:true,rate:.85,replay:false}); }
+  function r3(){
+    go('r2','r3'); title('How can I keep my teeth healthy?');
+    const box=$('habits');
+    HABITS.forEach((t,n)=>{
+      const b=document.createElement('button'); b.className='habit'; b.dataset.n=n; b.setAttribute('aria-label','Picture '+(n+1));
+      b.innerHTML='<img src="wb/p'+(n+1)+'.webp" alt=""><span>'+(n+1)+'. '+t+'</span>';
+      b.addEventListener('click',()=>{
+        if(b.classList.contains('done')) return;
+        if(+b.dataset.n!==ORDER[hq]){ shake(b); SB.say('Listen again. '+HABITS[ORDER[hq]],{el:$('ask3'),gerry:true,rate:.85,replay:false}); return; }
+        SB.sfx.good(); b.classList.add('done'); SB.sparkle(b,10); hq++;
+        if(hq<HABITS.length) setTimeout(askHabit,500);
+        else { SB.star(box); SB.say('That’s how we keep our teeth healthy! Now let’s meet the Tooth Team!').then(()=>setTimeout(science,400)); }
+      });
+      box.appendChild(b);
     });
-    const slots=[...document.querySelectorAll('.slot')];
-    SB.dragTap([...box.children],slots,(el,slot)=>{
-      if(slot.classList.contains('filled')) return;
-      const next=placed+1;
-      if(+el.dataset.n!==+slot.dataset.n || +slot.dataset.n!==next){
-        SB.sfx.bad(); el.classList.remove('bad'); void el.offsetWidth; el.classList.add('bad');
-        SB.say(next===1?'What do we do first? We need toothpaste on the brush!':next===2?'Next, we brush in little circles.':'Last, we rinse with water.');
-        return;
-      }
-      SB.sfx.good(); el.dataset.placed='1'; el.classList.remove('picked'); slot.querySelector('.inside').appendChild(el); slot.classList.add('filled'); SB.sparkle(slot,12);
-      placed++;
-      if(placed===3){ SB.star(slots[2]); SB.say('Toothpaste, brush, rinse! That’s how champions brush.').then(()=>SB.finish('think',{title:'Super thinking!',text:'You sorted the snacks and put the brushing steps in order. Your next step is EXPRESS.',img:'img/teeth_sparkle.webp'})); }
-    });
-    SB.say('Put the brushing steps in order. What comes first?');
+    SB.say('How can I keep my teeth healthy? Listen, then tap the right picture.').then(askHabit);
   }
 
-  SB.startScreen({kicker:'STEP 3 · THINK',title:'Sort it out',text:'Help the teeth! Decide which snacks make teeth happy, then put the brushing steps in order.',img:'img/teeth_sparkle.webp'}).then(r1);
+  /* the science video plays before the science page (user, 2026-11-11): video/my-teeth -> science.mp4 */
+  function science(){ SBVideo.play({src:'science.mp4',title:'Meet the Tooth Team!',text:'Watch your teeth cut, tear, crush and grind. Then find each tooth in the mouth!',img:'wb/tooth-happy.webp'}).then(r4); }
+
+  /* ---------- round 4 (page 27): My Teeth. put each name on its teeth, then meet its job and food ---------- */
+  const TEETH=[{id:'incisors',name:'Incisors',job:'Cut food.',food:'f-inc',pic:'t-inc',at:[.5,.3],fact:'Incisors are my front teeth. They cut food, like a crunchy apple.'},
+               {id:'canines',name:'Canines',job:'Tear food.',food:'f-can',pic:'t-can',at:[.71,.31],fact:'My canine teeth are sharp. They tear food, like chicken.'},
+               {id:'premolars',name:'Premolars',job:'Crush food.',food:'f-pre',pic:'t-pre',at:[.218,.32],fact:'Premolars crush food, like almonds.'},
+               {id:'molars',name:'Molars',job:'Grind food.',food:'f-mol',pic:'t-mol',at:[.15,.64],fact:'My molars help me chew. They grind food, like grains.'}];
+  let named=0;
+  function r4(){
+    go('r3','r4'); title('My teeth'); $('ask4').textContent='These are my teeth. Put each name on its teeth!';
+    const mouth=$('mouth'), names=$('names'), facts=$('facts');
+    TEETH.forEach(t=>{
+      const s=document.createElement('div'); s.className='spot'; s.dataset.id=t.id; s.style.left=(t.at[0]*100)+'%'; s.style.top=(t.at[1]*100)+'%'; s.textContent='?'; s.setAttribute('role','button'); s.setAttribute('aria-label','A place for a tooth name'); mouth.appendChild(s);
+      const f=document.createElement('div'); f.className='fact c-'+t.id; f.id='fact-'+t.id; f.innerHTML='<img src="wb/'+t.pic+'.webp" alt=""><span><b>'+t.name+'</b><i>'+t.job+'</i></span><img src="wb/'+t.food+'.webp" alt="">'; facts.appendChild(f);
+    });
+    [TEETH[2],TEETH[0],TEETH[3],TEETH[1]].forEach(t=>{ const b=document.createElement('button'); b.className='tname c-'+t.id; b.dataset.id=t.id; b.textContent=t.name; names.appendChild(b); });
+    SB.dragTap([...names.children],[...mouth.querySelectorAll('.spot')],(el,spot)=>{
+      if(spot.classList.contains('filled')) return;
+      const t=TEETH.find(x=>x.id===el.dataset.id);
+      if(spot.dataset.id!==t.id){ shake(el); SB.say('Look at the colours. '+t.name+' are the '+({incisors:'blue',canines:'yellow',premolars:'purple',molars:'green'})[t.id]+' teeth.'); return; }
+      SB.sfx.good(); el.dataset.placed='1'; el.classList.remove('picked'); el.remove();
+      spot.classList.add('filled'); spot.innerHTML='✓<span class="tag c-'+t.id+'">'+t.name+'</span>'; spot.style.color='#20b486'; SB.sparkle(spot,10);
+      $('fact-'+t.id).classList.add('on'); named++;
+      SB.say(t.fact).then(()=>{ if(named===TEETH.length){ SB.star(mouth); SB.finish('think',{title:'Super thinking!',text:'You sorted the foods, drew your own, found the healthy habits and named your teeth. Your next step is EXPRESS.',img:'wb/tooth-happy.webp'}); } });
+    });
+    SB.say('These are my teeth. Put each name on its teeth! The colours will help you.');
+  }
+
+  SB.startScreen({kicker:'STEP 4 · THINK',title:'My workbook',text:'Four pages from your workbook: sort the foods, draw the food, find the healthy habits and name your teeth!',img:'wb/tooth-happy.webp'}).then(()=>{ if(new URLSearchParams(location.search).has('science')){ $('r1').classList.add('hidden'); science(); } else r1(); });   // ?science jumps straight to the science video (for checking)
 })();
 </script>
 </body>

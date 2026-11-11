@@ -6,7 +6,7 @@
   const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = s => document.querySelector(s);
   const stage = $('#stage');
-  const STEPS = ['read', 'question', 'think', 'express', 'create'];
+  const STEPS = ['peek', 'read', 'question', 'think', 'express', 'create'];
   const store = {
     get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
     set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
@@ -65,7 +65,7 @@
     const el = document.createElement('div'); el.className = 'bar';
     el.innerHTML = `<button class="clb" id="sbBack" aria-label="Back to my quest"><span class="i">←</span>Quest</button>
       <span class="stepchip">${stepKey.toUpperCase()}</span><span class="title">${title}</span>
-      <span class="dots" aria-label="Step ${i + 1} of 5">${STEPS.map((s, n) => `<i class="${store.get(PFX + s) === '1' || (!BK && s === 'create' && store.get('cl.sb5.createDone') === '1') ? 'on' : n === i ? 'now' : ''}"></i>`).join('')}</span>
+      <span class="dots" aria-label="Step ${i + 1} of 6">${STEPS.map((s, n) => `<i class="${store.get(PFX + s) === '1' || (!BK && s === 'peek' && store.get('cl.sb5.explore') === '1') || (!BK && s === 'create' && store.get('cl.sb5.createDone') === '1') ? 'on' : n === i ? 'now' : ''}"></i>`).join('')}</span>
       <span class="clchip" id="sbStars">⭐ ${stars()}</span>
       <button class="clb clb--icon" id="sbSound" type="button"></button>`;
     stage.appendChild(el);
@@ -105,8 +105,8 @@
     if (current && current.resolve) current.resolve();
     current = null; if (gerryEl) flap(false);
   }
-  function words(el, text) {
-    el.innerHTML = text.split(' ').map((w, i) => `<span class="w" data-i="${i}">${w}</span>`).join(' ');
+  function words(el, text, breaks) {   // breaks: word indexes after which a new row starts (printed line breaks)
+    el.innerHTML = text.split(' ').map((w, i) => `<span class="w" data-i="${i}">${w}</span>` + (breaks && breaks.includes(i) ? '<br>' : ' ')).join('');
   }
   function light(el, upto) { el.querySelectorAll('.w').forEach(s => s.classList.toggle('lit', +s.dataset.i <= upto)); }
   function timedLight(el, text, ms, token) {
@@ -116,7 +116,7 @@
   /** Gerry says a line: bubble with lighting words, moving mouth, browser voice (stand-in). */
   function say(text, opts = {}) {
     stopVoice();
-    const bubble = opts.el || $('#sbSay'); const own = !opts.el || !!opts.gerry; words(bubble, text); bubble.classList.remove('hide');
+    const bubble = opts.el || $('#sbSay'); const own = !opts.el || !!opts.gerry; words(bubble, text, opts.breaks); bubble.classList.remove('hide');
     if (opts.replay !== false) { const r = document.createElement('button'); r.className = 'replay'; r.textContent = '🔊'; r.setAttribute('aria-label', 'Hear it again'); r.addEventListener('click', e => { e.stopPropagation(); say(text, opts); }); bubble.appendChild(r); }
     return new Promise(resolve => {
       const token = { resolve }; current = token; if (own) flap(true); else if (opts.bounce && !RM) opts.bounce.style.animation = 'talkBounce .45s ease-in-out infinite';

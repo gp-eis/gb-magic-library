@@ -2,7 +2,7 @@
    Outside view: ground floor = My Room (decorated, ui/room.js), one floor per imported month (app/months/catalog.js),
    the next month's floor as "coming soon", and the roof = Hall of Certificates.
    A month floor: that month's 12 books on three bookcases (Level A, B, C) with each child's progress
-   (localStorage cl.bk.<id>.<step>, five steps per book). An elevator on the side moves between floors.
+   (localStorage cl.bk.<id>.<step>, six steps per book). An elevator on the side moves between floors.
    Art: art/tower/{roof,floor,base}.webp (stackable ChatGPT parts) and art/floor-room.webp (tower room, same
    three bookcases as the hall). Stage 1180 x 820. */
 (function () {
@@ -12,7 +12,7 @@
   const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   const MONTHS = Object.values(C.months).sort((a, b) => a.no - b.no);
-  const STEPS = ['read', 'question', 'think', 'express', 'create'];
+  const STEPS = ['peek', 'read', 'question', 'think', 'express', 'create'];
   const LEVELS = ['A', 'B', 'C'];
   const LEVEL_ICON = { A: '✦', B: '☾', C: '★' };
   /* where books stand on the floor room's three bookcases (stage coordinates, measured on art/floor-room.webp) */
@@ -27,7 +27,7 @@
   }
   function monthStats(m) {
     let done = 0, started = 0;
-    LEVELS.forEach(L => (m.levels[L] || []).forEach(b => { const n = bookDone(b); if (n >= 5) done++; else if (n > 0) started++; }));
+    LEVELS.forEach(L => (m.levels[L] || []).forEach(b => { const n = bookDone(b); if (n >= 6) done++; else if (n > 0) started++; }));
     return { done, started };
   }
 
@@ -84,8 +84,8 @@
     floor.querySelector('#twBooks').innerHTML = LEVELS.map(L => {
       const c = CASES[L], pad = (c.w - 2 * 110 - 14) / 2;
       return `<span class="lvlpill tw-lv" style="left:${c.x + c.w / 2}px;top:300px">${LEVEL_ICON[L]} Level ${L}</span>` + (m.levels[L] || []).map((b, i) => {
-        const n = bookDone(b), st = n >= 5 ? 'done' : n > 0 ? 'part' : 'wait';
-        const tag = st === 'done' ? '<span class="seal">★</span>' : st === 'part' ? `<span class="count">${n}/5</span>` : '';
+        const n = bookDone(b), st = n >= 6 ? 'done' : n > 0 ? 'part' : 'wait';
+        const tag = st === 'done' ? '<span class="seal">★</span>' : st === 'part' ? `<span class="count">${n}/6</span>` : '';
         return `<button type="button" class="tw-book ${st} ${live ? 'live' : ''}" data-l="${L}" data-i="${i}" style="left:${c.x + pad + (i % 2) * 124}px;top:${c.ledges[i < 2 ? 0 : 1] - 64}px" aria-label="Level ${L}, week ${b.week}: ${esc(b.title)}">
           <img src="${b.cover}" alt="">${tag}</button>`;
       }).join('');

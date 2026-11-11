@@ -113,7 +113,16 @@
       coover: ['There is room for many more books here.', 'Every shelf is level. I checked!']
     },
 
-    /* ---------- the quest trail (five steps) ---------- */
+    /* ---------- the quest trail (six steps) ---------- */
+    'quest.peek': {
+      gerry: ['Peek at the cover! What do you see?'],
+      penny: ['Let’s peek at the cover first. What could this story be about?'],
+      ria: ['Observe the cover closely. Every picture is a clue!'],
+      syd: ['Peek time! Tap the cover and look around!'],
+      wanda: ['Let’s look at the cover carefully before we begin.'],
+      don: ['First, the cover! Let’s see what’s on it.'],
+      coover: ['Step 1 of 6: peek at the cover!']
+    },
     'quest.read': {
       gerry: ['Three, two, one… go! Let’s watch the story!'],
       penny: ['Let’s start with the story! I wonder what happens.'],
@@ -121,7 +130,7 @@
       syd: ['Warm-up time! Let’s watch the story!'],
       wanda: ['Let’s start at the beginning. Watch the story!'],
       don: ['The story begins! Let’s watch it together.'],
-      coover: ['Step 1 of 5: watch the story!']
+      coover: ['Step 2 of 6: watch the story!']
     },
     'quest.question': {
       gerry: ['Three, two, one… question time!'],
@@ -130,7 +139,7 @@
       syd: ['Quick stretch! Now, question time!'],
       wanda: ['Time for questions. Look closer!'],
       don: ['Questions, please! Let’s be clever.'],
-      coover: ['Step 2 of 5: answer the questions!']
+      coover: ['Step 3 of 6: answer the questions!']
     },
     'quest.think': {
       gerry: ['Three, two, one… thinking time!'],
@@ -139,7 +148,7 @@
       syd: ['Shake your arms! Now let’s think.'],
       wanda: ['Thinking time. Let’s think it through.'],
       don: ['Thinking time! A splendid mind at work.'],
-      coover: ['Step 3 of 5: let’s think it through.']
+      coover: ['Step 4 of 6: let’s think it through.']
     },
     'quest.express': {
       gerry: ['Three, two, one… say it out loud!'],
@@ -148,7 +157,7 @@
       syd: ['Big breath in! Now say it out loud!'],
       wanda: ['Now say it out loud, nice and clear.'],
       don: ['Now speak, like a royal announcer!'],
-      coover: ['Step 4 of 5: say it out loud!']
+      coover: ['Step 5 of 6: say it out loud!']
     },
     'quest.create': {
       gerry: ['Three, two, one… let’s make something!'],
@@ -157,19 +166,19 @@
       syd: ['Last one! Let’s make something!'],
       wanda: ['Let’s make something with care.'],
       don: ['The grand finale! Let’s make something!'],
-      coover: ['Step 5 of 5: let’s build something!']
+      coover: ['Step 6 of 6: let’s build something!']
     },
     questResume: {   // only some mates remember the last step out loud
       wanda: ['Last time you finished {last}. Now let’s do {step}!']
     },
     questAllDone: {
-      gerry: ['You did all five steps! Want to do one again?'],
-      penny: ['All five steps! How did the story make you feel?'],
-      ria: ['All five steps done! Want to investigate again?'],
-      syd: ['Five out of five! You’re a champion!'],
-      wanda: ['All five steps done, carefully and well!'],
-      don: ['All five steps! Three cheers for you!'],
-      coover: ['Five of five. A job done properly!']
+      gerry: ['You did all six steps! Want to do one again?'],
+      penny: ['All six steps! How did the story make you feel?'],
+      ria: ['All six steps done! Want to investigate again?'],
+      syd: ['Six out of six! You’re a champion!'],
+      wanda: ['All six steps done, carefully and well!'],
+      don: ['All six steps! Three cheers for you!'],
+      coover: ['Six of six. A job done properly!']
     },
     questFirst: {
       gerry: ['First, the glowing one! Let’s go!'],
