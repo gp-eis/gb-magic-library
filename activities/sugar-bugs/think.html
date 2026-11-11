@@ -207,7 +207,7 @@
   }
 
   /* the science video plays before the science page (user, 2026-11-11): video/my-teeth -> science.mp4 */
-  function science(){ SBVideo.play({src:'science.mp4',title:'Meet the Tooth Team!',text:'Watch your teeth cut, tear, crush and grind. Then find each tooth in the mouth!',img:'wb/tooth-happy.webp'}).then(r4); }
+  function science(){ SBVideo.play({src:'science.mp4',title:'Meet the Tooth Team!',text:'Watch your teeth cut, tear, crush and grind. Then find each tooth in the mouth!',img:'wb/tooth-happy.webp'}).then(()=>{ r4(); SBVideo.again({src:'science.mp4'}); }); }
 
   /* ---------- round 4 (page 27): My Teeth. put each name on its teeth, then meet its job and food ---------- */
   const TEETH=[{id:'incisors',name:'Incisors',job:'Cut food.',food:'f-inc',pic:'t-inc',at:[.5,.3],fact:'Incisors are my front teeth. They cut food, like a crunchy apple.'},

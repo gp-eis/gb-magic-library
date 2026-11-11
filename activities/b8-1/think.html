@@ -158,7 +158,7 @@
   }
 
   /* the science video plays before the science page (user, 2026-11-11): video/cup-phone -> science.mp4 */
-  function science(){ SBVideo.play({src:'science.mp4',title:'How does a cup phone work?',text:'Watch the cups show you: vibration, sound waves, microphone and speaker!',img:'wb/step4.webp'}).then(r3); }
+  function science(){ SBVideo.play({src:'science.mp4',title:'How does a cup phone work?',text:'Watch the cups show you: vibration, sound waves, microphone and speaker!',img:'wb/step4.webp'}).then(()=>{ r3(); SBVideo.again({src:'science.mp4'}); }); }
 
   /* ---------- round 3 (page 9): Let's Make a Cup Phone! put the four step pictures in order ---------- */
   const STEPS=['Prepare two paper cups, string and a sharp pencil.','Make a small hole in the bottom of each cup.','Thread the string through the holes.','Tie a knot at each end. Your cup phone is ready!'];
