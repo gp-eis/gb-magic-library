@@ -131,6 +131,13 @@
   const FOODS=[['apple','Apple','good'],['candy','Candy','bad'],['cheese','Cheese','good'],['chocolate','Chocolate','bad'],['milk','Milk','good'],['cookies','Cookies','bad','are'],
                ['carrot','Carrots','good','are'],['jelly','Jellies','bad','are'],['yogurt','Yogurt','good'],['cucumber','Cucumber','good'],['soda','Coke','bad'],['caramel','Caramels','bad','are']]
     .map(([id,name,kind,verb])=>({id,name,kind,verb:verb||'is'}));
+  /* what My Mate says when each food lands in the right basket (user, 2026-11-13: every food gets its own line) */
+  const FOOD_LINES={apple:'Crunch, crunch! Apples scrub your teeth clean.',candy:'Candy is so sticky. Sugar bugs love it!',
+    cheese:'Cheese makes your teeth strong!',chocolate:'Chocolate is sweet. The sugar bugs think so too!',
+    milk:'Milk helps your teeth grow big and strong.',cookies:'Cookies leave sugar crumbs. Yum for sugar bugs!',
+    carrot:'Crunchy carrots! Your teeth say thank you.',jelly:'Jellies stick to your teeth. The sugar bugs cheer!',
+    yogurt:'Yogurt is good for strong teeth. Yum!',cucumber:'Cool, crunchy cucumber. Good for your teeth!',
+    soda:'Coke is full of sugar. Sugar bugs love a drink!',caramel:'Caramels are super sticky. Sugar bugs hold on tight!'};
   let sorted=0;
   function r1(){
     const tray=$('tray');
@@ -145,8 +152,9 @@
       SB.sfx.good(); el.dataset.placed='1'; el.classList.remove('picked'); zone.querySelector('.inside').appendChild(el);
       zone.classList.add('flash'); setTimeout(()=>zone.classList.remove('flash'),200); SB.sparkle(el,10);
       sorted++;
-      if(sorted<FOODS.length){ if(sorted%3===1) SB.say(fact); }
-      else { SB.star($('zGood')); SB.star($('zBad')); SB.say('You sorted all twelve foods! Now it’s drawing time.').then(()=>setTimeout(r2,400)); }
+      const line=FOOD_LINES[f.id]||fact;
+      if(sorted<FOODS.length) SB.say(line);
+      else SB.say(line).then(()=>{ SB.star($('zGood')); SB.star($('zBad')); return SB.say('You sorted all twelve foods! Now it’s drawing time.'); }).then(()=>setTimeout(r2,400));
     });
     SB.say('Look at the pictures. Which foods are good for our teeth? Which foods can cause tooth decay?');
   }
