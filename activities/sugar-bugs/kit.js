@@ -101,6 +101,7 @@
   let current = null;
   function stopVoice() {
     if ('speechSynthesis' in window) speechSynthesis.cancel();
+    if (window.CLVoice) CLVoice.stop();
     if (current && current.audio) { current.audio.pause(); }
     if (current && current.resolve) current.resolve();
     current = null; if (gerryEl) flap(false);
@@ -122,6 +123,11 @@
       const token = { resolve }; current = token; if (own) flap(true); else if (opts.bounce && !RM) opts.bounce.style.animation = 'talkBounce .45s ease-in-out infinite';
       const est = Math.max(1600, text.split(' ').length * 380);
       const finish = () => { if (current !== token) return; light(bubble, 999); if (own) flap(false); if (opts.bounce) opts.bounce.style.animation = ''; current = null; resolve(); };
+      /* a recorded clip of exactly these words (ui/voice.js) plays on every phone; the phone's own voice is only the fallback */
+      if (!muted && window.CLVoice) {
+        const c = CLVoice.play(text, { onend: finish, onerror: () => setTimeout(finish, est) });
+        if (c) { token.clip = true; timedLight(bubble, text, c.dur * 1000, token); setTimeout(finish, c.dur * 1000 + 4000); return; }
+      }
       if (!muted && 'speechSynthesis' in window) {
         try {
           const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = opts.rate || .92; u.pitch = opts.pitch || (window.CLMate ? CLMate.pitch() : 1.2);
