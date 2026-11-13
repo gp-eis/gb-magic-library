@@ -51,12 +51,15 @@
 
   function normalizeEditableState(state, allowedParts = PART_IDS) {
     if (state?.kind === 'sugar-bugs-v3') {
-      const sceneParts = {'cover-title':new Set(['title-top','title-middle','title-bottom']),treats:PART_IDS,'sugar-bugs':new Set(['bug-round','bug-long','tooth']),toothache:PART_IDS};
-      if (state.version !== 3 || !Array.isArray(state.pages) || state.pages.length > 3 || typeof state.activePageId !== 'string' || typeof state.lastVisitedPageId !== 'string' || !Object.hasOwn(sceneParts,state.activePageId) || !Object.hasOwn(sceneParts,state.lastVisitedPageId)) throw new Error('This creative book is not supported.');
+      const sceneParts = {'cover-title':new Set(['title-top','title-middle','title-bottom']),treats:PART_IDS,'sugar-bugs':new Set(['bug-round','bug-long','tooth']),toothache:PART_IDS,
+        /* the six pages of the designer's final storybook (coloring/pages/b84-pages.js) and how many lines each has */
+        'b84-p30':new Set(['cup','toothbrush','bow']),'b84-p31':PART_IDS,'b84-p32':new Set(['tooth','bug','cube']),'b84-p33':PART_IDS,'b84-p34':new Set(['toothbrush','foam','bubbles']),'b84-p35':new Set(['bug-small','bug-loud','bug-big'])};
+      const lineCount = {toothache:3,'b84-p30':1,'b84-p31':2,'b84-p32':2,'b84-p33':2,'b84-p34':3,'b84-p35':2};
+      if (state.version !== 3 || !Array.isArray(state.pages) || state.pages.length > 6 || typeof state.activePageId !== 'string' || typeof state.lastVisitedPageId !== 'string' || !Object.hasOwn(sceneParts,state.activePageId) || !Object.hasOwn(sceneParts,state.lastVisitedPageId)) throw new Error('This creative book is not supported.');
       const cleanPage = (page, cover = false) => {
         if (!page || typeof page.id !== 'string' || (page.id === 'cover-title') !== cover || !Object.hasOwn(sceneParts,page.id) || typeof page.completed !== 'boolean') throw new Error('Each creative activity needs a known page and completion state.');
         const cleaned = normalizeEditableState({kind:'sugar-bugs-v1',version:1,drawing:page.drawing,handwriting:page.handwriting},sceneParts[page.id]);
-        const required = cover ? [] : page.id === 'toothache' ? ['line-yum','line-donut','line-candy'] : [...LINE_IDS];
+        const required = cover ? [] : [...LINE_IDS].slice(0, lineCount[page.id] || 4);
         if (cleaned.handwriting.lines.some(line => !required.includes(line.id)) || cleaned.handwriting.activeLineId != null && !required.includes(cleaned.handwriting.activeLineId)) throw new Error('This creative page contains handwriting for an unavailable line.');
         if (page.completed && required.some(id => !cleaned.handwriting.lines.some(line => line.id === id))) throw new Error('Finish every story line before completing this activity.');
         return {id:page.id,completed:page.completed,drawing:cleaned.drawing,handwriting:cleaned.handwriting};

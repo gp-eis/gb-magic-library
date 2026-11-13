@@ -120,6 +120,17 @@
     const art = document.createElement('canvas'); art.width = 1000; art.height = 563;
     art.getContext('2d').drawImage($('#editor'), 0, 0);
     const lines = [...document.querySelectorAll('.story-line')].filter(row => !row.hidden).map(row => ({ id: row.id, text: row.querySelector('.line-print')?.textContent || row.textContent })).filter(row => row.text.trim());
+    const whole = window.storybook?.getScene?.();      // a page that shows the WHOLE storybook page (pages/b84-view.js)
+    if (whole?.view && window.GPB84View) return (async () => {
+      const handwriting = await handwritingPromise, written = [];
+      for (let i = 0; i < lines.length; i++) { const w = handwriting.lines.find(line => line.id === lines[i].id); if (!w) { written.push(null); continue; }
+        const url = URL.createObjectURL(w.imageBlob); try { written.push(await window.GPB84View.load(url)); } catch (_) { written.push(null); } finally { URL.revokeObjectURL(url); } }
+      const canvas = await window.GPB84View.spread(whole, art, written, activityTitle, '');
+      const thumbnail = document.createElement('canvas'); thumbnail.width = 480; thumbnail.height = Math.round(480 * 740 / 1500);
+      thumbnail.getContext('2d').drawImage(canvas, 0, 0, thumbnail.width, thumbnail.height);
+      const [imageBlob, thumbnailBlob] = await Promise.all([canvasBlob(canvas), canvasBlob(thumbnail, 'image/jpeg', .88)]);
+      return { imageBlob, thumbnailBlob, pages: [{ id: 'spread-1', title: activityTitle, imageBlob, layout: 'spread' }] };
+    })();
     return (async () => {
       const handwriting = await handwritingPromise;
       const canvas = document.createElement('canvas'); canvas.width = 1500; canvas.height = 740;
@@ -446,7 +457,7 @@
     function checkStored(stored) {
       const value = stored.editableState, known = new Set(configs.map(page => page.id));
       if (stored.profileId !== profileId || stored.bookId !== BOOK_ID || value?.kind !== (creative?'sugar-bugs-v3':'sugar-bugs-v2') || value.version !== (creative?3:2)) throw new Error('This saved item belongs to a different book edition. Its original library picture has not been changed.');
-      if (!Array.isArray(value.pages) || (!value.pages.length&&!(creative&&value.cover)) || value.pages.length > (creative?3:configs.length) || new Set(value.pages.map(page => page.id)).size !== value.pages.length || value.pages.some(page => !known.has(page.id) || page.id==='cover-title' || typeof page.completed !== 'boolean') || !known.has(value.activePageId) || !known.has(value.lastVisitedPageId)) throw new Error('This saved activity book is not supported. Its original work has not been changed.');
+      if (!Array.isArray(value.pages) || (!value.pages.length&&!(creative&&value.cover)) || value.pages.length > (creative?configs.length-1:configs.length) || new Set(value.pages.map(page => page.id)).size !== value.pages.length || value.pages.some(page => !known.has(page.id) || page.id==='cover-title' || typeof page.completed !== 'boolean') || !known.has(value.activePageId) || !known.has(value.lastVisitedPageId)) throw new Error('This saved activity book is not supported. Its original work has not been changed.');
       if(creative&&value.cover&&(value.cover.id!=='cover-title'||typeof value.cover.completed!=='boolean'||!(stored.coverBlob instanceof Blob)||!stored.coverBlob.size))throw new Error('The saved book cover is missing. Your original work has not been changed.');
       if (!Array.isArray(stored.pages) || stored.pages.length !== value.pages.length || new Set(stored.pages.map(page => page.id)).size !== stored.pages.length) throw new Error('The saved activity pictures do not match this edition. Your original work has not been changed.');
       const previews = new Map(stored.pages.map(page => [page.id, page]));
@@ -459,7 +470,7 @@
       let backup;
       try {
         await waitForEngines();
-        if (configs.length !== (creative?4:3) || !window.sampleTest.loadScene || !window.handwriting.setPageLines) throw new Error('The activity pages could not finish opening. Please refresh this page.');
+        if ((creative?configs.length<2:configs.length !== 3) || !window.sampleTest.loadScene || !window.handwriting.setPageLines) throw new Error('The activity pages could not finish opening. Please refresh this page.');
         const stored = requestedProject ? await window.GPLibrary.get(id) : null;
         if (currentProfileId() !== profileId) throw new Error('The local profile changed while opening. Please reopen this book from Home.');
         if (requestedProject && !stored) throw new Error('This saved book was removed or cannot be found. Return Home to choose another activity.');

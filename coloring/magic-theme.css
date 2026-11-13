@@ -177,3 +177,24 @@ body.cl-magic #begin,body.cl-magic #edit,body.cl-magic #finish{min-height:64px}
    its Next button and the coloring picture */
 html.cl-pc .reading-stage,html.cl-pc .studio-art-panel{margin-right:110px}
 html.cl-pc .reading-page .story-line{white-space:nowrap}   /* keep each story line and its pencil on one row */
+
+/* CREATE pages from the final storybook (2026-11-12): their printed lines are longer than the old video lines, so the
+   words are a little smaller and each line still stays on one row (page 30 has one short line and keeps the big size). */
+html.cl-pc body[data-activity^="b84-"] .reading-page .story-line,body[data-activity^="b84-"] .story-lines .story-line{font-size:21px}
+html.cl-pc body[data-activity="b84-p30"] .reading-page .story-line,body[data-activity="b84-p30"] .story-lines .story-line{font-size:28px}
+body[data-activity^="b84-"] .story-lines p{margin:0 0 10px}
+
+/* The WHOLE storybook page while reading and playing (pages/b84-view.js): the picture box takes the page's tall shape, the
+   page is its background, the book maker's picture and play canvases lie over the scene's rectangle, the child's
+   handwriting over the cloud. The colouring screen is untouched (it keeps the zoomed scene). */
+.reading-page .scene.b84-whole,#storybook .scene.b84-whole{position:relative;aspect-ratio:1200/1387;height:100%;width:auto;max-width:100%;margin:0 auto;overflow:hidden;border-radius:12px;background-size:100% 100%;background-repeat:no-repeat;box-shadow:0 6px 18px rgba(60,40,10,.18)}
+.scene.b84-whole>#originalScene,.scene.b84-whole>#motion{position:absolute!important;left:var(--b84-x)!important;top:var(--b84-y)!important;width:var(--b84-w)!important;height:var(--b84-h)!important;max-width:none!important;max-height:none!important;object-fit:fill!important;border-radius:0!important;box-shadow:none!important;border:0!important;margin:0!important;inset:auto;right:auto;bottom:auto}
+.scene.b84-whole[data-fade*="t"]>#originalScene,.scene.b84-whole[data-fade*="t"]>#motion{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 3.5%);mask-image:linear-gradient(to bottom,transparent 0,#000 3.5%)}
+.scene.b84-whole[data-fade="tb"]>#originalScene,.scene.b84-whole[data-fade="tb"]>#motion{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 3.5%,#000 96.5%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 3.5%,#000 96.5%,transparent 100%)}
+.scene.b84-whole[data-fade="tbr"]>#originalScene,.scene.b84-whole[data-fade="tbr"]>#motion{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 3.5%,#000 96.5%,transparent 100%),linear-gradient(to left,transparent 0,#000 3%);mask-image:linear-gradient(to bottom,transparent 0,#000 3.5%,#000 96.5%,transparent 100%),linear-gradient(to left,transparent 0,#000 3%);-webkit-mask-composite:source-in;mask-composite:intersect}
+.b84-hands{position:absolute;inset:0;pointer-events:none;z-index:3}
+.b84-hand{position:absolute;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.b84-hand img{max-width:100%;max-height:100%;display:block}
+.b84-hand.b84-empty{container-type:size}
+.b84-hand.b84-empty>i{font:400 11px "Andika Literacy",sans-serif;font-style:normal;color:#aab3bb;white-space:nowrap}
+@supports (font-size:1cqh){.b84-hand.b84-empty>i{font-size:min(56cqh,calc(165cqw / var(--n,20)))}}

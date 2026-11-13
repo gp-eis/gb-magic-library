@@ -35,6 +35,9 @@
       {id:'title-middle',path:'M690 20 H1100 V465 H690 Z',x:895,y:230,whiteOnly:true,outline:false},
       {id:'title-bottom',path:'M1100 20 H1240 V225 H1550 V435 H1100 Z',x:1320,y:230,whiteOnly:true,outline:false}
     ]};
-  const creativePages=[cover,...pages.map(page=>({...page,requiredWriting:true,staticPreview:false,blankObjects:page.id==='sugar-bugs'}))];
+  /* CREATE since 2026-11-12: the six pages of the designer's final storybook (pages/b84-pages.js, made by tools/make_create_book.cjs).
+     The three old video-frame pages stay only as the fallback and for the old three-activity links. */
+  const finalPages=typeof globalThis!=='undefined'&&Array.isArray(globalThis.GPB84Pages)?globalThis.GPB84Pages:null;
+  const creativePages=[cover,...(finalPages?finalPages.map(page=>({...page,requiredWriting:true,staticPreview:false})):pages.map(page=>({...page,requiredWriting:true,staticPreview:false,blankObjects:page.id==='sugar-bugs'})))];
   return Object.freeze({lineIds:Object.freeze(lineIds),pages:Object.freeze(pages.map(page=>Object.freeze(page))),creativePages:Object.freeze(creativePages.map(page=>Object.freeze(page)))});
 });

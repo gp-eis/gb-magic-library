@@ -486,8 +486,9 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
 <script src="catalog.js"></script>
 <script src="library-store.js"></script>
 <script src="storybook-model.js"></script>
-
+<script src="coloring/pages/b84-pages.js"></script>
 <script src="coloring/book-pages.js"></script>
+<script src="coloring/pages/b84-view.js"></script>
 <script src="coloring/scene-motion.js"></script>
 <script src="storybook-playback.js"></script>
 <script src="storybook-viewer.js"></script>
@@ -781,6 +782,7 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
     try{ if(window.GPLibrary) records=(await window.GPLibrary.list(PROFILE)).filter(r=>r.bookId===REAL_BOOK); }catch(e){}
     /* books saved before 2026-11-12 hold the three old video pages (treats, sugar-bugs, toothache): the book maker no longer
        has those, so such a book is left out here and the newest book with today's pages shows the child's progress */
+    records=records.filter(r=>!(r.pages||[]).some(p=>['treats','sugar-bugs','toothache'].includes(p.id)));
     realRecord=records.find(r=>r.metadata&&r.metadata.bookCompleted)||records[0]||null;
     realMake=!realRecord?'none':(realRecord.metadata&&realRecord.metadata.bookCompleted)?'done':'part';
     if(realMake==='done'){ flag('createDone',true); if(!flag('createStars')){ flag('createStars',true); bonus(3); } }
@@ -839,6 +841,7 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
   async function blankSpread(cfg){
     if(!andika){ andika=new FontFace('Andika Literacy','url(coloring/fonts/Andika-Regular.woff2)'); try{ await andika.load(); document.fonts.add(andika); }catch(e){} }
     const art=new Image(); art.src='coloring/'+cfg.template; await art.decode();
+    if(cfg.view&&window.GPB84View){ const c=await GPB84View.spread(cfg,art,null,cfg.title,'coloring/'); const imageBlob=await new Promise(r=>c.toBlob(r,'image/png')); return {id:cfg.id,title:cfg.title,imageBlob,layout:'spread'}; }
     const c=document.createElement('canvas'); c.width=1500; c.height=740; const x=c.getContext('2d');
     x.fillStyle='#fffdf7'; x.fillRect(0,0,1500,740);
     x.fillStyle='#254e49'; x.font='bold 34px "Andika Literacy", sans-serif'; x.fillText('Bye-Bye Sugar Bugs!',42,65);

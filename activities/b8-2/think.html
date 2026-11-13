@@ -104,6 +104,7 @@
 <script src="../sugar-bugs/kit.js"></script>
 <script src="../book/draw.js"></script>
 <script src="../../ui/cl-bubble.js"></script>
+<script src="../book/science-video.js"></script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
@@ -166,7 +167,7 @@
       if(!d3.strokes()) return;
       SB.store.set(KEY+'draw.family',d3.snapshot(420,462));
       SB.sfx.good(); SB.star($('pad3')); SB.sparkle($('pad3'),14); $('drawDone3').disabled=true;
-      SB.say('Home is where love is! Now, what are houses made of?').then(()=>setTimeout(r4,300));
+      SB.say('Home is where love is! Now, what are houses made of? Let’s watch!').then(()=>setTimeout(science,300));
     });
     SB.say('A home is more than a house. A home is where love grows. A home is where we care for each other. Draw your family in the house!',{el:$('card3'),gerry:true,rate:.9,replay:false}).then(()=>{ $('card3').innerHTML='<p>A home is more than a house.</p><p>A home is where love grows.</p><p>A home is where we care for each other.</p>'; });
   }
@@ -175,6 +176,9 @@
   const MATS=[{id:'bricks',name:'Bricks',fact:'Bricks! Many houses are made of bricks.'},{id:'wood',name:'Wood',fact:'Wood comes from trees.'},{id:'stone',name:'Stone',fact:'Stone is hard and strong.'},
               {id:'glass',name:'Glass',fact:'Glass! We can see through the windows.'},{id:'straw',name:'Straw',fact:'Straw is light. The giraffe’s home has grass!'},{id:'concrete',name:'Concrete',fact:'Concrete is grey and very strong.'}];
   const PICS=['wood','straw','bricks','stone','glass','concrete']; let matched=0;
+  /* the science video plays before the science page (user, 2026-11-13): video/building-materials -> science.mp4 */
+  function science(){ SBVideo.play({src:'science.mp4',title:'What are houses made of?',text:'Watch Brick build a house with straw, wood, stone, bricks, glass and concrete!',img:'wb/houses.webp'}).then(()=>{ r4(); SBVideo.again({src:'science.mp4'}); }); }
+
   function r4(){
     go('r3','r4'); title('Building materials');
     MATS.forEach(m=>{ const b=document.createElement('button'); b.className='word'; b.dataset.id=m.id; b.textContent=m.name; $('words').appendChild(b); });
@@ -189,7 +193,7 @@
     SB.say('Building materials! What are houses made of? Match the words to the pictures.');
   }
 
-  SB.startScreen({kicker:'STEP 4 · THINK',title:'This bouquet is for you!',text:'Make a bouquet, draw your honey and your family, and find out what houses are made of, just like in your workbook.',img:'wb/boy.webp'}).then(r1);
+  SB.startScreen({kicker:'STEP 4 · THINK',title:'This bouquet is for you!',text:'Make a bouquet, draw your honey and your family, and find out what houses are made of, just like in your workbook.',img:'wb/boy.webp'}).then(()=>{ if(new URLSearchParams(location.search).has('science')){ $('r1').classList.add('hidden'); science(); } else r1(); });   // ?science jumps straight to the science video (for checking)
 })();
 </script>
 </body>

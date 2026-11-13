@@ -98,6 +98,7 @@
 <script src="../sugar-bugs/kit.js"></script>
 <script src="../book/draw.js"></script>
 <script src="../../ui/cl-bubble.js"></script>
+<script src="../book/science-video.js"></script>
 <script>
 (function(){
   const $=id=>document.getElementById(id);
@@ -153,7 +154,7 @@
       const l=LINES.find(x=>x.id===el.dataset.id);
       if(+pic.dataset.n!==l.pic){ shake(el); SB.say('Hmm. Which picture shows: '+l.text); return; }
       SB.sfx.good(); el.dataset.placed='1'; el.remove(); pic.classList.add('done'); const s=pic.querySelector('.slot'); s.textContent='★'; s.className='slot '+l.c; SB.sparkle(pic,10); placed3++;
-      SB.say(l.text).then(()=>{ if(placed3===LINES.length){ SB.star($('grid3')); SB.say('Wait for your turn, don’t push, and say: after you! Now, are you good at waiting?').then(()=>setTimeout(r4,400)); } });
+      SB.say(l.text).then(()=>{ if(placed3===LINES.length){ SB.star($('grid3')); SB.say('Wait for your turn, don’t push, and say: after you! Now, why is waiting good? Let’s watch!').then(()=>setTimeout(science,400)); } });
     });
     SB.say('Stand in line. Put each star on its picture. Listen: '+LINES.map(l=>l.text).join(' '));
   }
@@ -163,6 +164,9 @@
                  {img:'ice',t:'Ice melts when it gets warm.',s:['Ice melts when it gets warm.','It turns into water.']},
                  {img:'dough',t:'Dough rises as it rests.',s:['Yeast makes tiny bubbles in the dough.','The dough gets bigger.']}];
   let q4=0, d4=null;
+  /* the science video plays before the science page (user, 2026-11-13): video/good-at-waiting -> science.mp4 */
+  function science(){ SBVideo.play({src:'science.mp4',title:'Some things take time!',text:'Watch Seed, Ice and Dough wait: a sprout, melting ice and rising dough. How long does each one take?',img:'wb/medal.webp'}).then(()=>{ r4(); SBVideo.again({src:'science.mp4'}); }); }
+
   function r4(){
     go('r3','r4'); title('I am good at waiting');
     WAITING.forEach((w,n)=>{ const b=document.createElement('button'); b.className='wcard'+(n===0?' go':''); b.dataset.n=n; b.innerHTML='<img src="wb/'+w.img+'.webp" alt=""><span><b>'+w.t+'</b><small>1. '+w.s[0]+'<br>2. '+w.s[1]+'</small></span>';
@@ -186,7 +190,7 @@
     SB.say('I am good at waiting! I can be proud of myself for waiting. Tap each picture and listen.');
   }
 
-  SB.startScreen({kicker:'STEP 4 · THINK',title:'Why do we wait?',text:'Find where we wait, see what happens if we don’t, stand in line nicely and draw yourself waiting, just like in your workbook.',img:'wb/queue.webp'}).then(r1);
+  SB.startScreen({kicker:'STEP 4 · THINK',title:'Why do we wait?',text:'Find where we wait, see what happens if we don’t, stand in line nicely and draw yourself waiting, just like in your workbook.',img:'wb/queue.webp'}).then(()=>{ if(new URLSearchParams(location.search).has('science')){ $('r1').classList.add('hidden'); science(); } else r1(); });   // ?science jumps straight to the science video (for checking)
 })();
 </script>
 </body>
