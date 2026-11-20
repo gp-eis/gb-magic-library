@@ -51,3 +51,31 @@ html.cl-phone body.sb-stage .bar #sbStars{margin-top:auto}
 html.cl-phone body.sb-stage .gerry{left:auto;right:calc(91px - var(--cl-r) * 1px);bottom:calc(12px - var(--cl-b) * 1px);width:118px}
 html.cl-phone body.sb-stage #stage .say{left:auto;right:calc(14px - var(--cl-r) * 1px);bottom:calc(262px - var(--cl-b) * 1px);width:272px;
   max-width:272px!important;font-size:26px!important;padding:14px 18px!important;border-radius:22px 22px 6px 22px}
+
+/* ---------- castle and hall: the WIDE painting reaches the window edges (2026-11-20, user: "fill the whole screen like
+   Fresh Math") ----------
+   art/exterior-wide.webp and art/hall-wide.webp are 2260 x 941: ChatGPT painted the sides, the original painting is kept
+   exactly in the middle (x 294..1966; design/tools/make_wide_scene.py). Drawn at the scale of the sharp .bg (1457 x 820 for
+   1672 x 941 = 0.8714), so the wide picture is 1969.4 x 820 stage px and its left edge sits at -394.7 stage px (the .bg starts
+   at -138.5). It lies over the old blurred copy, which only still shows above and below it on screens taller than the stage. */
+html.cl-flex #outside::after,html.cl-flex #hall::after{content:"";position:absolute;z-index:-1;pointer-events:none;
+  top:0;height:820px;left:-394.7px;width:1969.4px;background:center/100% 100% no-repeat}
+html.cl-flex #outside::after{background-image:url(../art/exterior-wide.webp)}
+html.cl-flex #hall::after{background-image:url(../art/hall-wide.webp)}
+
+/* ---------- My Library, the tower room and the Hall of Certificates: wide paintings too (2026-11-20) ----------
+   Same recipe as the castle and hall (design/tools/make_wide_scene.py; 2260 x 941, original in the middle at x 294..1966). */
+/* My Library: its picture starts under the 104 px top bar (.bg 1273 x 716 from left -83.7, scale 0.7614 -> wide 1720.7 x 716 from
+   left -307.5; the webp also has 210 px of mirrored edge on each side, so 2040.5 wide from -467.4, because this room is drawn
+   smaller and needs more width). Its ::after is already the top bar's purple, so the wide painting replaces the blurred copy in ::before. */
+html.cl-flex #nook::before{filter:none;background:#c98a4a url(../art/my-room-wide.webp) no-repeat;background-size:2040.5px 716px;
+  background-position:calc(var(--cl-l) * 1px + 40px - 467.4px) 0}
+/* the tower room (same placing as the hall) */
+html.cl-flex .tw-room::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:0;height:820px;left:-394.7px;width:1969.4px;
+  background:url(../art/floor-room-wide.webp) center/100% 100% no-repeat}
+/* the Hall of Certificates (same placing as the hall; its ::before stays the blurred copy for screens taller than the stage) */
+html.cl-flex .cert-room::after{content:"";position:absolute;z-index:-1;pointer-events:none;top:0;height:820px;left:-394.7px;width:1969.4px;
+  background:url(../art/certificate-room-wide.webp) center/100% 100% no-repeat}
+/* the wide paintings hold the whole original picture at exactly the same place and size, so the rooms' own .bg is hidden on
+   wide-screen pages: otherwise its soft edges showed a second copy of a lantern or shelf where the two pictures join */
+html.cl-flex #outside>.bg,html.cl-flex #hall>.bg,html.cl-flex #nook>.bg,html.cl-flex .tw-room>.bg,html.cl-flex .cert-room>.bg{visibility:hidden}

@@ -26,7 +26,7 @@
   function save() { try { localStorage.setItem('cl.wardrobe', JSON.stringify(state)); } catch (e) {} }
   const left = () => (window.clStars ? window.clStars() : 12) - state.spent;
   window.CLWardrobe = { spent: () => state.spent, wearing: () => state.wearing, reset() { state = JSON.parse(JSON.stringify(START)); save(); dressAll(); },
-    /* one star wallet for outfits and My Library 꾸미기 (ui/room.js) */
+    /* one star wallet for outfits and My Library · Decorate (ui/room.js) */
     left, spend(n) { if (n > left()) return false; state.spent += n; save(); if (window.clDrawStars) window.clDrawStars(); return true; } };
 
   /* dress every My Mate on the page */

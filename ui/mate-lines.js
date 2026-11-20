@@ -369,24 +369,24 @@
       wanda: ['{mate} is getting ready. Coming soon!'], don: ['{mate} is getting ready. Coming soon!'], coover: ['{mate} is still getting ready. Coming soon!']
     },
 
-    /* ---------- My Library 꾸미기 (decorating the room) ---------- */
+    /* ---------- My Library · Decorate (decorating the room) ---------- */
     'room.open': {
-      gerry: ['Decorating time! Tap a glowing spot. Let’s go!'],
-      penny: ['Ooh, decorating! I have so many ideas. Tap a glowing spot!'],
-      ria: ['Let’s investigate this room. Tap a glowing spot!'],
-      syd: ['Let’s make this room awesome! Tap a glowing spot.'],
-      wanda: ['Let’s make our room cozy and tidy. Tap a glowing spot.'],
-      don: ['Let us make this room fit for a king! Tap a glowing spot.'],
-      coover: ['Hard hat on! Every room has a plan. Tap a glowing spot.']
+      gerry: ['Decorating time! Pick something and drag it anywhere. Let’s go!'],
+      penny: ['Ooh, decorating! I have so many ideas. Drag things anywhere you like!'],
+      ria: ['Let’s investigate this room. Drag things wherever you like!'],
+      syd: ['Let’s make this room awesome! Drag things anywhere.'],
+      wanda: ['Let’s make our room cozy and tidy. Drag things where they belong.'],
+      don: ['Let us make this room fit for a king! Drag things anywhere you wish.'],
+      coover: ['Hard hat on! Every room has a plan. Drag things into place.']
     },
     'room.spot': {
-      gerry: ['Pick one! They all look fun!'],
+      gerry: ['Pick one! Drag it where you like!'],
       penny: ['What if we try this one? Or this one?'],
-      ria: ['Fascinating choices! Tap one to try it.'],
-      syd: ['Try one on for size!'],
+      ria: ['Fascinating choices! Drag one into the room.'],
+      syd: ['Drag it around and try it out!'],
       wanda: ['Look closer and pick your favorite.'],
       don: ['Choose wisely, please!'],
-      coover: ['Measure twice! Tap one to try it.']
+      coover: ['Measure twice! Drag it into place.']
     },
     'room.kept': {
       gerry: ['Woo-hoo! It looks great!'],
