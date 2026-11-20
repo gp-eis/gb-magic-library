@@ -79,3 +79,5 @@ html.cl-flex .cert-room::after{content:"";position:absolute;z-index:-1;pointer-e
 /* the wide paintings hold the whole original picture at exactly the same place and size, so the rooms' own .bg is hidden on
    wide-screen pages: otherwise its soft edges showed a second copy of a lantern or shelf where the two pictures join */
 html.cl-flex #outside>.bg,html.cl-flex #hall>.bg,html.cl-flex #nook>.bg,html.cl-flex .tw-room>.bg,html.cl-flex .cert-room>.bg{visibility:hidden}
+/* castle: the sound + Skip pair sits in the window corner on wide screens (user 2026-11-20) */
+html.cl-flex .outbar{right:calc(24px - var(--cl-r) * 1px);top:calc(20px - var(--cl-t) * 1px)}
