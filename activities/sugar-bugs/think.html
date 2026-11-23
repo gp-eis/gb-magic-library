@@ -147,7 +147,7 @@
     });
     SB.dragTap([...tray.children],[$('zGood'),$('zBad')],(el,zone)=>{
       const f=FOODS.find(x=>x.id===el.dataset.id);
-      const fact=f.name+' '+f.verb+(f.kind==='good'?' good for our teeth!':' bad for our teeth. Sugar bugs love it!');
+      const fact=f.name+' '+f.verb+(f.kind==='good'?' good for our teeth!':' bad for our teeth. Sugar bugs love '+(f.verb==='are'?'them!':'it!'));
       if(zone.dataset.kind!==f.kind){ shake(el); SB.say('Hmm. '+fact); return; }
       SB.sfx.good(); el.dataset.placed='1'; el.classList.remove('picked'); zone.querySelector('.inside').appendChild(el);
       zone.classList.add('flash'); setTimeout(()=>zone.classList.remove('flash'),200); SB.sparkle(el,10);

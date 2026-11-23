@@ -10,7 +10,7 @@
   const L = {
     /* ---------- outside the castle ---------- */
     welcome: {
-      gerry: ['It’s Gerry time! Hi, {name}! Yay, let’s go!'],
+      gerry: ['It’s Gerry time! Hi, {name}! Yay! Let’s go!'],   // Yay on its own so it sounds excited (user 2026-11-23)
       penny: ['Hi, {name}! I have so many ideas for today!'],
       ria: ['Hello, {name}! Fascinating new books are waiting!'],
       syd: ['G’day, {name}! Good vibes, big smiles! Let’s do this!'],

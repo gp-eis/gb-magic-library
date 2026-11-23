@@ -5,8 +5,8 @@
   const me = document.currentScript, base = (me && me.dataset.base) || '';
   const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = base + 'ui/rotate.css';
   document.head.appendChild(css);
-  /* Android phones: the first tap makes the library full screen and turns it sideways by itself, even with the phone's
-     rotation lock on. Done by the phone frame (play.html) so it lasts from page to page. iPhones cannot do this. */
+  /* Android phones: the "Play sideways" button makes the library full screen and turns it sideways, even with the
+     phone's rotation lock on. Done by the phone frame (play.html) so it lasts from page to page. iPhones cannot do this. */
   const top_ = (() => { try { return window.top.CL_SHELL ? window.top : window; } catch (e) { return window; } })();
   const canTurn = matchMedia('(pointer: coarse)').matches && !!top_.document.documentElement.requestFullscreen
     && !!(top_.screen.orientation && top_.screen.orientation.lock);
@@ -32,7 +32,9 @@
     if (document.fullscreenElement) return;
     d.requestFullscreen({ navigationUI: 'hide' }).then(() => screen.orientation.lock('landscape')).catch(() => {});
   }
-  if (canTurn) addEventListener('pointerup', () => { if (!top_.document.fullscreenElement) full(); }, true);
+  /* only the "Play sideways" button asks for full screen (user 2026-11-23: a tap anywhere made the screen go full
+     screen, as in Let's Go PBL; removed there too) */
+  if (canTurn) addEventListener('click', e => { if (e.target.closest && e.target.closest('.rt-go') && !top_.document.fullscreenElement) full(); }, true);
 })();
 /* small-screen mode: the stage (1180 x 820) is drawn small on phones held sideways */
 (function () {
