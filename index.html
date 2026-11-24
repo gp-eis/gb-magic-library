@@ -289,7 +289,7 @@ h1{font-family:var(--f-ui);font-weight:600;font-size:clamp(26px,4vw,34px);margin
 </style>
 
 <script src="ui/profiles.js"></script>
-<script src="ui/mate.js"></script><script src="voice/gerry/clips.js"></script><script src="ui/voice.js"></script>
+<script src="ui/mate.js"></script><script src="voice/gerry/clips.js"></script><script src="ui/voice.js"></script><script src="ui/tap-sounds.js"></script>
 <script src="ui/rotate.js" data-base=""></script>
 <script src="ui/stage.js" data-base=""></script>
 <script src="ui/mate-lines.js"></script>
@@ -635,7 +635,8 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
   function show(id){ ['outside','hall','quest','nook'].forEach(s=>$(s).classList.toggle('on',s===id)); }
 
   async function arriveHall(){
-    $('hall').classList.add('arrive'); $('hallBubble').textContent=ml('hallArrive');
+    $('hall').classList.add('arrive'); for(let i=0;i<40&&window.clVoiceLeft&&window.clVoiceLeft()>0;i++) await wait(Math.min(400,window.clVoiceLeft()+120));   // up to 16 s
+    $('hallBubble').textContent=ml('hallArrive');
     if(!seenOwl){ seenOwl=true; await wait(500); $('owlnote').classList.add('on'); setTimeout(()=>$('owlnote').classList.remove('on'),3600); }
     await wait(300); $('hall').classList.remove('arrive');
   }
@@ -646,6 +647,8 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
     sparkle(589,572,20);
     $('outside').classList.add('open');
     await wait(fast?150:650);
+    /* stretch the walk-in so the flash lands as My Mate finishes "Three, two, one… Abracadabra!" (the zoom and flash below take 1.2 s) */
+    const extra=window.clVoiceLeft()-(fast?500:1200); if(extra>0) await wait(extra);
     const w=$('world'); w.style.transitionDuration=(fast?.5:1.1)+'s'; w.classList.add('zoom');
     await wait(fast?280:700);
     $('flash').classList.add('on');
@@ -955,10 +958,13 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
     let open=false; const end=Date.now()+ms;
     (function step(){ if(Date.now()>end){ stopTalk(g); return; } open=!open; frame(g,open?'talk':'idle'); timers.set(g,setTimeout(step,open?120+Math.random()*80:70+Math.random()*70)); })();
   }
+  /* when the recorded line now playing ends (0 = nothing playing): the walk into the hall waits for it, so the next line
+     never cuts it off (user 2026-11-24: "Abracadabra" was cut off) */
+  let speakUntil=0; window.clVoiceLeft=()=>window.CLVoice&&CLVoice.left?CLVoice.left():Math.max(0,speakUntil-Date.now());
   function speak(text,g){
     if(muted||!interacted) return false;
     /* a recorded clip of these words first (ui/voice.js: works on every phone), else the phone's own voice */
-    if(window.CLVoice){ if('speechSynthesis' in window) speechSynthesis.cancel(); const c=CLVoice.play(text,{onend:()=>{ if(g) stopTalk(g); },onerror:()=>{ if(g) stopTalk(g); }}); if(c) return true; }
+    if(window.CLVoice){ if('speechSynthesis' in window) speechSynthesis.cancel(); const c=CLVoice.play(text,{onend:()=>{ speakUntil=0; if(g) stopTalk(g); },onerror:()=>{ speakUntil=0; if(g) stopTalk(g); }}); if(c){ speakUntil=Date.now()+c.dur*1000; return true; } }
     if(!('speechSynthesis' in window)) return false;
     try{
       speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(text); u.lang='en-US'; u.rate=.95; u.pitch=(window.CLMate?CLMate.pitch():1.2);

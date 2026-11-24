@@ -41,5 +41,15 @@
     return c;
   }
   function stop() { turn++; try { audio.pause(); } catch (e) {} }
-  window.CLVoice = { has: t => !!find(t), play, stop, hash, norm };
+  /* ms of the clip still to play (0 when nothing is playing); a clip that is still loading counts its whole length */
+  let started = 0, wantMs = 0;
+  audio.addEventListener('playing', () => { started = 1; });
+  audio.addEventListener('error', () => { wantMs = 0; started = 1; }); audio.addEventListener('ended', () => { wantMs = 0; });
+  function left() {
+    if (audio.ended || !audio.src || audio.src === SILENT) return 0;
+    if (!started) return audio.paused && !wantMs ? 0 : wantMs;
+    if (audio.paused) return 0;
+    return Math.max(0, ((audio.duration || 0) - audio.currentTime) * 1000);
+  }
+  window.CLVoice = { has: t => !!find(t), play: (t, o) => { const c = play(t, o); if (c) { started = 0; wantMs = c.dur * 1000; } return c; }, stop, hash, norm, left };
 })();

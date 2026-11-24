@@ -54,7 +54,7 @@
     interacted = true;
     const t = e.target.closest('button,summary,.story-line,.activity-tab,.storybook-home-link');
     if (!t || t.disabled) return;
-    burst(e.clientX, e.clientY, 9); pop();
+    burst(e.clientX, e.clientY, 9); if (!window.CLTapSounds) pop();   // the library's shared tap sound (ui/tap-sounds.js) plays instead
   }, true);
 
   /* a little star trail while painting or tracing */
