@@ -189,7 +189,9 @@
   /* ---------- the big certificate (view, and the ceremony when earned) ---------- */
   function speak(text) {
     let muted = false; try { muted = localStorage.getItem('cl.muted') === '1'; } catch (e) {}
-    if (muted || !('speechSynthesis' in window)) return;
+    if (muted) return;
+    if (window.CLVoice && CLVoice.play(text)) return;   // Gerry's recorded clip first (ui/voice.js)
+    if (!('speechSynthesis' in window)) return;
     try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = .95; u.pitch = window.CLMate ? CLMate.pitch() : 1.2; speechSynthesis.speak(u); } catch (e) {}
   }
   function confetti() {

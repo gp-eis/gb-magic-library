@@ -74,6 +74,8 @@
     let open = false; const end = Date.now() + Math.min(5000, 360 * text.split(/\s+/).length);
     (function step() { if (Date.now() > end) { frame('idle'); g.classList.remove('talking'); return; } open = !open; frame(open ? 'talk' : 'idle'); flap = setTimeout(step, open ? 140 : 90); })();
     let muted = false; try { muted = localStorage.getItem('cl.muted') === '1'; } catch (e) {}
+    /* Gerry's recorded clip first (ui/voice.js), when the friend speaking is the child's own My Mate */
+    if (!muted && window.CLVoice && window.CLMate && pickMate === CLMate.current().id) { try { speechSynthesis.cancel(); } catch (e) {} if (CLVoice.play(text)) return; }
     if (!muted && 'speechSynthesis' in window) { try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = .95; u.pitch = mateOf(pickMate).pitch; speechSynthesis.speak(u); } catch (e) {} }
   }
   setInterval(() => { if (box.hidden || g.classList.contains('talking')) return; frame('blink'); setTimeout(() => { if (!g.classList.contains('talking')) frame('idle'); }, 140); }, 3200);

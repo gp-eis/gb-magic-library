@@ -289,7 +289,7 @@ h1{font-family:var(--f-ui);font-weight:600;font-size:clamp(26px,4vw,34px);margin
 </style>
 
 <script src="ui/profiles.js"></script>
-<script src="ui/mate.js"></script><script src="voice/gerry/clips.js"></script><script src="ui/voice.js"></script><script src="ui/tap-sounds.js"></script>
+<script src="ui/mate.js"></script><script src="voice/gerry/clips.js"></script><script src="ui/voice.js"></script><script src="ui/tap-sounds.js"></script><script src="ui/gerry-poses.js"></script>
 <script src="ui/rotate.js" data-base=""></script>
 <script src="ui/stage.js" data-base=""></script>
 <script src="ui/mate-lines.js"></script>
@@ -980,6 +980,7 @@ html:not(.dev) .screen{width:min(100vw,calc(100vh * 1180 / 820))!important;width
       if(t===last.t&&Date.now()-last.at<1500) return; last={t,at:Date.now()};
       const spoken=speak(t,g);
       if(g) talk(g, spoken?15000:Math.min(6000,380*t.split(/\s+/).length));
+      if(g&&window.CLPose) CLPose.react(g,t);   // wave / cheer / point / think / thumbs up from his words (ui/gerry-poses.js)
     }).observe(b,{childList:true,characterData:true,subtree:true});
   });
   document.querySelectorAll('.guide').forEach(g=>{

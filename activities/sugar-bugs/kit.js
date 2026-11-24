@@ -120,7 +120,7 @@
     const bubble = opts.el || $('#sbSay'); const own = !opts.el || !!opts.gerry; words(bubble, text, opts.breaks); bubble.classList.remove('hide');
     if (opts.replay !== false) { const r = document.createElement('button'); r.className = 'replay'; r.textContent = '🔊'; r.setAttribute('aria-label', 'Hear it again'); r.addEventListener('click', e => { e.stopPropagation(); say(text, opts); }); bubble.appendChild(r); }
     return new Promise(resolve => {
-      const token = { resolve }; current = token; if (own) flap(true); else if (opts.bounce && !RM) opts.bounce.style.animation = 'talkBounce .45s ease-in-out infinite';
+      const token = { resolve }; current = token; if (own) { flap(true); if (window.CLPose) CLPose.react(gerryEl, text); } else if (opts.bounce && !RM) opts.bounce.style.animation = 'talkBounce .45s ease-in-out infinite';
       const est = Math.max(1600, text.split(' ').length * 380);
       const finish = () => { if (current !== token) return; light(bubble, 999); if (own) flap(false); if (opts.bounce) opts.bounce.style.animation = ''; current = null; resolve(); };
       /* a recorded clip of exactly these words (ui/voice.js) plays on every phone; the phone's own voice is only the fallback */
